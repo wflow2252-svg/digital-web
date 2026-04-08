@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Wear - متجر أزياء فاخر | التسوق بستايل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <style>
+        :root {
+            --dark-bg: #050505;
+            --card-bg: #111111;
+            --accent: #d4af37; /* Luxury Gold */
+            --text-light: #ffffff;
+            --text-muted: #888888;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--dark-bg); color: var(--text-light); overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Top Promo Bar */
+        .promo-bar { background: var(--accent); color: #000; text-align: center; padding: 8px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;}
+        
+        /* Navbar */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #222; position: sticky; top:0; background: rgba(5,5,5,0.95); z-index:100; backdrop-filter: blur(10px); transition: 0.3s;}
+        .logo img { height: 50px; transition: 0.3s; }
+        .logo:hover img { transform: scale(1.05); }
+        .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
+        .nav-links a { color: var(--text-light); text-decoration: none; font-weight: 600; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-icons { display: flex; gap: 20px;}
+        .nav-icons span { cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-icons span:hover { color: var(--accent); }
+        .cart-count { position: absolute; top: -5px; right: -8px; background: var(--accent); color: #000; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        /* Hero */
+        .hero { display: flex; align-items: center; gap: 40px; padding: 80px 0; min-height: calc(100vh - 120px); position: relative; }
+        .hero-text { flex: 1; z-index: 2; }
+        .hero-text h1 { font-size: 4.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 900; }
+        .hero-text p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px; max-width: 500px; }
+        .hero-btn { background: var(--accent); color: #000; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; font-size: 1.1rem; }
+        .hero-btn:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+        .hero-img { flex: 1; position: relative; z-index: 1;}
+        .hero-img img { width: 100%; border-radius: 20px; box-shadow: 0 20px 50px rgba(212, 175, 55, 0.15); animation: float 6s ease-in-out infinite; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Categories */
+        .categories { padding: 60px 0; border-top: 1px solid #1a1a1a; }
+        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .cat-card { position: relative; border-radius: 12px; overflow: hidden; height: 250px; cursor: pointer; }
+        .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.7;}
+        .cat-card:hover img { transform: scale(1.1); opacity: 1; }
+        .cat-title { position: absolute; bottom: 20px; right: 20px; font-size: 1.5rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); pointer-events: none;}
+
+        /* Products */
+        .products { padding: 80px 0; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; }
+        .section-title { font-size: 2.5rem; margin: 0; }
+        .view-all { color: var(--accent); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .view-all:hover { text-decoration: underline; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: var(--card-bg); padding: 20px; border-radius: 12px; transition: 0.4s; position: relative; border: 1px solid transparent; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.4); border-color: #333; }
+        .img-wrapper { height: 280px; overflow: hidden; border-radius: 8px; margin-bottom: 20px; position: relative;}
+        .product-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .product-card:hover .product-img { transform: scale(1.1); }
+        
+        /* Wishlist Heart */
+        .wishlist-btn { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; color: #fff; cursor: pointer; backdrop-filter: blur(5px); border: none; transition: 0.3s; z-index: 2;}
+        .wishlist-btn:hover { color: var(--accent); background: #000; }
+
+        .product-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+        .product-price { color: var(--accent); font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; }
+        .add-to-cart { width: 100%; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .add-to-cart:hover { background: var(--accent); color: #000; }
+
+        /* Footer */
+        footer { background: #080808; padding: 60px 0 20px; border-top: 1px solid #222; margin-top: 60px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 40px; }
+        .footer-col h4 { color: var(--accent); font-size: 1.2rem; margin-bottom: 20px; }
+        .footer-col ul { list-style: none; padding: 0; margin: 0; }
+        .footer-col ul li { margin-bottom: 15px; }
+        .footer-col ul li a { color: var(--text-muted); text-decoration: none; transition: 0.3s; }
+        .footer-col ul li a:hover { color: #fff; padding-right: 10px;}
+        .footer-bottom { text-align: center; color: var(--text-muted); padding-top: 20px; border-top: 1px solid #1a1a1a; font-size: 0.9rem;}
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; }
+            .hero-text h1 { font-size: 2.8rem; }
+            .nav-links { display: none; }
+            .cat-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="promo-bar">شحن مجاني لجميع الطلبات فوق الـ ١٠٠٠ جنيه بمناسبة العيد! 🚀</div>
+    
+    <nav>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <a href="#" class="logo">
+                <img src="file:///c:/Users/hazem/Downloads/الشغل بتاعي/تصميم_بدون_عنوان-removebg-preview (1).png" alt="Logo" style="height:55px;">
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#">الرئيسية</a></li>
+                <li><a href="#">وصل حديثاً</a></li>
+                <li><a href="#">رجالي</a></li>
+                <li><a href="#">حريمي</a></li>
+                <li><a href="#">تخفيضات</a></li>
+            </ul>
+
+            <div class="nav-icons">
+                <span class="material-symbols-outlined">search</span>
+                <span class="material-symbols-outlined">person</span>
+                <span class="material-symbols-outlined">favorite</span>
+                <span class="material-symbols-outlined" style="position:relative;">
+                    shopping_cart
+                    <div class="cart-count">2</div>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="hero">
+            <div class="hero-text">
+                <h1>الشياكة ليها أصول.. اختار ستايلك صح</h1>
+                <p>تشكيلتنا الجديدة وصلت! جبنالك أحدث البراندات العالمية وأرقى الخامات اللي تليق بيك في مكان واحد وعشانك وبس.</p>
+                <a href="#" class="hero-btn">تسوق الكوليكشن الجديد <span class="material-symbols-outlined">arrow_left_alt</span></a>
+            </div>
+            <div class="hero-img">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" alt="مجموعة الأحذية الفاخرة">
+            </div>
+        </section>
+
+        <section class="categories">
+            <div class="cat-grid">
+                <div class="cat-card">
+                    <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80" alt="رجالي">
+                    <div class="cat-title">كوليكشن رجالي</div>
+                </div>
+                <div class="cat-card">
+                    <img src="https://images.unsplash.com/photo-1550614000-4b95d4ed1419?auto=format&fit=crop&w=600&q=80" alt="حريمي">
+                    <div class="cat-title">كوليكشن حريمي</div>
+                </div>
+                <div class="cat-card">
+                    <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=600&q=80" alt="أحذية">
+                    <div class="cat-title">أحذية وإكسسوارات</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="products">
+            <div class="section-header">
+                <h2 class="section-title">الأعلى مبيعاً عندنا 🔥</h2>
+                <a href="#" class="view-all">كل المنتجات <span class="material-symbols-outlined">arrow_left</span></a>
+            </div>
+            <div class="product-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <button class="wishlist-btn"><span class="material-symbols-outlined">favorite_border</span></button>
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&q=80" alt="Product" class="product-img">
+                    </div>
+                    <div class="product-title">سنيكرز أخضر نيون - إصدار محدود</div>
+                    <div class="product-price">٣,٢٠٠ ج.م</div>
+                    <button class="add-to-cart" onclick="alert('تم وضع المنتج في السلة بنجاح!')"><span class="material-symbols-outlined">add_shopping_cart</span> انقله للسلة</button>
+                </div>
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <button class="wishlist-btn"><span class="material-symbols-outlined">favorite_border</span></button>
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" alt="Product" class="product-img">
+                    </div>
+                    <div class="product-title">سماعات رأس لاسلكية برو أصلية</div>
+                    <div class="product-price">١,٨٥٠ ج.م</div>
+                    <button class="add-to-cart" onclick="alert('تم وضع المنتج في السلة بنجاح!')"><span class="material-symbols-outlined">add_shopping_cart</span> انقله للسلة</button>
+                </div>
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <button class="wishlist-btn"><span class="material-symbols-outlined">favorite_border</span></button>
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" alt="Product" class="product-img">
+                    </div>
+                    <div class="product-title">ساعة ذكية بشاشة لمس ضد المية</div>
+                    <div class="product-price">١,٥٠٠ ج.م</div>
+                    <button class="add-to-cart" onclick="alert('تم وضع المنتج في السلة بنجاح!')"><span class="material-symbols-outlined">add_shopping_cart</span> انقله للسلة</button>
+                </div>
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <button class="wishlist-btn"><span class="material-symbols-outlined">favorite_border</span></button>
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&w=800&q=80" alt="Product" class="product-img">
+                    </div>
+                    <div class="product-title">تيشيرت قطن ١٠٠٪ سادة فاخر</div>
+                    <div class="product-price">٥٥٠ ج.م</div>
+                    <button class="add-to-cart" onclick="alert('تم وضع المنتج في السلة بنجاح!')"><span class="material-symbols-outlined">add_shopping_cart</span> انقله للسلة</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="grid-column: span 1;">
+                    <img src="file:///c:/Users/hazem/Downloads/الشغل بتاعي/تصميم_بدون_عنوان-removebg-preview (1).png" alt="Logo" style="height:60px; margin-bottom:15px;">
+                    <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;">إحنا مش مجرد متجر، إحنا بوابتك لعالم الشياكة والتسوق المبسط براحة من بيتك.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>الروابط السريعة</h4>
+                    <ul>
+                        <li><a href="#">الرئيسية</a></li>
+                        <li><a href="#">أحدث الكوليكشن</a></li>
+                        <li><a href="#">رجالي</a></li>
+                        <li><a href="#">تخفيضات أخر الموسم</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>خدمة العملاء</h4>
+                    <ul>
+                        <li><a href="#">تتبع شحنتك</a></li>
+                        <li><a href="#">سياسة الاسترجاع والتسليم</a></li>
+                        <li><a href="#">الأسئلة الشائعة</a></li>
+                        <li><a href="#">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>خليك على تواصل</h4>
+                    <ul>
+                        <li><a href="#"><span class="material-symbols-outlined" style="vertical-align:bottom; margin-left:5px;">call</span> 0100xxxxxxx</a></li>
+                        <li><a href="#"><span class="material-symbols-outlined" style="vertical-align:bottom; margin-left:5px;">mail</span> info@luxewear.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                جميع الحقوق محفوظة لصالح متجر Luxe Wear - تم التطوير بواسطة شركة ديجيتال ويب للبرمجيات.
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Shrink navbar on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if(window.scrollY > 50) {
+                nav.style.padding = '10px 0';
+                nav.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
+            } else {
+                nav.style.padding = '20px 0';
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+    <script src="../chat-widget.js"></script>
+</body>
+</html>

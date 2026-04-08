@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم الأصالة | تجربة المذاق الرفيع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0d0a07;
+            --card-bg: #1a1208;
+            --primary: #c9973a;
+            --primary-light: #f0c060;
+            --text-light: #fef8f0;
+            --text-muted: #9a8a70;
+            --border: rgba(201,151,58,0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text-light); overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* ===== NAVBAR ===== */
+        header {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 20px 0;
+            background: rgba(13,10,7,0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            transition: padding 0.3s ease;
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo img { height: 55px; }
+        .nav-links { display: flex; gap: 35px; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 1rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary-light); }
+        .reserve-btn { 
+            background: var(--primary); color: #000; padding: 10px 25px;
+            border-radius: 50px; font-weight: 700; text-decoration: none;
+            transition: 0.3s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .reserve-btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(201,151,58,0.3); }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(rgba(13,10,7,0.5) 0%, rgba(13,10,7,0.85) 100%),
+                        url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+            z-index: -1;
+            animation: zoomBg 18s ease-in-out infinite alternate;
+        }
+        @keyframes zoomBg {
+            from { transform: scale(1); }
+            to { transform: scale(1.08); }
+        }
+        .hero-content { padding-top: 80px; }
+        .hero-tag { 
+            display: inline-block; border: 1px solid var(--primary); color: var(--primary);
+            padding: 6px 20px; border-radius: 50px; font-size: 0.9rem; margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+        .hero-title { font-size: 5rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+        .hero-title span { color: var(--primary); }
+        .hero-subtitle { font-size: 1.25rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px; line-height: 1.8; }
+        .hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn-gold { background: var(--primary); color: #000; padding: 14px 32px; border-radius: 50px; font-weight: 700; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-gold:hover { background: var(--primary-light); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(201,151,58,0.35); }
+        .btn-outline { border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 14px 32px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar { background: var(--card-bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 30px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+        .stat-item { padding: 0 20px; border-left: 1px solid var(--border); }
+        .stat-item:last-child { border: none; }
+        .stat-num { font-size: 2.5rem; font-weight: 900; color: var(--primary); }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+
+        /* ===== MENU SECTION ===== */
+        .menu-section { padding: 100px 0; }
+        .section-label { color: var(--primary); font-size: 0.9rem; letter-spacing: 3px; text-align: center; margin-bottom: 10px; font-weight: 600; }
+        .section-title { font-size: 3rem; font-weight: 900; text-align: center; margin-bottom: 50px; }
+        
+        .menu-tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 50px; }
+        .tab-btn { 
+            padding: 10px 25px; border-radius: 50px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-muted); font-family: 'Cairo'; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: 0.3s;
+        }
+        .tab-btn:hover,.tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        .menu-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 25px; }
+        .menu-grid.active { display: grid; }
+
+        .menu-card { 
+            background: var(--card-bg); border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border); display: flex; gap: 0;
+            transition: 0.4s; align-items: stretch;
+        }
+        .menu-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-color: rgba(201,151,58,0.4); }
+        .menu-card img { width: 130px; height: 130px; object-fit: cover; flex-shrink: 0; }
+        .menu-info { padding: 20px; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+        .menu-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+        .menu-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+        .menu-price { color: var(--primary); font-size: 1.3rem; font-weight: 700; }
+
+        /* ===== BOOKING SECTION ===== */
+        .booking-section { padding: 100px 0; background: var(--card-bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .booking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .booking-img img { width: 100%; border-radius: 20px; height: 450px; object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .booking-form h2 { font-size: 2.5rem; margin-bottom: 10px; }
+        .booking-form p { color: var(--text-muted); margin-bottom: 35px; line-height: 1.7;}
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; letter-spacing: 1px; }
+        .form-group input, .form-group select { 
+            width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border); border-radius: 8px; color: var(--text-light);
+            font-family: 'Cairo'; font-size: 1rem; transition: 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(201,151,58,0.1); }
+        .form-group select option { background: #1a1208; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .book-btn { 
+            width: 100%; padding: 15px; background: var(--primary); color: #000;
+            font-family: 'Cairo'; font-size: 1.1rem; font-weight: 700; border: none;
+            border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .book-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials { padding: 100px 0; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 50px; }
+        .testimonial-card { 
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 30px;
+            transition: 0.4s;
+        }
+        .testimonial-card:hover { border-color: rgba(201,151,58,0.4); transform: translateY(-5px); }
+        .stars { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; letter-spacing: 3px; }
+        .testimonial-text { color: var(--text-muted); line-height: 1.8; font-size: 1rem; margin-bottom: 25px; }
+        .reviewer { display: flex; align-items: center; gap: 15px; }
+        .reviewer-avatar { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary); }
+        .reviewer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .reviewer-name { font-weight: 700; font-size: 1rem; }
+        .reviewer-sub { color: var(--text-muted); font-size: 0.85rem; margin-top: 3px; }
+
+        /* ===== FOOTER ===== */
+        footer { background: #080602; padding: 70px 0 20px; border-top: 1px solid var(--border); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 50px; margin-bottom: 50px; }
+        .footer-brand img { height: 65px; margin-bottom: 20px; }
+        .footer-brand p { color: var(--text-muted); line-height: 1.8; font-size: 0.95rem; }
+        .footer-col h4 { color: var(--primary); font-size: 1.1rem; margin-bottom: 20px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: var(--text-muted); text-decoration: none; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .footer-col ul li a:hover { color: var(--primary-light); }
+        .footer-bottom { text-align: center; border-top: 1px solid var(--border); padding-top: 20px; color: var(--text-muted); font-size: 0.9rem; }
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 3rem; }
+            .booking-grid { grid-template-columns: 1fr; }
+            .booking-img { display: none; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="#" class="logo">
+                    <img src="file:///c:/Users/hazem/Downloads/الشغل بتاعي/تصميم_بدون_عنوان-removebg-preview (1).png" alt="Logo">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#home">الرئيسية</a></li>
+                    <li><a href="#menu">قائمة الطعام</a></li>
+                    <li><a href="#booking">احجز طاولة</a></li>
+                    <li><a href="#testimonials">آراء عملاؤنا</a></li>
+                </ul>
+                <a href="#booking" class="reserve-btn">
+                    <span class="material-symbols-outlined">event_seat</span>
+                    احجز ترابيزتك
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-content container">
+            <div class="hero-tag">تجربة استثنائية منذ ٢٠٠٥</div>
+            <h1 class="hero-title">أصالة المذاق<br><span>في أجواء لا تُنسى</span></h1>
+            <p class="hero-subtitle">إحنا مش مجرد مطعم.. إحنا تجربة حياة كاملة في مكان واحد. أكل بيوصل قلبك من أيادي طهاة متخصصين وأجواء هتخليك تنسى العالم كله وأنت جوانا.</p>
+            <div class="hero-buttons">
+                <a href="#menu" class="btn-gold"><span class="material-symbols-outlined">restaurant_menu</span> اتفرج على قائمتنا</a>
+                <a href="#booking" class="btn-outline"><span class="material-symbols-outlined">event_seat</span> احجز طاولتك دلوقتي</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-num">+٢٠</div>
+                    <div class="stat-label">سنة من التميز في الطهي</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">+٥٠,٠٠٠</div>
+                    <div class="stat-label">عميل سعيد بيثق فينا</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">+٨٠</div>
+                    <div class="stat-label">صنف متميز في القائمة</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">٤.٩ ★</div>
+                    <div class="stat-label">تقييم عملاؤنا على جوجل</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <section class="menu-section" id="menu">
+        <div class="container">
+            <div class="section-label">— قائمة الأكل —</div>
+            <h2 class="section-title">اختار اللي تحبه</h2>
+            <div class="menu-tabs">
+                <button class="tab-btn active" onclick="switchTab('appetizers', this)">المقبلات</button>
+                <button class="tab-btn" onclick="switchTab('main', this)">الأطباق الرئيسية</button>
+                <button class="tab-btn" onclick="switchTab('desserts', this)">الحلويات</button>
+                <button class="tab-btn" onclick="switchTab('drinks', this)">المشروبات</button>
+            </div>
+
+            <!-- Appetizers -->
+            <div class="menu-grid active" id="appetizers">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">سلطة الأفوكادو والروبيان</div>
+                        <div class="menu-desc">أوراق خس، أفوكادو طازج، روبيان مشوي، وصلصة الليمون السرية</div>
+                        <div class="menu-price">١٤٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">حمص نار بالكزبرة والزيت</div>
+                        <div class="menu-desc">موضة جديدة من الحمص المبهر بتوابل مختارة من أفضل المحلات</div>
+                        <div class="menu-price">٩٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1541014741259-de529411b96a?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">طبق الجبن الشرقي المشكل</div>
+                        <div class="menu-desc">تشكيلة راقية من أجود أنواع الجبن الشرقي مع الانعم الزيتون</div>
+                        <div class="menu-price">١٨٠ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">سمبوسك الجمبري الذهبي</div>
+                        <div class="menu-desc">سمبوسك مقرمش محشية جمبري طازج، بودر الفلفل والثوم المحمص</div>
+                        <div class="menu-price">١٢٠ ج.م</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dishes -->
+            <div class="menu-grid" id="main">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1544025162-831154318721?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">ستيك تيبون ١ كيلو أسترالي</div>
+                        <div class="menu-desc">لحم بقري فاخر، مشوي على النار مع الزبدة المعطرة وإكسسوارات المطعم</div>
+                        <div class="menu-price">٥٥٠ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1560684352-8497838a2229?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">تشكيلة المأكولات البحرية الفاخرة</div>
+                        <div class="menu-desc">استاكوزا + روبيان + كابوريا.. مسوية بأيادي أمهر طهاة البحر</div>
+                        <div class="menu-price">٨٨٠ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">ملوخية بالأرانب على الطريقة القديمة</div>
+                        <div class="menu-desc">ملوخية ناعمة مطبوخة ببطء لساعات مع أرانب مشوية وأرز بسمتي</div>
+                        <div class="menu-price">٢٩٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">فيليه سلمون النرويجي بصلصة الكبر</div>
+                        <div class="menu-desc">سلمون طازج مطهو في الفرن مع صلصة الكبر والليمون الحامض</div>
+                        <div class="menu-price">٤٢٠ ج.م</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desserts -->
+            <div class="menu-grid" id="desserts">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">أوم علي بالمكسرات والقشطة</div>
+                        <div class="menu-desc">الحلاوة المصرية الأصيلة بوصفة الجدة، مع قشطة تبدأ منها وتندم من بعدها</div>
+                        <div class="menu-price">٩٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">تشيز كيك بالتوت البري</div>
+                        <div class="menu-desc">طبقات من الكريم الناعم والبسكويت المقرمش مع صوص توت طازج</div>
+                        <div class="menu-price">١٣٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">كنافة بالجبنة المطبقة اليومية</div>
+                        <div class="menu-desc">عجينة خشنة محمصة، لبنة طازجة، قطر عسل وماء ورد مميز</div>
+                        <div class="menu-price">٨٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">مولتن كيك شوكولاتة داكنة</div>
+                        <div class="menu-desc">كعكة دافية بالشوكولاتة البلجيكية من الداخل، مع آيس كريم فانيليا</div>
+                        <div class="menu-price">١٢٠ ج.م</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drinks -->
+            <div class="menu-grid" id="drinks">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">موهيتو ليمون ونعناع ثولج</div>
+                        <div class="menu-desc">ليمون طازج، نعناع مسحوق، سكر قصب، وثلج مجروش لتبريد تام</div>
+                        <div class="menu-price">٧٥ ج.م</div>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=400&q=80" alt="">
+                    <div class="menu-info">
+                        <div class="menu-name">قهوة عربية بالهيل</div>
+                        <div class="menu-desc">قهوة أصيلة محمصة تحضر أمامك بالطريقة العربية التراثية</div>
+                        <div class="menu-price">٦٠ ج.م</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOOKING -->
+    <section class="booking-section" id="booking">
+        <div class="container">
+            <div class="booking-grid">
+                <div class="booking-img">
+                    <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?auto=format&fit=crop&w=800&q=80" alt="الأجواء الداخلية">
+                </div>
+                <div class="booking-form">
+                    <div class="section-label" style="text-align:right; margin-bottom:10px;">— احجز ترابيزتك —</div>
+                    <h2>متحجزتش؟<br>احجز دلوقتي قبل ما يتملى</h2>
+                    <p>سهل جداً، إملا البيانات وفريقنا هيكون على خط في ثواني عشان يأكدلك الحجز على طول!</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>الاسم الكامل</label>
+                            <input type="text" placeholder="مثال: أحمد محمد">
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الموبايل</label>
+                            <input type="tel" placeholder="01xxxxxxxxx">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>تاريخ الحجز</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>وقت الوصول</label>
+                            <input type="time">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>عدد الأشخاص</label>
+                        <select>
+                            <option>شخص واحد</option>
+                            <option>شخصان</option>
+                            <option selected>٣-٤ أشخاص</option>
+                            <option>٥-٨ أشخاص</option>
+                            <option>أكتر من ٨ أشخاص</option>
+                        </select>
+                    </div>
+                    <button class="book-btn" onclick="alert('تم استقبال طلب الحجز بنجاح! هنكلمك في خلال ٣٠ دقيقة لتأكيد الحجز.')">
+                        <span class="material-symbols-outlined">event_available</span>
+                        تأكيد الحجز
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-label">— بتقولوا إيه عننا؟ —</div>
+            <h2 class="section-title">العملاء هم اللي بيحكوا</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"والله ما أكلت في مطعم بالمستوى ده في حياتي! الجمبري كان طازج والتاميز في الخدمة كان على أعلى مستوى. هوا وصحابي حجزنا تاني يوم على طول بعد أول زيارة!"</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt=""></div>
+                        <div>
+                            <div class="reviewer-name">/ محمد أحمد علي</div>
+                            <div class="reviewer-sub">مهندس | القاهرة</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"أجواء الإضاءة اللي جوه المطعم خيالية فعلاً.. سحبتني قبل حتى ما أبص على الأكل. لما الأكل وصل، كان الهدف التاني اللي لقيته في المكان. ريحة الطبخ لوحدها تخلي أي حاجة تانية تتنسى!"</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt=""></div>
+                        <div>
+                            <div class="reviewer-name">/ سارة إبراهيم</div>
+                            <div class="reviewer-sub">مديرة تسويق | الإسكندرية</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">"الحجز من الموقع كان سهل وسلس. جيت مع عيلتي كلها لعشا وكانت ٣ ساعات شافوهاش، بسبب الراحة والأكل اللي مش له وجه كمان. شكراً على الخدمة المتميزة!"</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar"><img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=100&q=80" alt=""></div>
+                        <div>
+                            <div class="reviewer-name">/ عمر خالد</div>
+                            <div class="reviewer-sub">محامي | الجيزة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="file:///c:/Users/hazem/Downloads/الشغل بتاعي/تصميم_بدون_عنوان-removebg-preview (1).png" alt="Logo">
+                    <p>إحنا بنؤمن إن كل وجبة لازم تبقى ذكرى. مطعم الأصالة هو مكانك عشان تاكل صح وتعيش أحلى لحظات مع اللي بتحبهم.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>تصفح سريع</h4>
+                    <ul>
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#menu">قائمة الطعام</a></li>
+                        <li><a href="#booking">احجز طاولة</a></li>
+                        <li><a href="#testimonials">آراء العملاء</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>أوقات العمل</h4>
+                    <ul>
+                        <li><a>السبت - الخميس</a></li>
+                        <li><a>من ١٢ ظهراً حتى ١٢ منتصف ليل</a></li>
+                        <li><a>الجمعة: من ٢ ظهراً</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <ul>
+                        <li><a href="#"><span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle;">call</span> 0100 000 0000</a></li>
+                        <li><a href="#"><span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle;">mail</span> res@alasala.com</a></li>
+                        <li><a href="#"><span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle;">location_on</span> القاهرة, مصر الجديدة</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                جميع الحقوق محفوظة © ٢٠٢٥ مطعم الأصالة | تم التطوير بواسطة ديجيتال ويب للبرمجيات
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar shrink on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            header.style.padding = window.scrollY > 50 ? '10px 0' : '20px 0';
+        });
+
+        // Menu Tab Switcher
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.menu-grid').forEach(g => g.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+    <script src="../chat-widget.js"></script>
+</body>
+</html>
