@@ -286,7 +286,7 @@
     }
 
     // === Events ===
-    document.getElementById('dw-chat-btn').addEventListener('click', () => {
+    const triggerToggle = () => {
       isOpen = !isOpen;
       chatWindow.classList.toggle('open', isOpen);
       if (isOpen) {
@@ -299,7 +299,11 @@
           if (nameInput) nameInput.focus();
         }
       }
-    });
+    };
+    
+    document.getElementById('dw-chat-btn').addEventListener('click', triggerToggle);
+    window.dwOpenChat = () => { if (!isOpen) triggerToggle(); };
+
 
     // Registration submit
     chatWindow.addEventListener('click', (e) => {
