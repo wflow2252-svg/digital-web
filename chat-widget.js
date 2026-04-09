@@ -310,7 +310,7 @@
       if (dbListenerStarted) return;
       dbListenerStarted = true;
       
-      const convRef = db.ref(\`conversations/\${sessionId}\`);
+      const convRef = db.ref(`conversations/${sessionId}`);
       
       // Update basic info in case it's missing
       if (userInfo) {
@@ -322,7 +322,7 @@
       }
 
       // Listen to history and new messages
-      db.ref(\`conversations/\${sessionId}/messages\`).on('child_added', (snapshot) => {
+      db.ref(`conversations/${sessionId}/messages`).on('child_added', (snapshot) => {
         const msg = snapshot.val();
         messages.push(msg);
         renderMessages();
@@ -384,12 +384,12 @@
     function renderMessages() {
       const container = document.getElementById('dw-chat-messages');
       if (!container || messages.length === 0) return;
-      container.innerHTML = messages.map(m => \`
+      container.innerHTML = messages.map(m => `
         <div>
-          <div class="dw-bubble \${m.from === 'user' ? 'user' : 'admin'}">\${escHtml(m.text)}</div>
-          <div class="dw-bubble-time" style="text-align:\${m.from === 'user' ? 'left' : 'right'}">\${formatTime(m.time)}</div>
+          <div class="dw-bubble ${m.from === 'user' ? 'user' : 'admin'}">${escHtml(m.text)}</div>
+          <div class="dw-bubble-time" style="text-align:${m.from === 'user' ? 'left' : 'right'}">${formatTime(m.time)}</div>
         </div>
-      \`).join('');
+      `).join('');
       scrollToBottom();
     }
 
