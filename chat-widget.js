@@ -1,7 +1,5 @@
-// Digital Web - Chat Widget (Professional Version with Name & Phone)
+// Digital Web - Chat Widget (Serverless Firebase Version + Push Notifications)
 (function () {
-  const SERVER_URL = 'https://8eefb223-7dd7-4a6f-9a65-6a5e5c82a046-00-38o502oe3ekp0.spock.replit.dev';
-
   // Generate or retrieve session ID
   let sessionId = localStorage.getItem('dw_session');
   if (!sessionId) {
@@ -12,46 +10,40 @@
   // Check if user already registered
   let userInfo = JSON.parse(localStorage.getItem('dw_user') || 'null');
 
-  // Load Socket.io
-  const script = document.createElement('script');
-  script.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
-  script.onload = initChat;
-  document.head.appendChild(script);
+  // Load Firebase Scripts
+  const scriptApp = document.createElement('script');
+  scriptApp.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
+  scriptApp.onload = () => {
+    const scriptDb = document.createElement('script');
+    scriptDb.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
+    scriptDb.onload = initChat;
+    document.head.appendChild(scriptDb);
+  };
+  document.head.appendChild(scriptApp);
 
   function initChat() {
-    const socket = io(SERVER_URL, {
-      transports: ['websocket', 'polling'],
-      extraHeaders: { "Bypass-Tunnel-Reminder": "true" }
-    });
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
+      projectId: "chat-75d30",
+      databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+    
     let isOpen = false;
     let messages = [];
-    let connected = false;
+    let connected = true; // Firebase connects automatically
     let userRegistered = !!userInfo;
+    let dbListenerStarted = false;
 
-    socket.on('connect', () => {
-      connected = true;
-      if (userRegistered) {
-        socket.emit('web:identify', { sessionId, name: userInfo.name, phone: userInfo.phone });
-      }
+    // We start listening immediately if registered
+    if (userRegistered) {
+      startListening();
       updateStatus(true);
-    });
-
-    socket.on('disconnect', () => {
-      connected = false;
-      updateStatus(false);
-    });
-
-    socket.on('web:history', (history) => {
-      messages = history;
-      renderMessages();
-    });
-
-    socket.on('web:reply', (msg) => {
-      messages.push(msg);
-      renderMessages();
-      if (!isOpen) showNotificationDot();
-      playReceiveSound();
-    });
+    }
 
     // === Inject CSS ===
     const style = document.createElement('style');
@@ -230,8 +222,8 @@
           <div class="dw-header-name">Digital Web</div>
           <div class="dw-header-sub">محتاج مساعدة؟ إحنا هنا!</div>
           <div class="dw-header-status">
-            <div class="dw-status-dot" id="dw-status-dot"></div>
-            <span id="dw-status-text" style="color:rgba(255,255,255,0.4);">جاري الاتصال...</span>
+            <div class="dw-status-dot online" id="dw-status-dot"></div>
+            <span id="dw-status-text" style="color:#2ed573;">متاحين دلوقتي ✓</span>
           </div>
         </div>
       </div>
@@ -258,8 +250,8 @@
         <div class="dw-header-info">
           <div class="dw-header-name">Digital Web</div>
           <div class="dw-header-status">
-            <div class="dw-status-dot" id="dw-status-dot"></div>
-            <span id="dw-status-text" style="color:rgba(255,255,255,0.4);">جاري الاتصال...</span>
+            <div class="dw-status-dot online" id="dw-status-dot"></div>
+            <span id="dw-status-text" style="color:#2ed573;">متاحين دلوقتي ✓</span>
           </div>
         </div>
       </div>
@@ -281,8 +273,9 @@
     chatWindow.innerHTML = userRegistered ? chatHTML : regFormHTML;
     document.body.appendChild(chatWindow);
 
-    if (userRegistered) {
-      document.getElementById('dw-user-name-badge').textContent = userInfo.name;
+    if (userRegistered && userInfo) {
+      const nameBadge = document.getElementById('dw-user-name-badge');
+      if (nameBadge) nameBadge.textContent = userInfo.name;
     }
 
     // === Events ===
@@ -304,7 +297,6 @@
     document.getElementById('dw-chat-btn').addEventListener('click', triggerToggle);
     window.dwOpenChat = () => { if (!isOpen) triggerToggle(); };
 
-
     // Registration submit
     chatWindow.addEventListener('click', (e) => {
       if (e.target.id === 'dw-start-chat') submitRegistration();
@@ -314,18 +306,49 @@
       if (e.key === 'Enter' && userRegistered) sendMessage();
     });
 
+    function startListening() {
+      if (dbListenerStarted) return;
+      dbListenerStarted = true;
+      
+      const convRef = db.ref(\`conversations/\${sessionId}\`);
+      
+      // Update basic info in case it's missing
+      if (userInfo) {
+        convRef.update({
+          id: sessionId,
+          name: userInfo.name,
+          phone: userInfo.phone
+        });
+      }
+
+      // Listen to history and new messages
+      db.ref(\`conversations/\${sessionId}/messages\`).on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        messages.push(msg);
+        renderMessages();
+        
+        // Notify if admin replied
+        if (msg.from === 'admin' && !isOpen) {
+          showNotificationDot();
+          playReceiveSound();
+        }
+      });
+    }
+
     function submitRegistration() {
       const name = (document.getElementById('dw-name-input')?.value || '').trim();
       const phone = (document.getElementById('dw-phone-input')?.value || '').trim();
       if (!name) { document.getElementById('dw-name-input').style.borderColor = 'rgba(255,71,87,0.7)'; return; }
       if (!phone || phone.length < 8) { document.getElementById('dw-phone-input').style.borderColor = 'rgba(255,71,87,0.7)'; return; }
+      
       userInfo = { name, phone };
       localStorage.setItem('dw_user', JSON.stringify(userInfo));
       userRegistered = true;
       chatWindow.innerHTML = chatHTML;
       document.getElementById('dw-user-name-badge').textContent = name;
-      socket.emit('web:identify', { sessionId, name, phone });
-      updateStatus(connected);
+      
+      startListening();
+      
       document.getElementById('dw-chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
       document.getElementById('dw-send-btn').addEventListener('click', sendMessage);
     }
@@ -339,22 +362,34 @@
       const input = document.getElementById('dw-chat-input');
       if (!input) return;
       const text = input.value.trim();
-      if (!text || !connected) return;
-      socket.emit('web:message', { sessionId, text });
-      messages.push({ from: 'user', text, time: new Date().toISOString() });
+      if (!text) return;
+      
+      const msg = { from: 'user', text, time: new Date().toISOString() };
+      
+      // Write to Firebase
+      db.ref(`conversations/${sessionId}/messages`).push().set(msg);
+      
+      // Update unread count for admin & last seen
+      db.ref(`conversations/${sessionId}`).transaction((conv) => {
+        if (conv) {
+          conv.unread = (conv.unread || 0) + 1;
+          conv.lastSeen = msg.time;
+        }
+        return conv;
+      });
+
       input.value = '';
-      renderMessages();
     }
 
     function renderMessages() {
       const container = document.getElementById('dw-chat-messages');
       if (!container || messages.length === 0) return;
-      container.innerHTML = messages.map(m => `
+      container.innerHTML = messages.map(m => \`
         <div>
-          <div class="dw-bubble ${m.from === 'user' ? 'user' : 'admin'}">${escHtml(m.text)}</div>
-          <div class="dw-bubble-time" style="text-align:${m.from === 'user' ? 'left' : 'right'}">${formatTime(m.time)}</div>
+          <div class="dw-bubble \${m.from === 'user' ? 'user' : 'admin'}">\${escHtml(m.text)}</div>
+          <div class="dw-bubble-time" style="text-align:\${m.from === 'user' ? 'left' : 'right'}">\${formatTime(m.time)}</div>
         </div>
-      `).join('');
+      \`).join('');
       scrollToBottom();
     }
 
