@@ -1,13 +1,11 @@
-// Digital Web - Chat Widget (Serverless Firebase Version + Push Notifications)
+// Digital Web - Chat Widget (WhatsApp-Style Realistic Design)
 (function () {
-  // Generate or retrieve session ID
   let sessionId = localStorage.getItem('dw_session');
   if (!sessionId) {
     sessionId = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
     localStorage.setItem('dw_session', sessionId);
   }
 
-  // Check if user already registered
   let userInfo = JSON.parse(localStorage.getItem('dw_user') || 'null');
 
   // Load Firebase Scripts
@@ -27,418 +25,699 @@
       projectId: "chat-75d30",
       databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com"
     };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    
+
     let isOpen = false;
     let messages = [];
-    let connected = true; // Firebase connects automatically
     let userRegistered = !!userInfo;
     let dbListenerStarted = false;
+    let unreadCount = 0;
 
-    // We start listening immediately if registered
-    if (userRegistered) {
-      startListening();
-      updateStatus(true);
-    }
+    if (userRegistered) { startListening(); }
 
-    // === Inject CSS ===
+    // ===================== CSS =====================
     const style = document.createElement('style');
     style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+      #dw-fab-wrapper {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
       #dw-chat-btn {
-        position: fixed; bottom: 30px; left: 30px; z-index: 9999;
-        width: 62px; height: 62px; border-radius: 50%;
-        background: linear-gradient(135deg, #00f0ff, #7000ff);
-        border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 8px 30px rgba(0,240,255,0.45);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        animation: dw-pulse 2.5s infinite;
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #25D366, #128C7E);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(37,211,102,0.5), 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        outline: none;
       }
-      #dw-chat-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 15px 40px rgba(0,240,255,0.6); }
-      @keyframes dw-pulse {
-        0%,100% { box-shadow: 0 8px 30px rgba(0,240,255,0.45); }
-        50% { box-shadow: 0 8px 45px rgba(112,0,255,0.65); }
+      #dw-chat-btn:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(37,211,102,0.6), 0 4px 12px rgba(0,0,0,0.3); }
+      #dw-chat-btn svg { width: 30px; height: 30px; fill: white; transition: transform 0.3s ease; }
+      #dw-chat-btn.open svg { transform: rotate(90deg); }
+
+      #dw-unread-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        min-width: 20px;
+        height: 20px;
+        background: #ff3b30;
+        color: white;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cairo', sans-serif;
+        padding: 0 5px;
+        border: 2px solid white;
+        animation: dw-pop 0.3s ease;
       }
-      #dw-chat-btn svg { width: 28px; height: 28px; fill: white; }
-      #dw-notif-dot {
-        position: absolute; top: 0; right: 0; width: 16px; height: 16px;
-        background: #ff4757; border-radius: 50%; border: 2px solid #0a0a0f;
-        display: none; animation: dw-bounce 0.5s ease;
+      
+      #dw-chat-label {
+        background: rgba(0,0,0,0.75);
+        color: white;
+        font-family: 'Cairo', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+        pointer-events: none;
+        backdrop-filter: blur(10px);
+        display: none;
       }
-      @keyframes dw-bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+
+      @keyframes dw-pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+      @keyframes dw-slideUp { from{opacity:0;transform:translateY(20px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+      @keyframes dw-slideDown { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(20px) scale(0.95)} }
+      @keyframes dw-msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+      /* ========== CHAT WINDOW ========== */
       #dw-chat-window {
-        position: fixed; bottom: 108px; left: 30px; z-index: 9998;
-        width: 370px; border-radius: 22px;
-        background: linear-gradient(160deg, #0d0d1a 0%, #120a24 100%);
-        border: 1px solid rgba(255,255,255,0.07);
-        box-shadow: 0 25px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,240,255,0.05);
-        display: flex; flex-direction: column; overflow: hidden;
-        transform: scale(0.85) translateY(20px); opacity: 0;
-        transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s ease;
-        pointer-events: none; font-family: 'Cairo', sans-serif; direction: rtl;
-        max-height: 560px;
+        position: fixed;
+        bottom: 96px;
+        left: 24px;
+        width: 360px;
+        height: 580px;
+        max-height: calc(100dvh - 110px);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        z-index: 999998;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.2);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(20px) scale(0.95);
+        transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
       }
-      #dw-chat-window.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
-      #dw-chat-header {
-        padding: 18px 20px;
-        background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(112,0,255,0.08));
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        display: flex; align-items: center; gap: 13px;
+      #dw-chat-window.open {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0) scale(1);
       }
-      #dw-chat-header .avatar {
-        width: 44px; height: 44px; border-radius: 50%;
-        background: linear-gradient(135deg, #00f0ff, #7000ff);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 22px; flex-shrink: 0;
-        box-shadow: 0 4px 15px rgba(0,240,255,0.3);
-      }
-      .dw-header-info { flex: 1; }
-      .dw-header-name { color: #fff; font-weight: 700; font-size: 1rem; letter-spacing: 0.3px; }
-      .dw-header-sub { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
-      .dw-header-status { font-size: 0.78rem; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
-      .dw-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; flex-shrink: 0; transition: 0.3s; }
-      .dw-status-dot.online { background: #2ed573; box-shadow: 0 0 8px #2ed573; }
 
-      /* Registration Form */
-      #dw-reg-form {
-        padding: 25px 20px; display: flex; flex-direction: column; gap: 14px;
+      /* HEADER */
+      #dw-header {
+        background: linear-gradient(135deg, #075E54, #128C7E);
+        padding: 14px 16px 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
       }
-      .dw-reg-title {
-        color: #fff; font-size: 1.05rem; font-weight: 700; text-align: center; margin-bottom: 4px;
-        background: linear-gradient(135deg, #00f0ff, #a855f7);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      #dw-header-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,0.3);
+        overflow: hidden;
       }
-      .dw-reg-sub {
-        color: rgba(255,255,255,0.45); font-size: 0.82rem; text-align: center; margin-top: -8px; margin-bottom: 4px;
+      #dw-header-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+       }
+      #dw-header-info { flex: 1; }
+      #dw-header-name {
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.2;
       }
-      .dw-input-group { display: flex; flex-direction: column; gap: 6px; }
-      .dw-input-label { color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 600; }
-      .dw-field {
-        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px; padding: 11px 16px; color: #fff;
-        font-family: 'Cairo', sans-serif; font-size: 0.92rem; outline: none;
-        transition: 0.3s; direction: rtl; width: 100%; box-sizing: border-box;
+      #dw-header-status {
+        color: rgba(255,255,255,0.75);
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 1px;
       }
-      .dw-field:focus { border-color: rgba(0,240,255,0.5); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(0,240,255,0.08); }
-      .dw-field::placeholder { color: rgba(255,255,255,0.25); }
-      .dw-start-btn {
-        background: linear-gradient(135deg, #00f0ff, #7000ff);
-        border: none; border-radius: 14px; padding: 13px;
-        color: #fff; font-family: 'Cairo', sans-serif; font-size: 1rem;
-        font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 4px;
-        box-shadow: 0 6px 20px rgba(0,240,255,0.3);
-        letter-spacing: 0.5px;
+      #dw-status-pulse {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #9EE89E;
+        display: inline-block;
       }
-      .dw-start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,240,255,0.4); }
-      .dw-privacy { color: rgba(255,255,255,0.3); font-size: 0.72rem; text-align: center; }
+      #dw-close-btn {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.8);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        transition: 0.2s;
+        flex-shrink: 0;
+      }
+      #dw-close-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+      #dw-close-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
-      /* Chat Messages */
-      #dw-chat-messages {
-        flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
-        scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent;
-        min-height: 260px; max-height: 320px;
+      /* WALLPAPER */
+      #dw-messages-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 12px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background-color: #E5DDD5;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23E5DDD5'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='150' cy='100' r='20' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='250' cy='50' r='40' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='350' cy='100' r='25' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='100' cy='200' r='35' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='300' cy='200' r='30' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='50' cy='300' r='20' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='200' cy='300' r='45' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='350' cy='300' r='25' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3C/svg%3E");
+        scroll-behavior: smooth;
       }
+      #dw-messages-area::-webkit-scrollbar { width: 4px; }
+      #dw-messages-area::-webkit-scrollbar-track { background: transparent; }
+      #dw-messages-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 2px; }
+
+      /* DATE DIVIDER */
+      .dw-date-divider {
+        text-align: center;
+        margin: 6px 0;
+        position: relative;
+      }
+      .dw-date-divider span {
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(4px);
+        color: #667781;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 8px;
+      }
+
+      /* WELCOME MSG */
+      #dw-welcome-msg {
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(4px);
+        border-radius: 12px;
+        padding: 12px 16px;
+        text-align: center;
+        color: #667781;
+        font-size: 13px;
+        margin: 6px 0;
+        line-height: 1.6;
+      }
+      #dw-welcome-msg strong { color: #128C7E; }
+
+      /* BUBBLES */
+      .dw-msg-row {
+        display: flex;
+        margin-bottom: 2px;
+        animation: dw-msgIn 0.2s ease;
+      }
+      .dw-msg-row.user { justify-content: flex-start; }
+      .dw-msg-row.admin { justify-content: flex-end; }
+
       .dw-bubble {
-        max-width: 82%; padding: 11px 16px; border-radius: 18px; font-size: 0.93rem; line-height: 1.55;
-        word-break: break-word; animation: dw-fadeIn 0.35s ease;
+        max-width: 75%;
+        padding: 7px 10px 5px;
+        border-radius: 8px;
+        position: relative;
+        word-break: break-word;
+        line-height: 1.5;
+        font-size: 14px;
       }
-      @keyframes dw-fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+      /* User bubble = right side green */
       .dw-bubble.user {
-        background: linear-gradient(135deg, #7000ff, #4a00b4); color: #fff;
-        align-self: flex-end; border-bottom-left-radius: 5px;
-        box-shadow: 0 4px 15px rgba(112,0,255,0.3);
+        background: #DCF8C6;
+        color: #111;
+        border-radius: 8px 8px 8px 2px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.13);
       }
+      .dw-bubble.user::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: auto;
+        left: -6px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 8px 8px;
+        border-color: transparent transparent #DCF8C6 transparent;
+      }
+      /* Admin bubble = white */
       .dw-bubble.admin {
-        background: rgba(255,255,255,0.07); color: #e8e8e8;
-        align-self: flex-start; border-bottom-right-radius: 5px;
-        border: 1px solid rgba(255,255,255,0.05);
+        background: white;
+        color: #111;
+        border-radius: 8px 8px 2px 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.13);
       }
-      .dw-bubble-time { font-size: 0.68rem; color: rgba(255,255,255,0.35); margin-top: 5px; }
-      .dw-welcome {
-        text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; padding: 25px 15px;
-        display: flex; flex-direction: column; align-items: center; gap: 10px;
+      .dw-bubble.admin::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: -6px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 8px 8px 0;
+        border-color: transparent white transparent transparent;
       }
-      .dw-welcome-icon { font-size: 3rem; }
-      #dw-chat-input-area {
-        padding: 13px 15px;
-        background: rgba(0,0,0,0.2);
-        border-top: 1px solid rgba(255,255,255,0.05);
-        display: flex; gap: 10px; align-items: center;
+      .dw-bubble-meta {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 3px;
+        margin-top: 2px;
+      }
+      .dw-bubble-time { font-size: 10.5px; color: #999; }
+      .dw-read-tick { color: #53BDEB; font-size: 13px; }
+      
+      /* TYPING */
+      #dw-typing {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        padding: 0 4px;
+      }
+      #dw-typing .dw-bubble {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        padding: 10px 14px;
+      }
+      .dw-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #999;
+        animation: dw-type 1.2s ease-in-out infinite;
+      }
+      .dw-dot:nth-child(2) { animation-delay: 0.2s; }
+      .dw-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes dw-type { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+      /* REGISTRATION */
+      #dw-reg-form {
+        background: #F0F2F5;
+        flex: 1;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        overflow-y: auto;
+      }
+      .dw-reg-hello {
+        background: white;
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+        border: 1px solid #E9EDEF;
+      }
+      .dw-reg-hello .emoji { font-size: 36px; display: block; margin-bottom: 8px; }
+      .dw-reg-hello h3 {
+        color: #111;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0 0 5px;
+      }
+      .dw-reg-hello p { color: #667781; font-size: 12.5px; margin: 0; line-height: 1.5; }
+
+      .dw-form-group { display: flex; flex-direction: column; gap: 5px; }
+      .dw-form-label { color: #128C7E; font-size: 12px; font-weight: 700; }
+      .dw-form-input {
+        background: white;
+        border: 1.5px solid #E9EDEF;
+        border-radius: 8px;
+        padding: 11px 14px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 14px;
+        color: #111;
+        direction: rtl;
+        outline: none;
+        transition: 0.2s;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .dw-form-input:focus { border-color: #25D366; box-shadow: 0 0 0 3px rgba(37,211,102,0.1); }
+      .dw-form-input::placeholder { color: #aaa; }
+      .dw-form-input.error { border-color: #FF3B30; }
+
+      .dw-start-btn {
+        background: linear-gradient(135deg, #25D366, #128C7E);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 13px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 3px 12px rgba(37,211,102,0.35);
+      }
+      .dw-start-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,211,102,0.45); }
+      .dw-form-privacy { text-align: center; color: #aaa; font-size: 11px; }
+
+      /* INPUT AREA */
+      #dw-input-bar {
+        background: #F0F2F5;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        border-top: 1px solid #E9EDEF;
       }
       #dw-chat-input {
-        flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 25px; padding: 11px 18px; color: #fff; font-family: 'Cairo', sans-serif;
-        font-size: 0.92rem; outline: none; transition: 0.3s; direction: rtl;
+        flex: 1;
+        background: white;
+        border: none;
+        border-radius: 24px;
+        padding: 10px 16px;
+        font-family: 'Cairo', sans-serif;
+        font-size: 14px;
+        color: #111;
+        direction: rtl;
+        outline: none;
+        resize: none;
+        line-height: 1.4;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       }
-      #dw-chat-input:focus { border-color: rgba(0,240,255,0.4); background: rgba(255,255,255,0.09); }
-      #dw-chat-input::placeholder { color: rgba(255,255,255,0.28); }
+      #dw-chat-input::placeholder { color: #aaa; }
+
       #dw-send-btn {
-        width: 43px; height: 43px; border-radius: 50%;
-        background: linear-gradient(135deg, #00f0ff, #7000ff);
-        border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,240,255,0.35);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #25D366, #128C7E);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: 0.2s;
+        box-shadow: 0 2px 8px rgba(37,211,102,0.4);
       }
-      #dw-send-btn:hover { transform: scale(1.1); }
-      #dw-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-      #dw-send-btn svg { width: 18px; height: 18px; fill: white; }
-      .dw-user-badge {
-        padding: 10px 18px;
-        background: rgba(0,240,255,0.05);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        display: flex; align-items: center; gap: 10px;
-        font-size: 0.8rem; color: rgba(255,255,255,0.5);
-      }
-      .dw-user-badge span { color: rgba(0,240,255,0.8); font-weight: 700; }
-      @media (max-width: 480px) {
-        #dw-chat-window { width: calc(100vw - 20px); left: 10px; right: 10px; bottom: 90px; }
-        #dw-chat-btn { bottom: 20px; left: 20px; }
+      #dw-send-btn:hover { transform: scale(1.08); }
+      #dw-send-btn svg { width: 20px; height: 20px; fill: white; }
+
+      /* RESPONSIVE MOBILE */
+      @media (max-width: 500px) {
+        #dw-fab-wrapper {
+          bottom: 16px;
+          left: 16px;
+        }
+        #dw-chat-window {
+          position: fixed;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          width: 100% !important;
+          height: 100dvh !important;
+          max-height: 100dvh !important;
+          border-radius: 0 !important;
+          border-top-left-radius: 20px !important;
+          border-top-right-radius: 20px !important;
+        }
       }
     `;
     document.head.appendChild(style);
 
-    // === Inject HTML ===
-    const btnWrapper = document.createElement('div');
-    btnWrapper.style.cssText = 'position:fixed;bottom:30px;left:30px;z-index:9999;';
-    btnWrapper.innerHTML = `
-      <div id="dw-notif-dot"></div>
+    // ===================== HTML =====================
+    const fabWrapper = document.createElement('div');
+    fabWrapper.id = 'dw-fab-wrapper';
+    fabWrapper.innerHTML = `
       <button id="dw-chat-btn" title="كلمنا دلوقتي">
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+        <div id="dw-unread-badge"></div>
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.103 0-2 .897-2 2v18l5.333-4H20c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-3 9H7v-2h10v2zm0-4H7V5h10v2z"/></svg>
       </button>
     `;
-    document.body.appendChild(btnWrapper);
+    document.body.appendChild(fabWrapper);
 
     const chatWindow = document.createElement('div');
     chatWindow.id = 'dw-chat-window';
 
-    // Registration form HTML
     const regFormHTML = `
-      <div id="dw-chat-header">
-        <div class="avatar">💬</div>
-        <div class="dw-header-info">
-          <div class="dw-header-name">Digital Web</div>
-          <div class="dw-header-sub">محتاج مساعدة؟ إحنا هنا!</div>
-          <div class="dw-header-status">
-            <div class="dw-status-dot online" id="dw-status-dot"></div>
-            <span id="dw-status-text" style="color:#2ed573;">متاحين دلوقتي ✓</span>
+      <div id="dw-header">
+        <div id="dw-header-avatar">💬</div>
+        <div id="dw-header-info">
+          <div id="dw-header-name">Digital Web</div>
+          <div id="dw-header-status">
+            <span id="dw-status-pulse"></span>
+            <span>متاحين دلوقتي</span>
           </div>
         </div>
+        <button id="dw-close-btn"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       </div>
       <div id="dw-reg-form">
-        <div class="dw-reg-title">✨ أهلاً وسهلاً بيك!</div>
-        <div class="dw-reg-sub">عشان نقدر نساعدك بشكل أفضل، اكتب بياناتك الأول</div>
-        <div class="dw-input-group">
-          <label class="dw-input-label">👤 الاسم الكريم</label>
-          <input class="dw-field" id="dw-name-input" type="text" placeholder="اكتب اسمك هنا..." maxlength="50">
+        <div class="dw-reg-hello">
+          <span class="emoji">👋</span>
+          <h3>أهلاً وسهلاً!</h3>
+          <p>كلمنا في أي حاجة، عشان نبدأ البرجمة إدينا بياناتك الأول</p>
         </div>
-        <div class="dw-input-group">
-          <label class="dw-input-label">📱 رقم الواتساب أو التليفون</label>
-          <input class="dw-field" id="dw-phone-input" type="tel" placeholder="01xxxxxxxxx" maxlength="15" dir="ltr">
+        <div class="dw-form-group">
+          <label class="dw-form-label">👤 الاسم</label>
+          <input class="dw-form-input" id="dw-name-input" type="text" placeholder="اسمك هنا..." maxlength="50">
         </div>
-        <button class="dw-start-btn" id="dw-start-chat">ابدأ المحادثة 🚀</button>
-        <div class="dw-privacy">🔒 بياناتك محمية وآمنة تماماً</div>
+        <div class="dw-form-group">
+          <label class="dw-form-label">📱 الواتساب أو التليفون</label>
+          <input class="dw-form-input" id="dw-phone-input" type="tel" placeholder="01xxxxxxxxx" maxlength="15" dir="ltr">
+        </div>
+        <button class="dw-start-btn" id="dw-start-chat">ابدأ المحادثة →</button>
+        <div class="dw-form-privacy">🔒 بياناتك محمية تماماً</div>
       </div>
     `;
 
-    // Chat UI HTML
-    const chatHTML = `
-      <div id="dw-chat-header">
-        <div class="avatar">💬</div>
-        <div class="dw-header-info">
-          <div class="dw-header-name">Digital Web</div>
-          <div class="dw-header-status">
-            <div class="dw-status-dot online" id="dw-status-dot"></div>
-            <span id="dw-status-text" style="color:#2ed573;">متاحين دلوقتي ✓</span>
+    const chatUIHTML = `
+      <div id="dw-header">
+        <div id="dw-header-avatar">
+          <img src="https://ui-avatars.com/api/?name=DW&background=128C7E&color=fff&bold=true" alt="avatar">
+        </div>
+        <div id="dw-header-info">
+          <div id="dw-header-name">Digital Web</div>
+          <div id="dw-header-status">
+            <span id="dw-status-pulse"></span>
+            <span id="dw-typing-status">متاحين دلوقتي</span>
           </div>
         </div>
+        <button id="dw-close-btn"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       </div>
-      <div class="dw-user-badge">تتكلم كـ: <span id="dw-user-name-badge">-</span></div>
-      <div id="dw-chat-messages">
-        <div class="dw-welcome">
-          <div class="dw-welcome-icon">👋</div>
-          <div>أهلاً! ابعتلنا رسالتك وهنرد عليك في أقرب وقت.</div>
+      <div id="dw-messages-area">
+        <div class="dw-date-divider"><span>اليوم</span></div>
+        <div id="dw-welcome-msg">
+          🔒 الرسائل محمية. فريق <strong>Digital Web</strong> هيرد عليك في أقرب وقت.
+        </div>
+        <div id="dw-typing" class="dw-msg-row admin">
+          <div class="dw-bubble admin"><div class="dw-dot"></div><div class="dw-dot"></div><div class="dw-dot"></div></div>
         </div>
       </div>
-      <div id="dw-chat-input-area">
-        <input id="dw-chat-input" type="text" placeholder="اكتب رسالتك هنا..." maxlength="500">
+      <div id="dw-input-bar">
         <button id="dw-send-btn">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
+        <input id="dw-chat-input" type="text" placeholder="اكتب رسالة..." maxlength="500" autocomplete="off">
       </div>
     `;
 
-    chatWindow.innerHTML = userRegistered ? chatHTML : regFormHTML;
+    chatWindow.innerHTML = userRegistered ? chatUIHTML : regFormHTML;
     document.body.appendChild(chatWindow);
 
-    if (userRegistered && userInfo) {
-      const nameBadge = document.getElementById('dw-user-name-badge');
-      if (nameBadge) nameBadge.textContent = userInfo.name;
+    // Setup events
+    const btn = document.getElementById('dw-chat-btn');
+    btn.addEventListener('click', toggleChat);
+
+    chatWindow.addEventListener('click', e => {
+      if (e.target.id === 'dw-close-btn' || e.target.closest('#dw-close-btn')) closeChat();
+      if (e.target.id === 'dw-start-chat') submitReg();
+    });
+
+    chatWindow.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && document.activeElement.id === 'dw-chat-input') { e.preventDefault(); sendMsg(); }
+    });
+
+    document.getElementById('dw-send-btn')?.addEventListener('click', sendMsg);
+
+    if (userRegistered) {
+      // listen but don't render welcome again
+      renderMessages();
     }
 
-    // === Events ===
-    const triggerToggle = () => {
-      isOpen = !isOpen;
-      chatWindow.classList.toggle('open', isOpen);
-      if (isOpen) {
-        document.getElementById('dw-notif-dot').style.display = 'none';
-        if (userRegistered) {
-          const input = document.getElementById('dw-chat-input');
-          if (input) { input.focus(); scrollToBottom(); }
-        } else {
-          const nameInput = document.getElementById('dw-name-input');
-          if (nameInput) nameInput.focus();
-        }
-      }
-    };
-    
-    document.getElementById('dw-chat-btn').addEventListener('click', triggerToggle);
-    window.dwOpenChat = () => { if (!isOpen) triggerToggle(); };
+    function toggleChat() {
+      isOpen ? closeChat() : openChat();
+    }
 
-    // Registration submit
-    chatWindow.addEventListener('click', (e) => {
-      if (e.target.id === 'dw-start-chat') submitRegistration();
-    });
-    chatWindow.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !userRegistered) submitRegistration();
-      if (e.key === 'Enter' && userRegistered) sendMessage();
-    });
+    function openChat() {
+      isOpen = true;
+      chatWindow.classList.add('open');
+      btn.classList.add('open');
+      clearUnread();
+      setTimeout(() => {
+        document.getElementById('dw-chat-input')?.focus();
+        scrollToBottom();
+      }, 100);
+    }
+
+    function closeChat() {
+      isOpen = false;
+      chatWindow.classList.remove('open');
+      btn.classList.remove('open');
+    }
+
+    function clearUnread() {
+      unreadCount = 0;
+      const badge = document.getElementById('dw-unread-badge');
+      if (badge) badge.style.display = 'none';
+    }
+
+    function showUnread() {
+      if (isOpen) return;
+      unreadCount++;
+      const badge = document.getElementById('dw-unread-badge');
+      if (badge) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'flex';
+      }
+    }
 
     function startListening() {
       if (dbListenerStarted) return;
       dbListenerStarted = true;
-      
-      const convRef = db.ref(`conversations/${sessionId}`);
-      
-      // Update basic info in case it's missing
       if (userInfo) {
-        convRef.update({
-          id: sessionId,
-          name: userInfo.name,
-          phone: userInfo.phone
+        db.ref(`conversations/${sessionId}`).update({
+          id: sessionId, name: userInfo.name, phone: userInfo.phone
         });
       }
-
-      // Listen to history and new messages
-      db.ref(`conversations/${sessionId}/messages`).on('child_added', (snapshot) => {
-        const msg = snapshot.val();
-        messages.push(msg);
-        renderMessages();
-        
-        // Notify if admin replied
-        if (msg.from === 'admin' && !isOpen) {
-          showNotificationDot();
-          playReceiveSound();
+      db.ref(`conversations/${sessionId}/messages`).on('child_added', snap => {
+        const msg = snap.val();
+        if (msg) {
+          messages.push(msg);
+          renderMessages();
+          if (msg.from === 'admin') {
+            showUnread();
+            playPing();
+          }
         }
       });
     }
 
-    function submitRegistration() {
-      const name = (document.getElementById('dw-name-input')?.value || '').trim();
-      const phone = (document.getElementById('dw-phone-input')?.value || '').trim();
-      if (!name) { document.getElementById('dw-name-input').style.borderColor = 'rgba(255,71,87,0.7)'; return; }
-      if (!phone || phone.length < 8) { document.getElementById('dw-phone-input').style.borderColor = 'rgba(255,71,87,0.7)'; return; }
-      
+    function submitReg() {
+      const nameEl = document.getElementById('dw-name-input');
+      const phoneEl = document.getElementById('dw-phone-input');
+      const name = nameEl.value.trim();
+      const phone = phoneEl.value.trim();
+      if (!name) { nameEl.classList.add('error'); nameEl.focus(); return; }
+      if (!phone || phone.length < 8) { phoneEl.classList.add('error'); phoneEl.focus(); return; }
+
       userInfo = { name, phone };
       localStorage.setItem('dw_user', JSON.stringify(userInfo));
       userRegistered = true;
-      chatWindow.innerHTML = chatHTML;
-      document.getElementById('dw-user-name-badge').textContent = name;
-      
+
+      chatWindow.innerHTML = chatUIHTML;
+      chatWindow.querySelector('#dw-close-btn').addEventListener('click', closeChat);
+      chatWindow.querySelector('#dw-send-btn').addEventListener('click', sendMsg);
+      chatWindow.querySelector('#dw-chat-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendMsg(); }
+      });
+
       startListening();
-      
-      document.getElementById('dw-chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-      document.getElementById('dw-send-btn').addEventListener('click', sendMessage);
+      scrollToBottom();
     }
 
-    if (userRegistered) {
-      document.getElementById('dw-chat-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-      document.getElementById('dw-send-btn')?.addEventListener('click', sendMessage);
-    }
-
-    function sendMessage() {
+    function sendMsg() {
       const input = document.getElementById('dw-chat-input');
       if (!input) return;
       const text = input.value.trim();
       if (!text) return;
-      
+      input.value = '';
+
       const msg = { from: 'user', text, time: new Date().toISOString() };
-      
-      // Write to Firebase
       db.ref(`conversations/${sessionId}/messages`).push().set(msg);
-      
-      // Update unread count for admin & last seen
-      db.ref(`conversations/${sessionId}`).transaction((conv) => {
-        if (conv) {
-          conv.unread = (conv.unread || 0) + 1;
-          conv.lastSeen = msg.time;
-        }
+      db.ref(`conversations/${sessionId}`).transaction(conv => {
+        if (conv) { conv.unread = (conv.unread || 0) + 1; conv.lastSeen = msg.time; }
         return conv;
       });
-
-      input.value = '';
     }
 
     function renderMessages() {
-      const container = document.getElementById('dw-chat-messages');
-      if (!container || messages.length === 0) return;
-      container.innerHTML = messages.map(m => `
-        <div>
-          <div class="dw-bubble ${m.from === 'user' ? 'user' : 'admin'}">${escHtml(m.text)}</div>
-          <div class="dw-bubble-time" style="text-align:${m.from === 'user' ? 'left' : 'right'}">${formatTime(m.time)}</div>
-        </div>
-      `).join('');
+      const area = document.getElementById('dw-messages-area');
+      if (!area) return;
+
+      // Remove old message rows
+      area.querySelectorAll('.dw-msg-row').forEach(el => {
+        if (!el.id) el.remove(); // keep typing indicator which has no id set
+      });
+
+      const typing = document.getElementById('dw-typing');
+
+      messages.forEach(m => {
+        const row = document.createElement('div');
+        row.className = `dw-msg-row ${m.from === 'user' ? 'user' : 'admin'}`;
+        const tick = m.from === 'user' ? `<span class="dw-read-tick">✓✓</span>` : '';
+        row.innerHTML = `
+          <div class="dw-bubble ${m.from === 'user' ? 'user' : 'admin'}">
+            ${escHtml(m.text)}
+            <div class="dw-bubble-meta">
+              <span class="dw-bubble-time">${formatTime(m.time)}</span>
+              ${tick}
+            </div>
+          </div>`;
+        area.insertBefore(row, typing || null);
+      });
+
       scrollToBottom();
     }
 
     function scrollToBottom() {
-      const c = document.getElementById('dw-chat-messages');
-      if (c) c.scrollTop = c.scrollHeight;
+      const area = document.getElementById('dw-messages-area');
+      if (area) area.scrollTop = area.scrollHeight;
     }
 
-    function showNotificationDot() {
-      const dot = document.getElementById('dw-notif-dot');
-      if (dot) dot.style.display = 'block';
-    }
-
-    function updateStatus(online) {
-      const dot = document.getElementById('dw-status-dot');
-      const text = document.getElementById('dw-status-text');
-      if (!dot || !text) return;
-      if (online) {
-        dot.classList.add('online');
-        text.textContent = 'متاحين دلوقتي ✓';
-        text.style.color = '#2ed573';
-      } else {
-        dot.classList.remove('online');
-        text.textContent = 'جاري الاتصال...';
-        text.style.color = 'rgba(255,255,255,0.4)';
-      }
-    }
-
-    function playReceiveSound() {
+    function playPing() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4);
+        // Notification sound like WhatsApp
+        const o1 = ctx.createOscillator();
+        const g = ctx.createGain();
+        o1.connect(g); g.connect(ctx.destination);
+        o1.type = 'sine';
+        o1.frequency.setValueAtTime(1046, ctx.currentTime); // C6
+        o1.frequency.setValueAtTime(1318, ctx.currentTime + 0.07); // E6
+        o1.frequency.setValueAtTime(1568, ctx.currentTime + 0.14); // G6
+        g.gain.setValueAtTime(0.35, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        o1.start(ctx.currentTime); o1.stop(ctx.currentTime + 0.5);
       } catch (_) {}
     }
 
     function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     function formatTime(iso) {
-      const d = new Date(iso);
-      return d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+      try {
+        return new Date(iso).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+      } catch { return ''; }
     }
+
+    // Register dwOpenChat globally for "Contact Us" button
+    window.dwOpenChat = openChat;
   }
 })();
