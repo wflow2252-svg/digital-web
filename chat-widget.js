@@ -130,6 +130,8 @@
         pointer-events: none;
         transform: translateY(20px) scale(0.95);
         transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        user-select: none;
+        -webkit-user-select: none;
       }
       #dw-chat-window.open {
         opacity: 1;
