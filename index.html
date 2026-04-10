@@ -22,7 +22,6 @@
                 <li><a href="#about">طريقتنا</a></li>
                 <li><a href="#portfolio">الأمثلة الحية</a></li>
                 <li><a href="#services">بنميزك إزاي؟</a></li>
-                <li><a href="#domains">🌐 الدومينات</a></li>
                 <li><a href="#contact" class="btn-primary">يلا نبدأ بلسان مصري</a></li>
             </ul>
         </div>
@@ -122,48 +121,6 @@
         </div>
     </section>
 
-    <!-- ===== DOMAIN SEARCH SECTION ===== -->
-    <section id="domains" class="section" style="padding: 5rem 0;">
-        <div class="container">
-            <h2 class="section-title">ابحث عن <span class="gradient-text">دومينك</span> دلوقتي</h2>
-            <p style="text-align:center; color:var(--text-muted); margin-bottom:3rem; font-size:1.1rem;">احجز اسمك على الإنترنت قبل ما حد تاني ياخده! بنوفرلك كل الامتدادات المشهورة بأرخص الأسعار.</p>
-
-            <!-- Search Box -->
-            <div class="domain-search-box glassmorphism">
-                <div class="domain-input-row">
-                    <input type="text" id="domain-input" placeholder="اكتب اسم الدومين..." maxlength="63" autocomplete="off" spellcheck="false" dir="ltr">
-                    <button id="domain-search-btn" class="btn-primary" onclick="searchDomain()">
-                        <span class="material-symbols-outlined">search</span>
-                        ابحث
-                    </button>
-                </div>
-                <div class="domain-tips">
-                    <span>💡 مثال:</span>
-                    <button class="domain-example" onclick="tryExample('mybusiness')">mybusiness</button>
-                    <button class="domain-example" onclick="tryExample('shopnow')">shopnow</button>
-                    <button class="domain-example" onclick="tryExample('digitalstore')">digitalstore</button>
-                </div>
-            </div>
-
-            <!-- Results -->
-            <div id="domain-results" style="display:none; margin-top:2rem;">
-                <div id="domain-loading" style="text-align:center; padding:2rem; display:none;">
-                    <div class="domain-spinner"></div>
-                    <p style="color:var(--text-muted); margin-top:1rem;">جاري البحث...</p>
-                </div>
-                <div id="domain-grid" class="domain-grid"></div>
-            </div>
-
-            <!-- CTA -->
-            <div style="text-align:center; margin-top:3rem;">
-                <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1rem;">عايز تحجز الدومين أو محتاج مساعدة في الاختيار؟</p>
-                <button onclick="if(window.dwOpenChat) window.dwOpenChat()" class="btn-secondary" style="font-family:inherit; font-size:1rem; cursor:pointer;">
-                    كلمنا في الشات 💬
-                </button>
-            </div>
-        </div>
-    </section>
-
     <footer id="contact" class="footer glassmorphism">
         <div class="container">
             <div class="footer-content">
@@ -181,7 +138,6 @@
 
     <script src="main.js"></script>
     <script src="chat-widget.js"></script>
-    <script src="domain-search.js"></script>
     </div>
 </body>
 </html>
