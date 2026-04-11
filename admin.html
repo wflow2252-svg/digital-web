@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | Digital Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <style>
+        :root { --bg-dark: #0a0a0f; --primary-color: #00f0ff; --secondary-color: #7000ff; --text-main: #ffffff; --text-muted: #a0a0b0; --glass-bg: rgba(255, 255, 255, 0.05); }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 250px; background: rgba(0,0,0,0.5); padding: 2rem; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 1rem; }
+        .sidebar h2 { color: var(--primary-color); margin-bottom: 2rem; text-align: center; }
+        .nav-item { padding: 1rem; cursor: pointer; border-radius: 10px; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover, .nav-item.active { background: var(--primary-color); color: #000; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .panel { display: none; background: var(--glass-bg); padding: 2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .panel.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 1rem; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: var(--primary-color); }
+        .form-group { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        input, textarea { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; color: #fff; font-family: inherit; }
+        button.btn { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); border: none; padding: 1rem 2rem; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; font-family: inherit; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>لوحة التحكم</h2>
+        <div class="nav-item active" onclick="switchTab('visitors')"><span class="material-symbols-outlined">bar_chart</span> الزوار</div>
+        <div class="nav-item" onclick="switchTab('reviews')"><span class="material-symbols-outlined">stars</span> التقييمات</div>
+        <div class="nav-item" onclick="switchTab('templates')"><span class="material-symbols-outlined">dashboard_customize</span> النماذج</div>
+        <div class="nav-item" onclick="window.location.href='index.html'" style="margin-top:auto;"><span class="material-symbols-outlined">home</span> العودة للموقع</div>
+    </div>
+    
+    <div class="main-content">
+        <!-- Visitors Panel -->
+        <div id="visitors" class="panel active">
+            <h3>سجل الزوار</h3>
+            <p style="color:var(--text-muted)">قائمة بكل من زار الموقع (يتم تسجيل الـ IP ونوع الجهاز)</p>
+            <table>
+                <thead>
+                    <tr><th>التاريخ</th><th>IP</th><th>الجهاز</th></tr>
+                </thead>
+                <tbody id="visitors-table-body">
+                    <!-- Data populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reviews Panel -->
+        <div id="reviews" class="panel">
+            <h3>إضافة تقييم جديد</h3>
+            <form id="review-form">
+                <div class="form-group">
+                    <label>اسم البراند</label>
+                    <input type="text" id="review-brand" required>
+                </div>
+                <div class="form-group">
+                    <label>رابط لوجو البراند (صورة)</label>
+                    <input type="url" id="review-logo" required>
+                </div>
+                <div class="form-group">
+                    <label>الرسالة / التقييم</label>
+                    <textarea id="review-text" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn">حفظ التقييم</button>
+            </form>
+        </div>
+
+        <!-- Templates Panel -->
+        <div id="templates" class="panel">
+            <h3>إضافة نموذج موقع جديد</h3>
+            <form id="template-form">
+                <div class="form-group">
+                    <label>اسم النموذج (مثال: متجر إلكتروني)</label>
+                    <input type="text" id="template-name" required>
+                </div>
+                <div class="form-group">
+                    <label>وصف النموذج</label>
+                    <input type="text" id="template-desc" required>
+                </div>
+                <div class="form-group">
+                    <label>رابط صورة النموذج</label>
+                    <input type="url" id="template-image" required>
+                </div>
+                <div class="form-group">
+                    <label>رابط الموقع المباشر (اختياري)</label>
+                    <input type="url" id="template-link">
+                </div>
+                <button type="submit" class="btn">حفظ النموذج</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

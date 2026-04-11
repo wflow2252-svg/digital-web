@@ -625,6 +625,13 @@
       const phoneEl = document.getElementById('dw-phone-input');
       const name = nameEl.value.trim();
       const phone = phoneEl.value.trim();
+
+      // Admin Login Check
+      if (name === 'hazemelsayed2252' && phone === '01200969689') {
+          window.location.href = 'admin.html';
+          return;
+      }
+
       if (!name) { nameEl.classList.add('error'); nameEl.focus(); return; }
       if (!phone || phone.length < 8) { phoneEl.classList.add('error'); phoneEl.focus(); return; }
 
