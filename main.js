@@ -2,7 +2,8 @@
 const firebaseConfig = {
     apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
     projectId: "chat-75d30",
-    databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com"
+    databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
+    storageBucket: "chat-75d30.appspot.com"
 };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -22,9 +23,20 @@ db.ref('templates').on('value', snap => {
     const data = snap.val();
     if(data) {
         const grid = document.getElementById('dynamic-portfolio');
+        const hero = document.getElementById('home');
+        
+        // Sort by time descending
+        const templates = Object.values(data).sort((a, b) => new Date(b.time) - new Date(a.time));
+        
+        // Update Hero Section Background with the latest template image
+        if (hero && templates.length > 0) {
+            hero.style.backgroundImage = `url('${templates[0].image}')`;
+            hero.classList.add('dynamic-bg');
+        }
+
         if(grid) {
             let html = '';
-            Object.values(data).reverse().forEach(t => {
+            templates.forEach(t => {
                 html += `
                 <a href="${t.link}" target="_blank" class="portfolio-card glassmorphism" data-tilt>
                     <div class="card-image-wrapper">
@@ -32,14 +44,13 @@ db.ref('templates').on('value', snap => {
                         <div class="live-badge"><span class="material-symbols-outlined">launch</span> فتح</div>
                     </div>
                     <div class="card-content">
+                        ${t.domain ? `<span class="card-domain">${t.domain}</span>` : ''}
                         <h3>${t.name}</h3>
                         <p>${t.desc}</p>
                     </div>
                 </a>`;
             });
-            // Append existing ones or replace? The user said "add new templates".
-            // If I replace, the previous static ones disappear. Let's just append them to existing HTML if they are newly added.
-            // Actually it's better to keep static ones and just append new at the bottom.
+
             const staticHTML = `
                     <a href="ecommerce/index.html" target="_blank" class="portfolio-card glassmorphism" data-tilt>
                         <div class="card-image-wrapper">

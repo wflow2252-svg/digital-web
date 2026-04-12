@@ -58,8 +58,8 @@
                     <input type="text" id="review-brand" required>
                 </div>
                 <div class="form-group">
-                    <label>رابط لوجو البراند (صورة)</label>
-                    <input type="url" id="review-logo" required>
+                    <label>لوجو البراند (صورة من الجهاز)</label>
+                    <input type="file" id="review-logo" accept="image/*" required>
                 </div>
                 <div class="form-group">
                     <label>الرسالة / التقييم</label>
@@ -82,12 +82,16 @@
                     <input type="text" id="template-desc" required>
                 </div>
                 <div class="form-group">
-                    <label>رابط صورة النموذج</label>
-                    <input type="url" id="template-image" required>
+                    <label>صورة النموذج (من الجهاز)</label>
+                    <input type="file" id="template-image" accept="image/*" required>
                 </div>
                 <div class="form-group">
-                    <label>رابط الموقع المباشر (اختياري)</label>
-                    <input type="url" id="template-link">
+                    <label>الدومين / رابط الموقع (مثال: example.com)</label>
+                    <input type="text" id="template-domain" placeholder="example.com">
+                </div>
+                <div class="form-group">
+                    <label>رابط الموقع المباشر (رابط كامل بالـ https)</label>
+                    <input type="url" id="template-link" placeholder="https://example.com">
                 </div>
                 <button type="submit" class="btn">حفظ النموذج</button>
             </form>
@@ -96,6 +100,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>
