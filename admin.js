@@ -47,6 +47,16 @@ db.ref('visitors').on('value', snap => {
     }
 });
 
+// Base64 Converter
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
 // Add Review
 document.getElementById('review-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -57,10 +67,20 @@ document.getElementById('review-form').addEventListener('submit', async e => {
     try {
         const logoFile = document.getElementById('review-logo').files[0];
         if (!logoFile) throw new Error('يرجى اختيار ملف الصورة أولاً');
+        
+        // Size validation (Max 1.5MB)
+        if (logoFile.size > 1500000) throw new Error('حجم الصورة كبير جداً (يجب أن يكون أقل من 1.5 ميجا)');
 
-        console.log('Starting Storage upload...', logoFile.name);
-        const logoUrl = await uploadFile(logoFile, 'reviews');
-        console.log('Storage upload success:', logoUrl);
+        let logoUrl = null;
+        try {
+            console.log('Attempting Storage upload...', logoFile.name);
+            logoUrl = await uploadFile(logoFile, 'reviews');
+            console.log('Storage upload success:', logoUrl);
+        } catch (storageErr) {
+            console.warn('Storage failed (CORS?), falling back to Base64:', storageErr);
+            logoUrl = await toBase64(logoFile);
+            console.log('Base64 conversion success');
+        }
 
         const review = {
             brand: document.getElementById('review-brand').value,
@@ -69,7 +89,7 @@ document.getElementById('review-form').addEventListener('submit', async e => {
             time: new Date().toISOString()
         };
 
-        console.log('Sending to Database...', review);
+        console.log('Sending to Database...', review.brand);
         await db.ref('reviews').push(review);
         console.log('Database push success');
 
@@ -94,10 +114,20 @@ document.getElementById('template-form').addEventListener('submit', async e => {
     try {
         const imageFile = document.getElementById('template-image').files[0];
         if (!imageFile) throw new Error('يرجى اختيار صورة النموذج');
+        
+        // Size validation (Max 1.5MB)
+        if (imageFile.size > 1500000) throw new Error('حجم الصورة كبير جداً (يجب أن يكون أقل من 1.5 ميجا)');
 
-        console.log('Starting Storage upload...', imageFile.name);
-        const imageUrl = await uploadFile(imageFile, 'templates');
-        console.log('Storage upload success:', imageUrl);
+        let imageUrl = null;
+        try {
+            console.log('Attempting Storage upload...', imageFile.name);
+            imageUrl = await uploadFile(imageFile, 'templates');
+            console.log('Storage upload success:', imageUrl);
+        } catch (storageErr) {
+            console.warn('Storage failed (CORS?), falling back to Base64:', storageErr);
+            imageUrl = await toBase64(imageFile);
+            console.log('Base64 conversion success');
+        }
 
         const template = {
             name: document.getElementById('template-name').value,
@@ -108,7 +138,7 @@ document.getElementById('template-form').addEventListener('submit', async e => {
             time: new Date().toISOString()
         };
 
-        console.log('Sending to Database...', template);
+        console.log('Sending to Database...', template.name);
         await db.ref('templates').push(template);
         console.log('Database push success');
 
