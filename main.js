@@ -25,8 +25,12 @@ db.ref('templates').on('value', snap => {
         const grid = document.getElementById('dynamic-portfolio');
         const hero = document.getElementById('home');
         
-        // Sort by time descending
-        const templates = Object.values(data).sort((a, b) => new Date(b.time) - new Date(a.time));
+        // Sort by time descending (handle missing dates with fallback)
+        const templates = Object.values(data).sort((a, b) => {
+            const dateA = a.time ? new Date(a.time) : new Date(0);
+            const dateB = b.time ? new Date(b.time) : new Date(0);
+            return dateB - dateA;
+        });
         
         // Update Hero Section Background with the latest template image
         if (hero && templates.length > 0) {

@@ -56,7 +56,11 @@ document.getElementById('review-form').addEventListener('submit', async e => {
 
     try {
         const logoFile = document.getElementById('review-logo').files[0];
+        if (!logoFile) throw new Error('يرجى اختيار ملف الصورة أولاً');
+
+        console.log('Starting Storage upload...', logoFile.name);
         const logoUrl = await uploadFile(logoFile, 'reviews');
+        console.log('Storage upload success:', logoUrl);
 
         const review = {
             brand: document.getElementById('review-brand').value,
@@ -65,12 +69,15 @@ document.getElementById('review-form').addEventListener('submit', async e => {
             time: new Date().toISOString()
         };
 
+        console.log('Sending to Database...', review);
         await db.ref('reviews').push(review);
+        console.log('Database push success');
+
         alert('تم إضافة التقييم بنجاح!');
         e.target.reset();
     } catch (err) {
-        console.error(err);
-        alert('حدث خطأ أثناء الرفع!');
+        console.error('Unified Error:', err);
+        alert(`حدث خطأ: ${err.message || 'فشل الاتصال بـ Firebase'}`);
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = 'حفظ التقييم';
@@ -86,7 +93,11 @@ document.getElementById('template-form').addEventListener('submit', async e => {
 
     try {
         const imageFile = document.getElementById('template-image').files[0];
+        if (!imageFile) throw new Error('يرجى اختيار صورة النموذج');
+
+        console.log('Starting Storage upload...', imageFile.name);
         const imageUrl = await uploadFile(imageFile, 'templates');
+        console.log('Storage upload success:', imageUrl);
 
         const template = {
             name: document.getElementById('template-name').value,
@@ -97,12 +108,15 @@ document.getElementById('template-form').addEventListener('submit', async e => {
             time: new Date().toISOString()
         };
 
+        console.log('Sending to Database...', template);
         await db.ref('templates').push(template);
+        console.log('Database push success');
+
         alert('تم إضافة النموذج بنجاح!');
         e.target.reset();
     } catch (err) {
-        console.error(err);
-        alert('حدث خطأ أثناء الرفع!');
+        console.error('Unified Error:', err);
+        alert(`حدث خطأ: ${err.message || 'فشل الاتصال بـ Firebase'}`);
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = 'حفظ النموذج';
