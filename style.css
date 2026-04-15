@@ -799,38 +799,41 @@ section.exiting {
 /* Responsive */
 @media (max-width: 1024px) {
     .hero-split {
-        display: grid !important;
-        grid-template-columns: 140px 1fr !important;
-        align-items: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
         text-align: left;
-        gap: 0.5rem;
+        gap: 1.5rem; /* More space between logo and text */
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 2rem;
     }
     .hero-text {
         min-width: 0 !important;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 100%;
     }
     .media-frame {
-        width: 130px !important; /* Slightly smaller than column for safe padding */
-        height: 130px !important;
+        width: 200px !important; /* Larger Logo */
+        height: 200px !important;
         display: block !important;
-        margin: 0 !important;
+        margin-bottom: 1rem !important;
+        order: -1; /* Always on top */
     }
     #hero-img {
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important;
+        transform: scale(1.1); /* Enlarge image inside frame */
     }
     .this-is {
         display: none !important;
     }
     .hero-title {
-        font-size: clamp(1.2rem, 6vw, 2.5rem) !important;
-        line-height: 1.1 !important;
-        margin: 0.2rem 0 !important;
+        font-size: clamp(2rem, 10vw, 3.5rem) !important; /* Larger Title */
+        line-height: 1.4 !important; /* Spacing between Digital and Web */
+        margin: 0.5rem 0 !important;
         white-space: nowrap;
         color: #fff !important;
     }
@@ -843,9 +846,9 @@ section.exiting {
         display: block !important;
     }
     .cursive-text {
-        font-size: 1.8rem !important;
+        font-size: 2.2rem !important; /* Larger Cursive */
         color: #3b82f6 !important;
-        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        margin-bottom: 0.5rem !important;
     }
 }
 
