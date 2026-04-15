@@ -810,13 +810,14 @@ section.exiting {
         text-align: right !important;
     }
     .media-frame {
-        width: 280px !important; /* Even larger logo now that frame is gone */
+        width: 280px !important;
         height: auto !important;
         aspect-ratio: auto;
         display: block !important;
         margin-bottom: 2rem !important;
+        margin-top: 5rem !important; /* Move it down from top edge */
         order: -1; 
-        align-self: center !important;
+        align-self: flex-end !important; /* Move it to the right */
     }
     #hero-img {
         width: 100% !important;
