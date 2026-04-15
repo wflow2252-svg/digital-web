@@ -396,7 +396,7 @@ section.exiting {
     position: relative;
     aspect-ratio: 1;
     background: rgba(255, 255, 255, 0.03);
-    border-radius: 0;
+    border-radius: 100px 20px 100px 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
     box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8),
