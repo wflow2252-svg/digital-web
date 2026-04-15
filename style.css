@@ -810,40 +810,57 @@ section.exiting {
 /* Responsive */
 @media (max-width: 1024px) {
     .hero-split {
-        display: flex !important;
-        flex-direction: row !important;
+        display: grid !important;
+        grid-template-columns: 140px 1fr !important;
         align-items: center !important;
-        justify-content: space-between !important;
         text-align: left;
         gap: 0.5rem;
         width: 100%;
+        margin-top: 1rem;
     }
     .hero-text {
-        flex: 1;
-        margin-top: 0 !important;
-        min-width: 0;
+        min-width: 0 !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     .media-frame {
-        width: 35vw !important;
-        max-width: 140px !important;
-        min-width: 90px !important;
-        margin: 0 !important;
+        width: 130px !important; /* Slightly smaller than column for safe padding */
+        height: 130px !important;
         display: block !important;
-        flex-shrink: 0;
+        margin: 0 !important;
+    }
+    #hero-img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
     }
     .this-is {
-        font-size: clamp(0.9rem, 3.5vw, 1.5rem) !important;
-        margin-bottom: 0.1rem !important;
+        display: none !important;
     }
     .hero-title {
-        font-size: clamp(1.4rem, 6vw, 2.8rem) !important;
+        font-size: clamp(1.2rem, 6vw, 2.5rem) !important;
         line-height: 1.1 !important;
-        margin-bottom: 0.8rem !important;
+        margin: 0.2rem 0 !important;
         white-space: nowrap;
+        color: #fff !important;
     }
     .hero-subtitle {
-        font-size: clamp(0.8rem, 3vw, 1.2rem) !important;
-        margin-right: 0.1rem !important;
+        display: none !important;
+    }
+    .cursive-wrapper {
+        height: 35px !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        display: flex !important;
+        align-items: center;
+    }
+    .cursive-path {
+        font-size: clamp(24px, 6vw, 32px) !important;
+        fill: #3b82f6 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        font-weight: 500;
     }
 }
 
