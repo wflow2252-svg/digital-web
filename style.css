@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rock+Salt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rock+Salt&family=Dancing+Script:wght@700&display=swap');
 
 :root {
     --bg: #0a0a0a;
@@ -849,18 +849,19 @@ section.exiting {
         display: none !important;
     }
     .cursive-wrapper {
-        height: 35px !important;
+        height: 40px !important;
         margin: 0 !important;
         overflow: visible !important;
         display: flex !important;
         align-items: center;
     }
     .cursive-path {
-        font-size: clamp(24px, 6vw, 32px) !important;
+        font-family: 'Dancing Script', cursive !important;
+        font-size: 32px !important;
         fill: #3b82f6 !important;
         opacity: 1 !important;
         visibility: visible !important;
-        font-weight: 500;
+        font-weight: 700 !important;
     }
 }
 
