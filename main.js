@@ -132,6 +132,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: true });
 
+    // Swipe Detection for Mobile
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    window.addEventListener('touchstart', e => {
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', e => {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const now = Date.now();
+        if (now - lastWheelTime < 1500) return; // Use same debounce
+
+        const swipeThreshold = 50;
+        const deltaY = touchStartY - touchEndY;
+
+        if (Math.abs(deltaY) < swipeThreshold) return;
+
+        if (deltaY > 0) {
+            // Swiped Up (Go Down)
+            if (currentSectionIndex < sections.length - 1) {
+                switchSection(sections[currentSectionIndex + 1]);
+                lastWheelTime = now;
+            }
+        } else {
+            // Swiped Down (Go Up)
+            if (currentSectionIndex > 0) {
+                switchSection(sections[currentSectionIndex - 1]);
+                lastWheelTime = now;
+            }
+        }
+    }
+
     // Handle Splash Screen
     const splash = document.getElementById('splash-screen');
     if (splash) {

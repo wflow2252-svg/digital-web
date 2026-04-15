@@ -810,49 +810,53 @@ section.exiting {
 /* Responsive */
 @media (max-width: 1024px) {
     .hero-split {
-        grid-template-columns: 1.2fr 0.8fr !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
         text-align: left;
-        gap: 1rem;
-        align-items: center;
-        display: grid !important;
-    }
-    .media-frame {
-        width: 100% !important;
-        max-width: 160px !important;
-        margin: 0 !important;
-        display: block !important;
+        gap: 0.5rem;
+        width: 100%;
     }
     .hero-text {
+        flex: 1;
         margin-top: 0 !important;
+        min-width: 0;
+    }
+    .media-frame {
+        width: 35vw !important;
+        max-width: 140px !important;
+        min-width: 90px !important;
+        margin: 0 !important;
+        display: block !important;
+        flex-shrink: 0;
     }
     .this-is {
-        font-size: clamp(1rem, 4vw, 1.8rem) !important;
-        margin-bottom: 0.2rem !important;
+        font-size: clamp(0.9rem, 3.5vw, 1.5rem) !important;
+        margin-bottom: 0.1rem !important;
     }
     .hero-title {
-        font-size: clamp(1.8rem, 8vw, 3rem) !important;
+        font-size: clamp(1.4rem, 6vw, 2.8rem) !important;
         line-height: 1.1 !important;
-        margin-bottom: 1rem !important;
+        margin-bottom: 0.8rem !important;
+        white-space: nowrap;
     }
     .hero-subtitle {
-        font-size: clamp(0.9rem, 3.5vw, 1.5rem) !important;
-        margin-right: 0.2rem !important;
+        font-size: clamp(0.8rem, 3vw, 1.2rem) !important;
+        margin-right: 0.1rem !important;
     }
 }
 
 @media (max-width: 480px) {
     .hero-split {
-        grid-template-columns: 1.3fr 0.7fr !important;
-        gap: 0.5rem !important;
+        gap: 0.3rem;
     }
     .media-frame {
-        max-width: 110px !important;
+        width: 30vw !important;
+        min-width: 80px !important;
     }
     .hero-title {
-        font-size: 1.8rem !important;
-    }
-    .hero-subtitle {
-        font-size: 0.9rem !important;
+        font-size: 1.5rem !important;
     }
 }
 
