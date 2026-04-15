@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA MARKET | The Everything Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #0f172a;
+            --gray: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Public Sans', sans-serif; background: var(--bg); color: var(--text-dark); }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+
+        /* Super Nav */
+        .super-nav { background: var(--primary); color: #fff; padding: 10px 0; font-size: 0.85rem; font-weight: 600; }
+        .super-nav .container { display: flex; justify-content: space-between; }
+
+        /* Header */
+        header { background: var(--white); border-bottom: 1px solid var(--border); padding: 20px 0; sticky; top: 0; z-index: 100; }
+        .header-main { display: flex; align-items: center; gap: 40px; }
+        .logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); letter-spacing: -1px; text-decoration: none; }
+        
+        .search-bar { flex: 1; position: relative; }
+        .search-bar input { width: 100%; padding: 12px 20px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); font-family: inherit; font-size: 1rem; }
+        .search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--primary); color: #fff; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; }
+
+        .header-actions { display: flex; gap: 25px; }
+        .action-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; font-weight: 700; color: var(--gray); cursor: pointer; }
+        .action-item i { font-size: 1.3rem; color: var(--text-dark); }
+
+        /* Categories Bar */
+        .cat-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 15px 0; display: flex; gap: 30px; }
+        .cat-item { font-size: 0.9rem; font-weight: 600; color: var(--gray); cursor: pointer; transition: 0.3s; }
+        .cat-item:hover { color: var(--primary); }
+
+        /* Main Content */
+        main { padding: 40px 0; }
+        .hero-banner { background: linear-gradient(90deg, #1e40af, #3b82f6); border-radius: 20px; padding: 60px; color: #fff; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; }
+        .hero-text h1 { font-size: 3rem; margin-bottom: 15px; font-weight: 900; }
+        .hero-text p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 30px; }
+        .shop-btn { background: #fff; color: var(--primary); padding: 12px 35px; border-radius: 8px; text-decoration: none; font-weight: 800; border: none;}
+
+        /* Marketplace Grid */
+        .market-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: 0.3s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .img-box { height: 200px; background: #eee; position: relative; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .seller-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 100px; font-size: 0.65rem; font-weight: 800; }
+        
+        .product-content { padding: 15px; }
+        .product-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; display: block; }
+        .product-price { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+        .rating { color: #fbbf24; font-size: 0.8rem; margin: 10px 0; }
+        .buy-btn { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: transparent; font-weight: 700; color: var(--primary); cursor: pointer; transition: 0.3s; }
+        .buy-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .header-main { flex-direction: column; gap: 20px; }
+            .hero-banner { flex-direction: column; text-align: center; padding: 40px 20px; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="super-nav">
+        <div class="container">
+            <div>Global Marketplace / 24/7 Support</div>
+            <div>Sell on Alpha / My Account</div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container header-main">
+            <a href="#" class="logo">ALPHA MARKET</a>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products, brands or sellers...">
+                <button class="search-btn">Search</button>
+            </div>
+            <div class="header-actions auth-trigger">
+                <a href="../shared/auth.html" class="action-item" style="text-decoration:none;"><i class="bi bi-person"></i>Sign In</a>
+                <div class="action-item"><i class="bi bi-heart"></i>Saved</div>
+                <div class="action-item"><i class="bi bi-cart3"></i>$0.00</div>
+            </div>
+        </div>
+        <div class="container cat-bar">
+            <div class="cat-item"><i class="bi bi-list"></i> All Categories</div>
+            <div class="cat-item">Electronics</div>
+            <div class="cat-item">Home & Garden</div>
+            <div class="cat-item">Fashion</div>
+            <div class="cat-item">Health & Beauty</div>
+            <div class="cat-item">Collectibles</div>
+            <div class="cat-item">Auto Parts</div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero-banner">
+            <div class="hero-text">
+                <h1>Mid-Season Sale</h1>
+                <p>Up to 50% OFF on premium tech and fashion. Verified sellers only.</p>
+                <button class="shop-btn">View All Deals</button>
+            </div>
+            <div class="hero-img-mock">
+                <i class="bi bi-lightning-charge" style="font-size: 120px; opacity: 0.2;"></i>
+            </div>
+        </section>
+
+        <section>
+            <div class="market-header">
+                <h2>Recommended For You</h2>
+                <div style="font-weight: 700; color: var(--primary); cursor: pointer;">See More <i class="bi bi-arrow-right"></i></div>
+            </div>
+            
+            <div class="market-grid">
+                <!-- P1 -->
+                <div class="product-card">
+                    <div class="img-box">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=400&q=80" alt="Watch">
+                        <div class="seller-badge">TOP SELLER</div>
+                    </div>
+                    <div class="product-content">
+                        <span class="product-title">Luxury Steel Hybrid Watch</span>
+                        <div class="product-price">$299.99</div>
+                        <div class="rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i> (128)</div>
+                        <button class="buy-btn">Add to Cart</button>
+                    </div>
+                </div>
+
+                 <!-- P2 -->
+                 <div class="product-card">
+                    <div class="img-box">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80" alt="Headphones">
+                        <div class="seller-badge">VERIFIED</div>
+                    </div>
+                    <div class="product-content">
+                        <span class="product-title">Wireless Noise Cancelling Pro</span>
+                        <div class="product-price">$189.50</div>
+                        <div class="rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i> (542)</div>
+                        <button class="buy-btn">Add to Cart</button>
+                    </div>
+                </div>
+
+                <!-- P3 -->
+                <div class="product-card">
+                    <div class="img-box">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80" alt="Shoes">
+                    </div>
+                    <div class="product-content">
+                        <span class="product-title">Ultra Sprint Sports Shoe</span>
+                        <div class="product-price">$95.00</div>
+                        <div class="rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i> (2.1k)</div>
+                        <button class="buy-btn">Add to Cart</button>
+                    </div>
+                </div>
+
+                <!-- P4 -->
+                <div class="product-card">
+                    <div class="img-box">
+                        <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=400&q=80" alt="Sneakers">
+                    </div>
+                    <div class="product-content">
+                        <span class="product-title">Minimalist All-Day Sneaker</span>
+                        <div class="product-price">$120.00</div>
+                        <div class="rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i> (890)</div>
+                        <button class="buy-btn">Add to Cart</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+    <script src="../shared/auth.js"></script>
+</body>
+</html>

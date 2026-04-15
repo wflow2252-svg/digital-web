@@ -1,185 +1,329 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Digital Web | بنبني نجاحك على النت</title>
     <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-        rel="stylesheet" />
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Rock+Salt&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-
 <body>
-    <div style="overflow-x: hidden; width: 100%; position: relative; min-height: 100vh;">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-blur"></div>
 
-        <nav class="navbar glassmorphism" id="main-nav">
-            <div class="container nav-content">
-                <img src="logo.png" alt="Digital Web Logo" class="brand-logo">
-                <ul class="nav-links" id="nav-links">
-                    <li><a href="#home">الرئيسية</a></li>
-                    <li><a href="#about">طريقتنا</a></li>
-                    <li><a href="#portfolio">الأمثلة الحية</a></li>
-                    <li><a href="#services">بنميزك إزاي؟</a></li>
-                    <li><a href="#contact" class="btn-primary">يلا نبدأ بلسان مصري</a></li>
-                </ul>
-            </div>
-        </nav>
-
-        <header id="home" class="hero dynamic-bg">
-            <div class="container hero-content">
-                <h1 class="hero-title">إحنا في ديجيتال ويب هننقل البيزنس بتاعك لمستوى <span class="gradient-text">تاني
-                        خالص</span></h1>
-                <p class="hero-subtitle">هنعملك موقع يعلّم مع عملائك وتصميم يخطف العين من أول نظرة.. موقعك معانا هيبقى
-                    الشريك الأساسي في زيادة مبيعاتك وبناء اسم الـ Brand بتاعك بقوة وفي وقت خيالي.</p>
-                <div class="hero-buttons">
-                    <a href="#portfolio" class="btn-primary"
-                        style="display:inline-flex; align-items:center; gap:8px;">اتفرج على حلاوة شغلنا <span
-                            class="material-symbols-outlined">visibility</span></a>
-                    <a href="#about" class="btn-secondary">اعرف أكتر عننا</a>
-                </div>
-            </div>
-        </header>
-
-        <section id="about" class="about section">
-            <div class="container">
-                <div class="about-card glassmorphism">
-                    <div class="about-icon">
-                        <span class="material-symbols-outlined xl-icon gradient-icon">architecture</span>
-                    </div>
-                    <h2>ديجيتال ويب.. <span class="gradient-text">مش مجرد شركة برمجة وخلاص</span></h2>
-                    <p>ديجيتال ويب هي الشريك الاستراتيجي اللي هيقف في ضهرك عشان تكبر شغلك وتبقى رقم واحد. إحنا مقتنعين
-                        إن أي بيزنس ليه قصة وتارجت، ومهمتنا إننا نظهر ده للناس من خلال واجهات مواقع بتخطف العين وتجارب
-                        استخدام ناعمة جداً، وكل ده مبني على كود نضيف بيحقق أعلى سرعة وأداء.</p>
-                    <p>إحنا مش بنسلمك "مجرد موقع" وتقفل على كده.. إحنا بنعملك "منظومة قوية" بتسهل عليك البيع، بترفع قيمة
-                        البراند بتاعك في السوق، وبتحول الزوار العاديين لعملاء دائمين مصدقين فيك وبيشتروا منك باستمرار.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="portfolio" class="portfolio section">
-            <div class="container">
-                <h2 class="section-title">دي أمثلة لمواقع <span class="gradient-text">حية</span> عملناها.. شوف واتأكد
-                </h2>
-                <p style="text-align:center; color: var(--text-muted); margin-bottom: 3rem; font-size:1.1rem;">اضغط على
-                    أي مثال تحت عشان تفتح الموقع وتعيش تجربة الاستخدام كاملة بنفسك وتشوف شغلنا على أصوله.</p>
-                <div class="portfolio-grid" id="dynamic-portfolio">
-                    <!-- Project 1 -->
-                    <a href="ecommerce/index.html" target="_blank" class="portfolio-card glassmorphism">
-                        <div class="card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
-                                alt="E-commerce Website">
-                            <div class="live-badge"><span class="material-symbols-outlined">launch</span> افتح الموقع
-                                الحي</div>
-                        </div>
-                        <div class="card-content">
-                            <h3>متجر إلكتروني متكامل للبيع</h3>
-                            <p>نموذج حقيقي لمتجر شيك ومظبوط، تجربة الشراء فيه سهلة وسلسة جداً وبتشجع العميل يكمل أوردره،
-                                وشغال زي الطلقة على الموبايل.</p>
-                        </div>
-                    </a>
-                    <!-- Project 2 -->
-                    <a href="restaurant/index.html" target="_blank" class="portfolio-card glassmorphism">
-                        <div class="card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80"
-                                alt="Restaurant Website">
-                            <div class="live-badge"><span class="material-symbols-outlined">launch</span> افتح الموقع
-                                الحي</div>
-                        </div>
-                        <div class="card-content">
-                            <h3>موقع فخم للمطاعم والكافيهات</h3>
-                            <p>تجربة استثنائية لمطعم بيعكس الفخامة والجودة، مع واجهة بتجوع اللي يشوفها وتخليه يحجز
-                                ترابيزة وهو قاعد في البيت بضغطة زرار.</p>
-                        </div>
-                    </a>
-                    <!-- Project 3 -->
-                    <a href="#contact" class="portfolio-card glassmorphism">
-                        <div class="card-image-wrapper placeholder-bg">
-                            <div class="tech-icons">
-                                <span class="material-symbols-outlined xl-icon gradient-icon">web</span>
-                                <span class="material-symbols-outlined xl-icon gradient-icon">devices</span>
-                                <span class="material-symbols-outlined xl-icon gradient-icon">code</span>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <h3>سيستم كامل للشركات الناشئة</h3>
-                            <p>بنوفر أنظمة متقدمة متفصلة على مقاس البيزنس بالملّي، عشان تستحمل ضغط الشغلة الكبيرة وتكبر
-                                معاك بدون أعطال.</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section id="services" class="services section">
-            <div class="container">
-                <div class="services-banner glassmorphism">
-                    <h2>ليه تبرمج وتظبط موقعك معانا إحنا؟</h2>
-                    <div class="services-features">
-                        <div class="feature">
-                            <span class="material-symbols-outlined feature-icon">bolt</span>
-                            <h3>صاروخ في الأداء</h3>
-                            <p>شغلنا متبرمج صح ومتهندل بحيث الموقع يحمل في ثواني معدودة، وده هيخلي محركات البحث تحبك
-                                جداً وتقدرك.</p>
-                        </div>
-                        <div class="feature">
-                            <span class="material-symbols-outlined feature-icon">phonelink_setup</span>
-                            <h3>شغال على أي شاشة</h3>
-                            <p>سواء العميل بيفتح من الموبايل، التاب، أو الكمبيوتر، الموقع بيلبس المقاس بالظبط من غير ما
-                                الشكل يبوظ أبداً.</p>
-                        </div>
-                        <div class="feature">
-                            <span class="material-symbols-outlined feature-icon">palette</span>
-                            <h3>شياكة وتصميم بيبيع</h3>
-                            <p>بنعملك "واجهة" حتة ألماظ، بتجبر الزبون يفضل موجود في موقعك ويقلب في المنتجات وهو مستمتع
-                                بتأثيرات بصرية راقية.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===== TESTIMONIALS SECTION ===== -->
-        <section id="reviews" class="section">
-            <div class="container">
-                <h2 class="section-title">كلام عملائنا <span class="gradient-text">عننا</span></h2>
-                <div class="reviews-grid" id="dynamic-reviews" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                    <!-- Dynamically populated from JS -->
-                    <p style="text-align:center; color: var(--text-muted); grid-column: 1 / -1;">لا توجد تقييمات حالياً...</p>
-                </div>
-            </div>
-        </section>
-
-        <footer id="contact" class="footer glassmorphism">
-            <div class="container">
-                <div class="footer-content">
-                    <img src="logo.png" alt="Logo" class="footer-logo">
-                    <p>مستني إيه تاني؟ يلا بينا نعملك أقوى موقع وتشوف أرقام المبيعات وهي بتضرب في السقف. ابعتلنا دلوقتي!
-                    </p>
-                    <div class="social-links" style="display:flex; justify-content:center; gap:1.5rem; margin-top:2rem;">
-                        <a href="https://wa.me/201125963000" target="_blank" class="glass-icon" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:50px; height:50px; border-radius:50%; background:rgba(37,211,102,0.1); border:1px solid #25D366; transition:0.3s; color:#25D366;">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="24" height="24">
-                        </a>
-                        <a href="https://www.facebook.com/share/1DfqryxjAV/" target="_blank" class="glass-icon" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:50px; height:50px; border-radius:50%; background:rgba(24,119,242,0.1); border:1px solid #1877F2; transition:0.3s; color:#1877F2;">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" width="24" height="24">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
-        <script src="main.js"></script>
-        <script src="chat-widget.js"></script>
-
+    <!-- Social Sidebar -->
+    <div class="social-sidebar">
+        <div class="social-line"></div>
+        <a href="https://www.facebook.com/share/1DfqryxjAV/" target="_blank"><i class="p-2 bi bi-facebook"></i></a>
+        <a href="https://wa.me/#" target="_blank"><i class="p-2 bi bi-whatsapp"></i></a>
+        <div class="social-line"></div>
     </div>
-</body>
 
+    <!-- Cinematic Overlay -->
+    <div id="intro-overlay">
+        <div class="intro-content">
+            <h1 class="intro-title">
+                <span id="intro-main-text">STAC</span><span id="intro-cursive-text" class="intro-cursive">K</span>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Splash Screen / Loader -->
+    <div id="splash-screen">
+        <div class="loader-content">
+            <span class="loader-brand">Digital Web</span>
+            <span class="loader-badge">INIT</span>
+        </div>
+    </div>
+    <!-- Noise Filter -->
+    <svg style="display:none;">
+        <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+        </filter>
+    </svg>
+
+    <!-- Background Decor -->
+    <div class="bg-container">
+        <div class="noise-overlay"></div>
+        <div class="grid-overlay"></div>
+        <div class="blob-container">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Home Section -->
+        <section id="home" class="active">
+            <div class="hero-split">
+                <div class="media-frame">
+                    <img src="logo.png" alt="Digital Web Logo" id="hero-img">
+                    <div class="frame-decor"></div>
+                </div>
+
+                <div class="hero-text">
+                    <div class="cursive-wrapper" data-stagger="0">
+                        <svg class="cursive-svg" viewBox="0 0 400 100">
+                            <!-- "This is" path -->
+                            <text x="0" y="80" class="cursive-path">This is</text>
+                        </svg>
+                    </div>
+                    <h1 class="hero-title animate-in" data-stagger="1">Digital<br>Web</h1>
+                    <div class="cursive-wrapper" data-stagger="2">
+                         <svg class="cursive-svg" viewBox="0 0 600 100">
+                            <text x="0" y="80" class="cursive-path">Products Expert</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="hero-badges animate-in" data-stagger="3">
+                        <div class="badge">
+                            <div class="dot pulse"></div>
+                            Available for projects
+                        </div>
+                        <div class="badge">
+                            <span class="material-symbols-outlined">schedule</span>
+                            <span id="utc-time">00:52</span> UTC+02:00
+                        </div>
+                        <div class="badge">
+                            v. 4.0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2 class="section-title-alt">Selected Work</h2>
+            <div class="bento-grid">
+                <!-- Project 1: AI Vision -->
+                <a href="projects/ai-dash/index.html" target="_blank" class="bento-card card-large" data-stagger="1" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> REAL-TIME AI</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-ai.png" class="project-img" alt="AI Dashboard">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa;">Python</span>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #34d399;">FastAPI</span>
+                    </div>
+                    <h3>AI Vision Dashboard</h3>
+                    <p>منصة ذكاء اصطناعي لتحليل البيانات البصرية بدقة متناهية.</p>
+                </a>
+
+                <!-- Project 2: Perfume Store -->
+                <a href="projects/perfume/index.html" target="_blank" class="bento-card" data-stagger="2" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> LUXURY SHOP</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-perfume.png" class="project-img" alt="Perfume Store">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(197, 160, 89, 0.1); color: #c5a059;">E-Commerce</span>
+                    </div>
+                    <h3>Luxe Scents</h3>
+                    <p>متجر عطور فاخر يركز على تجربة المستخدم الراقية.</p>
+                </a>
+
+                <!-- Project 3: SaaS -->
+                <a href="projects/saas/index.html" target="_blank" class="bento-card card-tall" data-stagger="3" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> MODERN SAAS</div>
+                    <div class="project-preview-container" style="height: 100%; max-height: 400px;">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-saas.png" class="project-img" style="height: 100%;" alt="SaaS Landing">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #fbbf24;">Next.js</span>
+                    </div>
+                    <h3>NextGen SaaS</h3>
+                    <p>واجهات مستقبلية مصممة للسرعة والنمو المتسارع للشركات.</p>
+                </a>
+
+                <!-- Project 4: Marketplace -->
+                <a href="projects/marketplace/index.html" target="_blank" class="bento-card card-wide" data-stagger="4" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> MULTI-VENDOR</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-marketplace.png" class="project-img" alt="Marketplace">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">Marketplace</span>
+                    </div>
+                    <h3>Alpha Market</h3>
+                    <p>منصة تجارة إلكترونية متكاملة تدعم تعدد البائعين ونظام بحث ذكي.</p>
+                </a>
+
+                <!-- Project 5: Real Estate -->
+                <a href="projects/real-estate/index.html" target="_blank" class="bento-card card-wide" data-stagger="5" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> REAL ESTATE</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-realestate.png" class="project-img" alt="Real Estate">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(30, 58, 138, 0.1); color: #1e3a8a;">Property Portal</span>
+                    </div>
+                    <h3>Estate Elite</h3>
+                    <p>بوابة عقارية فاخرة لاستعراض وتصفح العقارات الراقية بأسلوب عصري.</p>
+                </a>
+
+                <!-- Project 6: Finance -->
+                <a href="projects/finance/index.html" target="_blank" class="bento-card" data-stagger="6" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> FINTECH UI</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-finance.png" class="project-img" alt="Fintech App">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #818cf8;">Mobile UX</span>
+                    </div>
+                    <h3>Luxe Banking</h3>
+                    <p>تجربة بنكية رقمية تعيد تعريف التعاملات المالية بلمسة فنية.</p>
+                </a>
+
+                <!-- Project 7: Fashion -->
+                <a href="projects/fashion/index.html" target="_blank" class="bento-card card-large" data-stagger="7" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> URBAN TREND</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-fashion.png" class="project-img" alt="Fashion Store">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(250, 255, 0, 0.1); color: #faff00;">Cutting-Edge</span>
+                    </div>
+                    <h3>Urban Trend</h3>
+                    <p>متجر ملابس شبابي يركز على الموضة العصرية والقطع النادرة.</p>
+                </a>
+
+                 <!-- Project 8: E-commerce -->
+                 <a href="ecommerce/index.html" target="_blank" class="bento-card" data-stagger="8" style="text-decoration: none;">
+                    <div class="live-badge"><div class="dot pulse"></div> OFFICIAL STORE</div>
+                    <div class="project-preview-container">
+                        <div class="browser-shell"><div class="browser-dot dot-red"></div><div class="browser-dot dot-yellow"></div><div class="browser-dot dot-green"></div></div>
+                        <img src="assets/live-ecommerce.png" class="project-img" alt="E-commerce Full">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa;">Commercial</span>
+                    </div>
+                    <h3>Luxe Wear</h3>
+                    <p>مشروع متكامل لمتجر أزياء إلكتروني بتجربة مستخدم عالمية.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Stack Section -->
+        <section id="stack">
+            <div class="stack-title-wrapper" data-stagger="1">
+                <span class="stack-title-cursive">My Tech</span>
+                <h1 class="stack-title-main">Stack</h1>
+            </div>
+
+            <div class="skills-grid" data-stagger="2">
+                <!-- Row 1 -->
+                <div class="skill-box">
+                    <div class="dot-corner dot-tl"></div>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML5">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="Python">
+                </div>
+                <div class="skill-box">
+                    <div class="dot-corner dot-tr"></div>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node.js">
+                </div>
+
+                <!-- Row 2 -->
+                <div class="skill-box">
+                    <div class="dot-corner dot-bl"></div>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" alt="Next.js">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="Tailwind CSS">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg" alt="Firebase">
+                </div>
+                <div class="skill-box">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg" alt="Google Cloud">
+                </div>
+                <div class="skill-box">
+                    <div class="dot-corner dot-br"></div>
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/electron/electron-original.svg" alt="Electron">
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <h2 class="section-title-alt">Get in Touch</h2>
+            <div class="bento-grid">
+                <div class="bento-card card-large">
+                    <h3>يلا نبدأ؟</h3>
+                    <p>ابعتلنا دلوقتي ونحول فكرتك لواقع ملموس.</p>
+                    <div class="hero-badges" style="margin-top: 2rem;">
+                        <a href="https://wa.me/201125963000" class="badge" target="_blank" style="text-decoration: none;">
+                            <i class="bi bi-whatsapp"></i>
+                            WhatsApp
+                        </a>
+                        <a href="https://www.facebook.com/share/1DfqryxjAV/" class="badge" target="_blank" style="text-decoration: none;">
+                            <i class="bi bi-facebook"></i>
+                            Facebook
+                        </a>
+                        <a href="https://m.me/hazem.elsayed.315" class="badge" target="_blank" style="text-decoration: none;">
+                            <i class="bi bi-messenger"></i>
+                            Messenger
+                        </a>
+                        <a href="javascript:void(0)" onclick="window.dwOpenChat()" class="badge badge-accent" style="text-decoration: none;">
+                            <i class="bi bi-chat-dots"></i>
+                            Live Chat
+                        </a>
+                    </div>
+                    <!-- Embedded Chat Container -->
+                    <div id="dw-chat-embed" style="margin-top: 2.5rem; width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; min-height: 500px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Floating Nav -->
+        <nav class="pill-nav">
+            <div class="nav-indicator"></div>
+            <button class="nav-item active" onclick="switchSection('home')">
+                <span class="material-symbols-outlined">home</span>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('stack')">
+                <span class="material-symbols-outlined">layers</span>
+                <span>Stack</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('projects')">
+                <span class="material-symbols-outlined">folder</span>
+                <span>Projects</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('contact')">
+                <span class="material-symbols-outlined">mail</span>
+                <span>Contact</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="chat-widget.js"></script>
+    <script src="main.js"></script>
+</body>
 </html>

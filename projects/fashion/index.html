@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URBAN TREND | Modern Streetwear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --accent: #faff00; /* Neon Yellow */
+            --white: #fff;
+            --gray: #1a1a1a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--white); font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; overflow-x: hidden; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+
+        /* Navigation */
+        nav { padding: 40px 0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Syncopate', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -2px; }
+        .nav-items { display: flex; gap: 40px; }
+        .nav-items a { text-decoration: none; color: var(--white); font-weight: 700; font-size: 0.9rem; position: relative; }
+        .nav-items a:hover { color: var(--accent); }
+
+        /* Hero Marquee */
+        .hero { position: relative; padding: 100px 0; height: 90vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero-text { font-family: 'Syncopate', sans-serif; font-size: clamp(4rem, 15vw, 12rem); font-weight: 700; line-height: 0.8; z-index: 1; pointer-events: none;}
+        .hero-img { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1200&q=80') center/cover; opacity: 0.5; }
+
+        /* Fashion Grid */
+        .section-header { display: flex; justify-content: space-between; align-items: end; border-bottom: 2px solid var(--gray); padding-bottom: 2rem; margin-bottom: 4rem; margin-top: 100px; }
+        .section-header h2 { font-size: 3rem; font-weight: 700; }
+        
+        .fashion-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .fashion-item { position: relative; height: 500px; overflow: hidden; cursor: pointer; }
+        .fashion-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); filter: grayscale(1); }
+        .fashion-item:hover img { transform: scale(1.1); filter: grayscale(0); }
+        .fashion-info { position: absolute; bottom: 20px; left: 20px; z-index: 10; opacity: 0; transition: 0.5s;}
+        .fashion-item:hover .fashion-info { opacity: 1; }
+        .fashion-info h4 { font-size: 1.2rem; margin-bottom: 5px; background: var(--accent); color: #000; display: inline-block; padding: 2px 8px; }
+
+        footer { padding: 100px 0; border-top: 2px solid var(--gray); text-align: center; }
+        .footer-logo { font-family: 'Syncopate', sans-serif; font-size: 5vw; margin-bottom: 40px; }
+        
+        @media (max-width: 1024px) {
+            .fashion-grid { grid-template-columns: 1fr 1fr; }
+            .nav-items { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">URBAN*TREND</div>
+            <ul class="nav-items auth-trigger">
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">Drop #24</a></li>
+                <li><a href="../shared/auth.html" style="color:var(--accent);">Login</a></li>
+                <li><a href="#">Cart (0)</a></li>
+            </ul>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-img"></div>
+            <h1 class="hero-text">FUTURE<br>VINTAGE</h1>
+        </section>
+
+        <div class="section-header">
+            <h2>Season Collection</h2>
+            <p style="color: var(--accent);">Available now / Global shipping</p>
+        </div>
+
+        <section class="fashion-grid">
+            <div class="fashion-item">
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80" alt="Look 1">
+                <div class="fashion-info">
+                    <h4>CYBER HOODIE</h4>
+                    <p>$180.00</p>
+                </div>
+            </div>
+            <div class="fashion-item">
+                <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80" alt="Look 2">
+                <div class="fashion-info">
+                    <h4>VOID JACKET</h4>
+                    <p>$320.00</p>
+                </div>
+            </div>
+            <div class="fashion-item">
+                <img src="https://images.unsplash.com/photo-1529139570274-3343907d6148?auto=format&fit=crop&w=600&q=80" alt="Look 3">
+                <div class="fashion-info">
+                    <h4>NEON PANTS</h4>
+                    <p>$210.00</p>
+                </div>
+            </div>
+            <div class="fashion-item">
+                <img src="https://images.unsplash.com/photo-1549439602-43bbcb45f581?auto=format&fit=crop&w=600&q=80" alt="Look 4">
+                <div class="fashion-info">
+                    <h4>GHOST TEE</h4>
+                    <p>$65.00</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-logo">URBAN*TREND</div>
+            <p>©2024 DESIGNED FOR THE STREETS - POWERED BY DIGITAL WEB</p>
+        </footer>
+    </div>
+    <script src="../shared/auth.js"></script>
+</body>
+</html>

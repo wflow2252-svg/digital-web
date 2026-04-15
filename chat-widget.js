@@ -9,30 +9,44 @@
   let userInfo = JSON.parse(localStorage.getItem('dw_user') || 'null');
 
   // Load Firebase Scripts
-  const scriptApp = document.createElement('script');
-  scriptApp.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
-  scriptApp.onload = () => {
-    const scriptDb = document.createElement('script');
-    scriptDb.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
-    scriptDb.onload = initChat;
-    document.head.appendChild(scriptDb);
-  };
-  document.head.appendChild(scriptApp);
+  const scripts = [
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js',
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js'
+  ];
+
+  let loadedCount = 0;
+  scripts.forEach(src => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => {
+      loadedCount++;
+      if (loadedCount === scripts.length) initChat();
+    };
+    document.head.appendChild(s);
+  });
 
   function initChat() {
     const firebaseConfig = {
       apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
       projectId: "chat-75d30",
-      databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com"
+      databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
+      storageBucket: "chat-75d30.appspot.com"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    const storage = firebase.storage();
 
     let isOpen = false;
     let messages = [];
     let userRegistered = !!userInfo;
     let dbListenerStarted = false;
     let unreadCount = 0;
+
+    // Media Recording Variables
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
 
     if (userRegistered) { startListening(); }
 
@@ -41,33 +55,24 @@
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 
-      #dw-fab-wrapper {
-        position: fixed;
-        bottom: 24px;
-        left: 24px;
-        z-index: 999999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-      }
+      #dw-fab-wrapper { display: none !important; }
 
       #dw-chat-btn {
         position: relative;
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: linear-gradient(145deg, #25D366, #128C7E);
+        background: linear-gradient(145deg, var(--accent, #3b82f6), #2563eb);
         border: none;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 20px rgba(37,211,102,0.5), 0 2px 8px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 20px rgba(59,130,246,0.5), 0 2px 8px rgba(0,0,0,0.3);
         transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
         outline: none;
       }
-      #dw-chat-btn:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(37,211,102,0.6), 0 4px 12px rgba(0,0,0,0.3); }
+      #dw-chat-btn:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(59,130,246,0.6), 0 4px 12px rgba(0,0,0,0.3); }
       #dw-chat-btn svg { width: 30px; height: 30px; fill: white; transition: transform 0.3s ease; }
       #dw-chat-btn.open svg { transform: rotate(90deg); }
 
@@ -112,27 +117,49 @@
 
       /* ========== CHAT WINDOW ========== */
       #dw-chat-window {
-        position: fixed;
-        bottom: 96px;
-        left: 24px;
-        width: 360px;
-        height: 580px;
-        max-height: calc(100dvh - 110px);
+        position: relative;
+        width: 100%;
+        height: 500px;
+        max-width: 100%;
         border-radius: 20px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         font-family: 'Cairo', sans-serif;
         direction: rtl;
-        z-index: 999998;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.2);
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(20px) scale(0.95);
-        transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        z-index: 10;
+        background: rgba(10, 10, 10, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        opacity: 1; /* Always visible in embed */
+        pointer-events: all;
         user-select: none;
         -webkit-user-select: none;
       }
+
+      @media (max-width: 640px) {
+        #dw-chat-window {
+            height: 100%;
+            min-height: 520px;
+            border-radius: 16px;
+        }
+        #dw-header {
+            padding: 15px 20px !important;
+        }
+        .dw-reg-hello {
+            padding: 10px !important;
+            margin-bottom: 15px;
+        }
+        .dw-form-group {
+            margin-bottom: 12px;
+        }
+        .msg-bubble {
+            max-width: 90% !important;
+            font-size: 13px !important;
+        }
+      }
+
       #dw-chat-window.open {
         opacity: 1;
         pointer-events: all;
@@ -141,12 +168,9 @@
 
       /* HEADER */
       #dw-header {
-        background: linear-gradient(135deg, #075E54, #128C7E);
-        padding: 14px 16px 14px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       #dw-header-avatar {
         width: 44px;
@@ -187,20 +211,7 @@
         background: #9EE89E;
         display: inline-block;
       }
-      #dw-close-btn {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.8);
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        transition: 0.2s;
-        flex-shrink: 0;
-      }
-      #dw-close-btn:hover { background: rgba(255,255,255,0.15); color: white; }
-      #dw-close-btn svg { width: 20px; height: 20px; fill: currentColor; }
+      #dw-close-btn { display: none !important; }
 
       /* WALLPAPER */
       #dw-messages-area {
@@ -210,8 +221,7 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
-        background-color: #E5DDD5;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23E5DDD5'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='150' cy='100' r='20' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='250' cy='50' r='40' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='350' cy='100' r='25' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='100' cy='200' r='35' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='300' cy='200' r='30' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3Ccircle cx='50' cy='300' r='20' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='200' cy='300' r='45' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.3'/%3E%3Ccircle cx='350' cy='300' r='25' fill='none' stroke='%23D4C7BB' stroke-width='1' opacity='0.4'/%3E%3C/svg%3E");
+        background: transparent;
         scroll-behavior: smooth;
       }
       #dw-messages-area::-webkit-scrollbar { width: 4px; }
@@ -246,7 +256,7 @@
         margin: 6px 0;
         line-height: 1.6;
       }
-      #dw-welcome-msg strong { color: #128C7E; }
+      #dw-welcome-msg strong { color: #3b82f6; }
 
       /* BUBBLES */
       .dw-msg-row {
@@ -268,10 +278,10 @@
       }
       /* User bubble = right side green */
       .dw-bubble.user {
-        background: #DCF8C6;
-        color: #111;
-        border-radius: 8px 8px 8px 2px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.13);
+        background: #3b82f6;
+        color: white;
+        border-radius: 12px 12px 4px 12px;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
       }
       .dw-bubble.user::after {
         content: '';
@@ -283,14 +293,15 @@
         height: 0;
         border-style: solid;
         border-width: 0 0 8px 8px;
-        border-color: transparent transparent #DCF8C6 transparent;
+        border-color: transparent transparent #3b82f6 transparent;
       }
       /* Admin bubble = white */
       .dw-bubble.admin {
-        background: white;
-        color: #111;
-        border-radius: 8px 8px 2px 8px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.13);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px 12px 12px 4px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       }
       .dw-bubble.admin::before {
         content: '';
@@ -337,7 +348,7 @@
 
       /* REGISTRATION */
       #dw-reg-form {
-        background: #F0F2F5;
+        background: transparent;
         flex: 1;
         padding: 20px 16px;
         display: flex;
@@ -346,11 +357,11 @@
         overflow-y: auto;
       }
       .dw-reg-hello {
-        background: white;
+        background: rgba(255, 255, 255, 0.03);
         border-radius: 10px;
         padding: 14px;
         text-align: center;
-        border: 1px solid #E9EDEF;
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
       .dw-reg-hello .emoji { font-size: 36px; display: block; margin-bottom: 8px; }
       .dw-reg-hello h3 {
@@ -362,27 +373,27 @@
       .dw-reg-hello p { color: #667781; font-size: 12.5px; margin: 0; line-height: 1.5; }
 
       .dw-form-group { display: flex; flex-direction: column; gap: 5px; }
-      .dw-form-label { color: #128C7E; font-size: 12px; font-weight: 700; }
+      .dw-form-label { color: #3b82f6; font-size: 12px; font-weight: 700; }
       .dw-form-input {
-        background: white;
-        border: 1.5px solid #E9EDEF;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         padding: 11px 14px;
         font-family: 'Cairo', sans-serif;
         font-size: 14px;
-        color: #111;
+        color: white;
         direction: rtl;
         outline: none;
         transition: 0.2s;
         width: 100%;
         box-sizing: border-box;
       }
-      .dw-form-input:focus { border-color: #25D366; box-shadow: 0 0 0 3px rgba(37,211,102,0.1); }
+      .dw-form-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
       .dw-form-input::placeholder { color: #aaa; }
       .dw-form-input.error { border-color: #FF3B30; }
 
       .dw-start-btn {
-        background: linear-gradient(135deg, #25D366, #128C7E);
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
         color: white;
         border: none;
         border-radius: 10px;
@@ -392,35 +403,34 @@
         font-weight: 700;
         cursor: pointer;
         transition: 0.2s;
-        box-shadow: 0 3px 12px rgba(37,211,102,0.35);
+        box-shadow: 0 3px 12px rgba(59,130,246,0.35);
       }
-      .dw-start-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,211,102,0.45); }
+      .dw-start-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59,130,246,0.45); }
       .dw-form-privacy { text-align: center; color: #aaa; font-size: 11px; }
 
       /* INPUT AREA */
       #dw-input-bar {
-        background: #F0F2F5;
-        padding: 8px 10px;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 12px 10px;
         display: flex;
         align-items: center;
         gap: 8px;
         flex-shrink: 0;
-        border-top: 1px solid #E9EDEF;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
       #dw-chat-input {
         flex: 1;
-        background: white;
-        border: none;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 24px;
         padding: 10px 16px;
         font-family: 'Cairo', sans-serif;
         font-size: 14px;
-        color: #111;
+        color: white;
         direction: rtl;
         outline: none;
         resize: none;
         line-height: 1.4;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       }
       #dw-chat-input::placeholder { color: #aaa; }
 
@@ -428,7 +438,7 @@
         width: 44px;
         height: 44px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #25D366, #128C7E);
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
         border: none;
         cursor: pointer;
         display: flex;
@@ -436,10 +446,37 @@
         justify-content: center;
         flex-shrink: 0;
         transition: 0.2s;
-        box-shadow: 0 2px 8px rgba(37,211,102,0.4);
+        box-shadow: 0 2px 8px rgba(59,130,246,0.4);
       }
       #dw-send-btn:hover { transform: scale(1.08); }
       #dw-send-btn svg { width: 20px; height: 20px; fill: white; }
+
+      .dw-icon-btn {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+        border-radius: 50%;
+      }
+      .dw-icon-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+      .dw-icon-btn.active { color: #ff3b30; animation: dw-pulse 1.5s infinite; }
+      @keyframes dw-pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+      .dw-media-bubble img, .dw-media-bubble video {
+        max-width: 100%;
+        border-radius: 12px;
+        display: block;
+        cursor: pointer;
+      }
+      .dw-audio-player {
+        min-width: 200px;
+        height: 40px;
+      }
 
       /* RESPONSIVE MOBILE */
       @media (max-width: 500px) {
@@ -464,30 +501,20 @@
     document.head.appendChild(style);
 
     // ===================== HTML =====================
-    const fabWrapper = document.createElement('div');
-    fabWrapper.id = 'dw-fab-wrapper';
-    fabWrapper.innerHTML = `
-      <button id="dw-chat-btn" title="كلمنا دلوقتي">
-        <div id="dw-unread-badge"></div>
-        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.103 0-2 .897-2 2v18l5.333-4H20c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-3 9H7v-2h10v2zm0-4H7V5h10v2z"/></svg>
-      </button>
-    `;
-    document.body.appendChild(fabWrapper);
+    // FAB Removed
 
     const chatWindow = document.createElement('div');
     chatWindow.id = 'dw-chat-window';
 
     const regFormHTML = `
       <div id="dw-header">
-        <div id="dw-header-avatar">💬</div>
         <div id="dw-header-info">
-          <div id="dw-header-name">Digital Web</div>
+          <div id="dw-header-name">Start Conversation</div>
           <div id="dw-header-status">
             <span id="dw-status-pulse"></span>
-            <span>متاحين دلوقتي</span>
+            <span>Online Now</span>
           </div>
         </div>
-        <button id="dw-close-btn"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       </div>
       <div id="dw-reg-form">
         <div class="dw-reg-hello">
@@ -510,17 +537,13 @@
 
     const chatUIHTML = `
       <div id="dw-header">
-        <div id="dw-header-avatar">
-          <img src="https://ui-avatars.com/api/?name=DW&background=128C7E&color=fff&bold=true" alt="avatar">
-        </div>
         <div id="dw-header-info">
-          <div id="dw-header-name">Digital Web</div>
+          <div id="dw-header-name">Live Assistance</div>
           <div id="dw-header-status">
             <span id="dw-status-pulse"></span>
-            <span id="dw-typing-status">متاحين دلوقتي</span>
+            <span id="dw-typing-status">Online Now</span>
           </div>
         </div>
-        <button id="dw-close-btn"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       </div>
       <div id="dw-messages-area">
         <div class="dw-date-divider"><span>اليوم</span></div>
@@ -532,23 +555,20 @@
         </div>
       </div>
       <div id="dw-input-bar">
+        <input id="dw-chat-input" type="text" placeholder="اكتب رسالة..." maxlength="500" autocomplete="off">
         <button id="dw-send-btn">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
-        <input id="dw-chat-input" type="text" placeholder="اكتب رسالة..." maxlength="500" autocomplete="off">
       </div>
     `;
 
-    chatWindow.innerHTML = userRegistered ? chatUIHTML : regFormHTML;
-    document.body.appendChild(chatWindow);
-
     // Setup events
     const btn = document.getElementById('dw-chat-btn');
-    btn.addEventListener('click', toggleChat);
+    if (btn) btn.addEventListener('click', toggleChat);
 
     chatWindow.addEventListener('click', e => {
       if (e.target.id === 'dw-close-btn' || e.target.closest('#dw-close-btn')) closeChat();
-      if (e.target.id === 'dw-start-chat') submitReg();
+      if (e.target.id === 'dw-start-chat' || e.target.closest('#dw-start-chat')) submitReg();
     });
 
     chatWindow.addEventListener('keydown', e => {
@@ -556,6 +576,17 @@
     });
 
     document.getElementById('dw-send-btn')?.addEventListener('click', sendMsg);
+
+    chatWindow.innerHTML = userRegistered ? chatUIHTML : regFormHTML;
+    if (userRegistered) setupChatListeners();
+    
+    const embedContainer = document.getElementById('dw-chat-embed');
+    if (embedContainer) {
+      embedContainer.appendChild(chatWindow);
+      openChat(); // Working now because btn is initialized
+    } else {
+      document.body.appendChild(chatWindow);
+    }
 
     if (userRegistered) {
       // listen but don't render welcome again
@@ -569,7 +600,7 @@
     function openChat() {
       isOpen = true;
       chatWindow.classList.add('open');
-      btn.classList.add('open');
+      if (btn) btn.classList.add('open');
       clearUnread();
       setTimeout(() => {
         document.getElementById('dw-chat-input')?.focus();
@@ -577,10 +608,24 @@
       }, 100);
     }
 
+    function setupChatListeners() {
+      const sendBtn = chatWindow.querySelector('#dw-send-btn');
+      if (sendBtn) sendBtn.addEventListener('click', sendMsg);
+      const chatInp = chatWindow.querySelector('#dw-chat-input');
+      if (chatInp) chatInp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); sendMsg(); }
+      });
+      
+      // Media Listeners
+      chatWindow.querySelector('#dw-attach-btn')?.addEventListener('click', () => chatWindow.querySelector('#dw-media-input').click());
+      chatWindow.querySelector('#dw-media-input')?.addEventListener('change', handleMediaSelect);
+      chatWindow.querySelector('#dw-mic-btn')?.addEventListener('click', toggleMic);
+    }
+
     function closeChat() {
       isOpen = false;
       chatWindow.classList.remove('open');
-      btn.classList.remove('open');
+      if (btn) btn.classList.remove('open');
     }
 
     function clearUnread() {
@@ -620,6 +665,95 @@
       });
     }
 
+    // Media Handlers
+    function handleMediaSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const type = file.type.startsWith('image/') ? 'image' : 'video';
+      uploadAndSend(file, type);
+      e.target.value = ''; // Reset
+    }
+
+    async function toggleMic() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        await startRecording();
+      }
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          uploadAndSend(audioBlob, 'voice');
+          stream.getTracks().forEach(t => t.stop());
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('dw-mic-btn').classList.add('active');
+      } catch (err) {
+        alert('تحتاج إذن الميكروفون لتسجيل الصوت');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('dw-mic-btn').classList.remove('active');
+      }
+    }
+
+    function uploadAndSend(file, type) {
+      const ext = type === 'voice' ? 'webm' : file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 5)}.${ext}`;
+      const path = `chats/${sessionId}/${fileName}`;
+      const ref = storage.ref(path);
+      
+      // Temporary "Uploading" indicator
+      const tempId = 'temp_' + Date.now();
+      messages.push({ from: 'user', text: type === 'image' ? 'جاري رفع صورة...' : (type === 'video' ? 'جاري رفع فيديو...' : 'جاري رفع صوت...'), time: new Date().toISOString(), tempId });
+      renderMessages();
+
+      console.log('Starting upload to:', path);
+      
+      const uploadTask = ref.put(file);
+      
+      // Auto-timeout after 40 seconds
+      const timeout = setTimeout(() => {
+        console.error('Upload timeout for:', path);
+        alert('المشكلة لسه مستمرة؟ غالباً دي محتاجة تعديل الـ Rules في Firebase Storage لـ Public.');
+        messages = messages.filter(m => m.tempId !== tempId);
+        renderMessages();
+      }, 40000);
+
+      uploadTask.then(async snapshot => {
+        clearTimeout(timeout);
+        console.log('Upload successful for:', path);
+        const url = await ref.getDownloadURL();
+        const msg = { from: 'user', type, content: url, time: new Date().toISOString() };
+        db.ref(`conversations/${sessionId}/messages`).push().set(msg);
+        
+        // Remove temp message
+        messages = messages.filter(m => m.tempId !== tempId);
+        renderMessages();
+      }).catch(err => {
+        clearTimeout(timeout);
+        console.error('Upload error detail:', err);
+        alert('خطأ في الرفع: ' + err.message + '\nتأكد إنك مفعل الـ Storage ومخلي الـ Rules تسمح بالـ Write.');
+        messages = messages.filter(m => m.tempId !== tempId);
+        renderMessages();
+      });
+    }
+
     function submitReg() {
       const nameEl = document.getElementById('dw-name-input');
       const phoneEl = document.getElementById('dw-phone-input');
@@ -640,11 +774,7 @@
       userRegistered = true;
 
       chatWindow.innerHTML = chatUIHTML;
-      chatWindow.querySelector('#dw-close-btn').addEventListener('click', closeChat);
-      chatWindow.querySelector('#dw-send-btn').addEventListener('click', sendMsg);
-      chatWindow.querySelector('#dw-chat-input').addEventListener('keydown', e => {
-        if (e.key === 'Enter') { e.preventDefault(); sendMsg(); }
-      });
+      setupChatListeners();
 
       startListening();
       scrollToBottom();
@@ -680,9 +810,19 @@
         const row = document.createElement('div');
         row.className = `dw-msg-row ${m.from === 'user' ? 'user' : 'admin'}`;
         const tick = m.from === 'user' ? `<span class="dw-read-tick">✓✓</span>` : '';
+        
+        let contentHTML = escHtml(m.text || '');
+        if (m.type === 'image') {
+          contentHTML = `<div class="dw-media-bubble"><img src="${m.content}" onclick="window.open('${m.content}')"></div>`;
+        } else if (m.type === 'video') {
+          contentHTML = `<div class="dw-media-bubble"><video src="${m.content}" controls></video></div>`;
+        } else if (m.type === 'voice') {
+          contentHTML = `<div class="dw-media-bubble"><audio src="${m.content}" controls class="dw-audio-player"></audio></div>`;
+        }
+
         row.innerHTML = `
           <div class="dw-bubble ${m.from === 'user' ? 'user' : 'admin'}">
-            ${escHtml(m.text)}
+            ${contentHTML}
             <div class="dw-bubble-meta">
               <span class="dw-bubble-time">${formatTime(m.time)}</span>
               ${tick}

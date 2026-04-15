@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Dashboard | Neural Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --accent: #00f2ff;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            border-right: 1px solid var(--border);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; color: var(--accent); }
+        .nav-item { padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; transition: 0.3s; color: rgba(255,255,255,0.6); }
+        .nav-item:hover { background: var(--card-bg); color: #fff; }
+        .nav-item.active { background: rgba(0, 242, 255, 0.1); color: var(--accent); border-left: 2px solid var(--accent); }
+
+        /* Main Content */
+        main { flex: 1; padding: 2rem; overflow-y: auto; background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.05), transparent 60%); }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 16px; position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.02)); }
+        .stat-card h4 { font-size: 0.8rem; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; }
+        .stat-card .val { font-size: 2rem; font-weight: 900; }
+
+        /* Charts & Logs */
+        .content-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; height: 400px; }
+        .chart-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+        
+        .log-container { 
+            background: #000; 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            padding: 1rem; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.75rem; 
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .log-line { color: rgba(0, 242, 255, 0.5); }
+        .log-line.success { color: #00ff88; }
+        .log-line.warning { color: #ffcc00; }
+
+        .scan-line {
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            position: absolute;
+            left: 0; right: 0;
+            top: 0;
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">NEURAL_IO</div>
+        <div class="nav-item active">Visual Analytics</div>
+        <div class="nav-item">Core Processing</div>
+        <div class="nav-item">Network Nodes</div>
+        <div class="auth-trigger" style="margin-top:auto;"><a href="../shared/auth.html" class="nav-item" style="display:block; text-align:center; background:rgba(0, 242, 255, 0.1); color:var(--accent); text-decoration:none;">System Login</a></div>
+    </aside>
+
+    <main>
+        <header>
+            <h1>Real-Time Analysis</h1>
+            <div style="font-family: 'JetBrains Mono'; font-size: 0.9rem; color: var(--accent);">LATENCY: 14ms</div>
+        </header>
+
+        <section class="stat-grid">
+            <div class="stat-card">
+                <h4>Nodes Active</h4>
+                <div class="val">1,204</div>
+                <div class="scan-line"></div>
+            </div>
+            <div class="stat-card">
+                <h4>Inference Speed</h4>
+                <div class="val">8.4 t/s</div>
+            </div>
+            <div class="stat-card">
+                <h4>Accuracy Rate</h4>
+                <div class="val">99.2%</div>
+            </div>
+        </section>
+
+        <div class="content-row">
+            <div class="chart-container">
+                <canvas id="neuralChart"></canvas>
+            </div>
+            <div class="log-container" id="logs">
+                <div class="log-line">[SYS] Initializing kernel...</div>
+                <div class="log-line success">[OK] Neural link established</div>
+                <div class="log-line">[SYS] Parsing visual vectors...</div>
+            </div>
+        </div>
+    </main>
+    <script src="../shared/auth.js"></script>
+    <script>
+        // Chart Initialization
+        const ctx = document.getElementById('neuralChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(10).fill(''),
+                datasets: [{
+                    label: 'Efficiency',
+                    data: [65, 59, 80, 81, 56, 55, 40, 70, 85, 95],
+                    borderColor: '#00f2ff',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(0, 242, 255, 0.05)',
+                    borderWidth: 3,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.3)' } }
+                }
+            }
+        });
+
+        // Logs Simulation
+        const logs = document.getElementById('logs');
+        const logLines = [
+            "[PROCESS] Tracking entity #A492...",
+            "[DATA] Vector extraction complete",
+            "[SYS] Memory optimized (12%)",
+            "[SUCCESS] Threat assessment zeroed",
+            "[WARN] CPU Temp rising - Fan speed adjusted",
+            "[PROCESS] Loading next epoch..."
+        ];
+
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            if(Math.random() > 0.7) line.classList.add('success');
+            line.textContent = logLines[Math.floor(Math.random() * logLines.length)];
+            logs.appendChild(line);
+            
+            if(logs.children.length > 20) logs.removeChild(logs.firstChild);
+            
+            // Randomly update chart
+            chart.data.datasets[0].data.shift();
+            chart.data.datasets[0].data.push(Math.floor(Math.random() * 40) + 60);
+            chart.update('none');
+        }, 1200);
+    </script>
+</body>
+</html>

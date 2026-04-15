@@ -1,139 +1,173 @@
-// Firebase Config
-const firebaseConfig = {
-    apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
-    projectId: "chat-75d30",
-    databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
-    storageBucket: "chat-75d30.appspot.com"
-};
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const sections = ['home', 'stack', 'projects', 'contact'];
+let currentSectionIndex = 0;
+let isTransitioning = false;
 
-// Log Visitor
-fetch('https://ipapi.co/json/').then(res => res.json()).then(data => {
-    db.ref('visitors').push({
-        ip: data.ip,
-        city: data.city,
-        device: navigator.userAgent,
-        time: new Date().toISOString()
-    });
-}).catch(e => console.log('IP fetch failed', e));
+function switchSection(sectionId) {
+    if (isTransitioning) return;
+    
+    const activeSection = document.querySelector('section.active');
+    const targetSection = document.getElementById(sectionId);
+    
+    if (activeSection === targetSection) return;
 
-// Load Templates
-db.ref('templates').on('value', snap => {
-    const data = snap.val();
-    if(data) {
-        const grid = document.getElementById('dynamic-portfolio');
-        const hero = document.getElementById('home');
-        
-        // Sort by time descending (handle missing dates with fallback)
-        const templates = Object.values(data).sort((a, b) => {
-            const dateA = a.time ? new Date(a.time) : new Date(0);
-            const dateB = b.time ? new Date(b.time) : new Date(0);
-            return dateB - dateA;
-        });
-        
-        // Update Hero Section Background with the latest template image
-        if (hero && templates.length > 0) {
-            hero.style.backgroundImage = `url('${templates[0].image}')`;
-            hero.classList.add('dynamic-bg');
-        }
+    isTransitioning = true;
+    currentSectionIndex = sections.indexOf(sectionId);
 
-        if(grid) {
-            let html = '';
-            templates.forEach(t => {
-                html += `
-                <a href="${t.link}" target="_blank" class="portfolio-card glassmorphism" data-tilt>
-                    <div class="card-image-wrapper">
-                        <img src="${t.image}" alt="${t.name}">
-                        <div class="live-badge"><span class="material-symbols-outlined">launch</span> فتح</div>
-                    </div>
-                    <div class="card-content">
-                        ${t.domain ? `<span class="card-domain">${t.domain}</span>` : ''}
-                        <h3>${t.name}</h3>
-                        <p>${t.desc}</p>
-                    </div>
-                </a>`;
-            });
+    // 1. Show Cinematic Intro Overlay
+    const overlay = document.getElementById('intro-overlay');
+    const introMain = document.getElementById('intro-main-text');
+    const introCursive = document.getElementById('intro-cursive-text');
 
-            const staticHTML = `
-                    <a href="ecommerce/index.html" target="_blank" class="portfolio-card glassmorphism" data-tilt>
-                        <div class="card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" alt="E-commerce Website">
-                            <div class="live-badge"><span class="material-symbols-outlined">launch</span> افتح الموقع الحي</div>
-                        </div>
-                        <div class="card-content">
-                            <h3>متجر إلكتروني متكامل للبيع</h3>
-                            <p>نموذج حقيقي لمتجر شيك ومظبوط، تجربة الشراء فيه سهلة وسلسة جداً.</p>
-                        </div>
-                    </a>
-                    <a href="restaurant/index.html" target="_blank" class="portfolio-card glassmorphism" data-tilt>
-                        <div class="card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80" alt="Restaurant Website">
-                            <div class="live-badge"><span class="material-symbols-outlined">launch</span> افتح الموقع الحي</div>
-                        </div>
-                        <div class="card-content">
-                            <h3>موقع فخم للمطاعم والكافيهات</h3>
-                            <p>تجربة استثنائية لمطعم بيعكس الفخامة والجودة.</p>
-                        </div>
-                    </a>
-            `;
-            grid.innerHTML = staticHTML + html;
-            VanillaTilt.init(document.querySelectorAll(".portfolio-card"), { max: 5, speed: 400, glare: true, "max-glare": 0.2 });
-        }
-    }
-});
-
-// Load Reviews
-db.ref('reviews').on('value', snap => {
-    const data = snap.val();
-    if(data) {
-        const grid = document.getElementById('dynamic-reviews');
-        if(grid) {
-            grid.innerHTML = '';
-            Object.values(data).reverse().forEach(r => {
-                grid.innerHTML += `
-                <div class="review-card glassmorphism" style="padding:2rem; border-radius:20px; text-align:center;">
-                    <img src="${r.logo}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:2px solid #00f0ff;">
-                    <h3 style="color:#00f0ff; margin-bottom:1rem;">${r.brand}</h3>
-                    <p style="color:#fff; font-style:italic;">"${r.text}"</p>
-                </div>
-                `;
-            });
-        }
-    }
-});
-
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(10, 10, 15, 0.85)';
-        navbar.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+    // Prepare Text based on section
+    if (sectionId === 'stack') {
+        introMain.innerText = 'STAC';
+        introCursive.innerText = 'K';
+    } else if (sectionId === 'projects') {
+        introMain.innerText = 'PROJEC';
+        introCursive.innerText = 'TS';
+    } else if (sectionId === 'contact') {
+        introMain.innerText = 'CONTAC';
+        introCursive.innerText = 'T';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.03)';
-        navbar.style.boxShadow = 'none';
+        introMain.innerText = 'DIGITAL';
+        introCursive.innerText = 'WEB';
     }
-});
 
-// Smooth scrolling
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth'
-            });
+    if (overlay) {
+        overlay.classList.add('active');
+        
+        // Hide current if exists
+        if (activeSection) {
+            activeSection.classList.add('exiting');
+            activeSection.classList.remove('active');
+        }
+
+        // Wait for Intro to "sink in"
+        setTimeout(() => {
+            if (activeSection) {
+                activeSection.classList.remove('exiting');
+                activeSection.style.display = 'none';
+            }
+            
+            // 2. Hide Overlay & Enter New Section
+            overlay.classList.remove('active');
+            
+            setTimeout(() => {
+                prepareAndEnter(targetSection, sectionId);
+                isTransitioning = false;
+            }, 500); // Wait for overlay fade out
+        }, 1200); // How long the big title stays
+    } else {
+        prepareAndEnter(targetSection, sectionId);
+        isTransitioning = false;
+    }
+}
+
+function prepareAndEnter(targetSection, sectionId) {
+    if (!targetSection) return;
+    
+    targetSection.style.display = 'block';
+    setTimeout(() => {
+        targetSection.classList.add('active');
+        
+        // Update nav items and indicator
+        const navIndicator = document.querySelector('.nav-indicator');
+        document.querySelectorAll('.nav-item').forEach(item => {
+            const isActive = item.getAttribute('onclick').includes(sectionId);
+            item.classList.toggle('active', isActive);
+            
+            if (isActive && navIndicator) {
+                navIndicator.style.width = `${item.offsetWidth}px`;
+                navIndicator.style.left = `${item.offsetLeft}px`;
+            }
+        });
+
+        // Trigger staggered animations
+        const elements = targetSection.querySelectorAll('[data-stagger]');
+        elements.forEach(el => {
+            const delay = parseFloat(el.getAttribute('data-stagger')) * 0.1;
+            el.style.animationDelay = `${delay}s`;
+            el.classList.add('visible');
+        });
+
+        const cursivePaths = targetSection.querySelectorAll('.cursive-path');
+        cursivePaths.forEach(path => path.classList.add('visible'));
+    }, 50);
+}
+
+// Spotlight Effect for Bento Cards
+function initSpotlight() {
+    document.querySelectorAll('.bento-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Scroll Handling
+    let lastWheelTime = 0;
+    window.addEventListener('wheel', (e) => {
+        const now = Date.now();
+        if (now - lastWheelTime < 1500) return; // Debounce
+        
+        if (Math.abs(e.deltaY) < 120) return; // Add more resistance to prevent accidental scrolling
+
+        if (e.deltaY > 0) {
+            // Scroll Down
+            if (currentSectionIndex < sections.length - 1) {
+                switchSection(sections[currentSectionIndex + 1]);
+                lastWheelTime = now;
+            }
+        } else {
+            // Scroll Up
+            if (currentSectionIndex > 0) {
+                switchSection(sections[currentSectionIndex - 1]);
+                lastWheelTime = now;
+            }
+        }
+    }, { passive: true });
+
+    // Handle Splash Screen
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(() => {
+            splash.classList.add('fade-out');
+        }, 1500);
+    }
+
+    // Custom Cursor Logic
+    const cursor = document.getElementById('cursor');
+    const cursorBlur = document.getElementById('cursor-blur');
+    
+    document.addEventListener('mousemove', e => {
+        if (cursor) {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+        }
+        if (cursorBlur) {
+            cursorBlur.style.left = `${e.clientX}px`;
+            cursorBlur.style.top = `${e.clientY}px`;
         }
     });
-});
 
-// Initialize Vanilla Tilt for existing elements
-document.addEventListener("DOMContentLoaded", () => {
-    VanillaTilt.init(document.querySelectorAll(".portfolio-card"), {
-        max: 5,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.2
-    });
+    initSpotlight();
+    
+    // Initial entrance
+    const activeSection = document.querySelector('section.active');
+    if (activeSection) {
+        prepareAndEnter(activeSection, 'home');
+    }
+
+    // Update time clock
+    setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        const timeContainer = document.getElementById('utc-time');
+        if (timeContainer) timeContainer.innerText = timeStr;
+    }, 1000);
 });

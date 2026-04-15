@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen SaaS | Scalable Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #9333ea;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Navigation */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--gray); font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .cta-btn { background: var(--primary); color: #fff; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 700; transition: 0.3s; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(79, 70, 229, 0.3); }
+
+        /* Hero Section */
+        .hero { padding: 100px 0; text-align: center; }
+        .badge { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 0.5rem 1rem; border-radius: 100px; font-weight: 700; font-size: 0.8rem; display: inline-block; margin-bottom: 2rem; }
+        .hero h1 { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -2px; }
+        .hero p { color: var(--gray); font-size: 1.25rem; max-width: 700px; margin: 0 auto 3rem; }
+
+        /* Pricing Area */
+        .pricing { padding: 100px 0; background: #fff; }
+        .pricing-header { text-align: center; margin-bottom: 4rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .price-card { padding: 3rem 2rem; border-radius: 24px; border: 1px solid #e2e8f0; transition: 0.5s; position: relative; }
+        .price-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 30px 60px rgba(0,0,0,0.05); }
+        .price-card.featured { background: var(--dark); color: #fff; border: none; }
+        .price-card.featured .badge { background: var(--primary); color: #fff; }
+        
+        .price { font-size: 3rem; font-weight: 800; margin: 1.5rem 0; }
+        .features { list-style: none; margin: 2rem 0; }
+        .features li { margin-bottom: 1rem; color: var(--gray); font-weight: 500; }
+        .price-card.featured .features li { color: rgba(255,255,255,0.6); }
+
+        /* Footer */
+        footer { padding: 60px 0; border-top: 1px solid #e2e8f0; text-align: center; }
+        .copyright { color: var(--gray); font-size: 0.9rem; margin-top: 2rem; }
+
+        @media (max-width: 768px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">NextGen.</div>
+            <ul class="nav-links">
+                <li><a href="#">Product</a></li>
+                <li><a href="#">Solutions</a></li>
+                <li><a href="#">Pricing</a></li>
+                <li><a href="#">Resources</a></li>
+            </ul>
+            <a href="#" class="cta-btn">Start Free Trial</a>
+        </nav>
+
+        <section class="hero">
+            <div class="badge">V2.0 IS NOW LIVE 🚀</div>
+            <h1>Scale your business<br>without the limits.</h1>
+            <p>The only platform that combines powerful automation with deep behavioral analytics. Built for modern teams who want to move fast.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="#" class="cta-btn">Get Started Now</a>
+                <a href="#" class="cta-btn" style="background: transparent; border: 2px solid var(--primary); color: var(--primary); box-shadow: none;">Watch Demo</a>
+            </div>
+        </section>
+
+        <section class="pricing">
+            <div class="pricing-header">
+                <h2>Simple, transparent pricing.</h2>
+                <p>Choose the plan that's right for your stage of growth.</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- Pro -->
+                <div class="price-card">
+                    <h4>Starter</h4>
+                    <div class="price">$19<span style="font-size: 1rem; font-weight: 600;">/mo</span></div>
+                    <ul class="features">
+                        <li>5 Projects</li>
+                        <li>Basic Analytics</li>
+                        <li>24h Support</li>
+                        <li>Community Access</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%; display: block; text-align: center; background: #f1f5f9; color: var(--dark); box-shadow: none;">Select Plan</a>
+                </div>
+
+                <!-- Featured -->
+                <div class="price-card featured">
+                    <div class="badge" style="position: absolute; top: 1.5rem; right: 1.5rem;">MOST POPULAR</div>
+                    <h4>Enterprise</h4>
+                    <div class="price">$99<span style="font-size: 1rem; font-weight: 600; color: #aaa;">/mo</span></div>
+                    <ul class="features">
+                        <li>Unlimited Projects</li>
+                        <li>Advanced AI Insight</li>
+                        <li>Dedicated Account Manager</li>
+                        <li>Custom Integrations</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%; display: block; text-align: center;">Go Unlimited</a>
+                </div>
+
+                <!-- Custom -->
+                <div class="price-card">
+                    <h4>Scale</h4>
+                    <div class="price">$49<span style="font-size: 1rem; font-weight: 600;">/mo</span></div>
+                    <ul class="features">
+                        <li>20 Projects</li>
+                        <li>Premium Analytics</li>
+                        <li>Priority Support</li>
+                        <li>Custom Dashboards</li>
+                    </ul>
+                    <a href="#" class="cta-btn" style="width: 100%; display: block; text-align: center; background: #f1f5f9; color: var(--dark); box-shadow: none;">Select Plan</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="logo">NextGen.</div>
+            <div class="copyright">© 2024 NextGen SaaS. All rights reserved. Built for the future.</div>
+        </footer>
+    </div>
+</body>
+</html>

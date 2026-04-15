@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Banking | Elite Finance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--dark); color: #fff; font-family: 'Outfit', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
+        .app-container {
+            width: 400px;
+            height: 800px;
+            background: linear-gradient(135deg, #1a1a2e, #0a0a0f);
+            border-radius: 40px;
+            border: 4px solid #222;
+            position: relative;
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .profile { width: 45px; height: 45px; border-radius: 50%; background: var(--glass); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; }
+
+        /* Card Section */
+        .card-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            border-radius: 24px;
+            padding: 1.5rem;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .card-preview:hover { transform: scale(1.02) rotate(-2deg); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .chip { width: 40px; height: 30px; background: rgba(0,0,0,0.2); border-radius: 6px; }
+        .balance-label { font-size: 0.8rem; font-weight: 600; opacity: 0.7; }
+        .balance { font-size: 1.8rem; font-weight: 900; margin-top: 5px; }
+
+        /* Actions */
+        .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem; }
+        .action-item { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .icon-box { width: 50px; height: 50px; background: var(--glass); border-radius: 15px; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border); transition: 0.3s; }
+        .action-item:hover .icon-box { background: var(--gold); color: #000; transform: translateY(-5px); }
+        .action-item span { font-size: 0.7rem; font-weight: 600; opacity: 0.6; }
+
+        /* History */
+        .history { margin-top: 2.5rem; flex: 1; overflow-y: auto; padding-right: 5px; }
+        .history h3 { font-size: 1.1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .tx-item { background: var(--glass); padding: 1rem; border-radius: 18px; display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; border: 1px solid var(--border); transition: 0.3s; }
+        .tx-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+        .tx-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .tx-info { flex: 1; }
+        .tx-name { font-weight: 700; font-size: 0.95rem; }
+        .tx-date { font-size: 0.75rem; opacity: 0.5; }
+        .tx-amount { font-weight: 900; color: var(--gold); }
+        .tx-amount.neg { color: #ff5e5e; }
+
+        /* Custom Scrollbar */
+        .history::-webkit-scrollbar { width: 4px; }
+        .history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="profile"><i class="bi bi-person"></i></div>
+            <div style="font-weight: 900; letter-spacing: 2px;">LUXE_BNK</div>
+            <div class="profile"><i class="bi bi-bell"></i></div>
+        </header>
+
+        <div class="card-preview">
+            <div class="card-top">
+                <div class="chip"></div>
+                <div style="font-weight: 900;">GOLD</div>
+            </div>
+            <div>
+                <div class="balance-label">CURRENT BALANCE</div>
+                <div class="balance">$142,500.00</div>
+            </div>
+            <div style="font-family: monospace; letter-spacing: 2px; font-size: 0.9rem;">**** **** **** 8824</div>
+        </div>
+
+        <div class="actions">
+            <div class="action-item"><div class="icon-box"><i class="bi bi-arrow-up-right"></i></div><span>Send</span></div>
+            <div class="action-item"><div class="icon-box"><i class="bi bi-arrow-down-left"></i></div><span>Receive</span></div>
+            <div class="action-item"><div class="icon-box"><i class="bi bi-layers"></i></div><span>Bill</span></div>
+            <div class="action-item"><div class="icon-box"><i class="bi bi-plus-lg"></i></div><span>More</span></div>
+        </div>
+
+        <div class="history">
+            <h3>Recent Transactions <span style="font-size: 0.8rem; color: var(--gold); cursor: pointer;">View All</span></h3>
+            
+            <div class="tx-item">
+                <div class="tx-icon" style="background: rgba(26, 115, 232, 0.1); color: #4285f4;"><i class="bi bi-apple"></i></div>
+                <div class="tx-info"><div class="tx-name">Apple Store</div><div class="tx-date">14 April, 2024</div></div>
+                <div class="tx-amount neg">-$1,299.00</div>
+            </div>
+
+            <div class="tx-item">
+                <div class="tx-icon" style="background: rgba(255, 122, 0, 0.1); color: #ff7a00;"><i class="bi bi-cart"></i></div>
+                <div class="tx-info"><div class="tx-name">Amazon Luxe</div><div class="tx-date">12 April, 2024</div></div>
+                <div class="tx-amount neg">-$450.50</div>
+            </div>
+
+            <div class="tx-item">
+                <div class="tx-icon" style="background: rgba(0, 200, 83, 0.1); color: #00c853;"><i class="bi bi-bank"></i></div>
+                <div class="tx-info"><div class="tx-name">Treasury Yield</div><div class="tx-date">10 April, 2024</div></div>
+                <div class="tx-amount">+$2,400.00</div>
+            </div>
+
+             <div class="tx-item">
+                <div class="tx-icon" style="background: rgba(156, 39, 176, 0.1); color: #9c27b0;"><i class="bi bi-cup-hot"></i></div>
+                <div class="tx-info"><div class="tx-name">Starbucks Paris</div><div class="tx-date">08 April, 2024</div></div>
+                <div class="tx-amount neg">-$12.40</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
