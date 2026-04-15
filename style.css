@@ -817,7 +817,7 @@ section.exiting {
         margin-bottom: 2rem !important;
         margin-top: 5rem !important; 
         order: -1; 
-        align-self: flex-end !important; /* Back to Right */
+        align-self: flex-start !important; /* Logo on the LEFT */
     }
     #hero-img {
         width: 100% !important;
