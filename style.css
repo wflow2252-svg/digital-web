@@ -306,32 +306,21 @@ section.exiting {
 
 /* Cursive SVG Animation */
 .cursive-wrapper {
-    margin-bottom: -1.5rem;
-    transform: rotate(-4deg) translateX(-10px);
-    pointer-events: none;
-}
-
-.cursive-svg {
-    width: 320px;
-    height: 100px;
+    margin-bottom: -0.5rem;
     overflow: visible;
 }
 
-.cursive-path {
-    font-family: 'Rock Salt', cursive;
-    font-size: 42px;
-    fill: transparent;
-    stroke: var(--accent);
-    stroke-width: 1.5;
-    stroke-dasharray: 800;
-    stroke-dashoffset: 800;
-    transition: stroke-dashoffset 3s cubic-bezier(0.16, 1, 0.3, 1);
+.cursive-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--accent);
+    color: #3b82f6;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
 }
 
-.visible .cursive-path {
-    stroke-dashoffset: 0;
-}
-
+/* Animations */
 .hero-title {
     font-size: clamp(3rem, 10vw, 8rem);
     font-weight: 900;
@@ -849,19 +838,14 @@ section.exiting {
         display: none !important;
     }
     .cursive-wrapper {
-        height: 40px !important;
+        height: auto !important;
         margin: 0 !important;
-        overflow: visible !important;
-        display: flex !important;
-        align-items: center;
+        display: block !important;
     }
-    .cursive-path {
-        font-family: 'Dancing Script', cursive !important;
-        font-size: 32px !important;
-        fill: #3b82f6 !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        font-weight: 700 !important;
+    .cursive-text {
+        font-size: 1.8rem !important;
+        color: #3b82f6 !important;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
     }
 }
 
