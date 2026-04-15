@@ -803,7 +803,7 @@ section.exiting {
         flex-direction: column !important;
         align-items: flex-start !important;
         text-align: left;
-        gap: 1.5rem; /* More space between logo and text */
+        gap: 1.5rem;
         width: 100%;
         margin-top: 2rem;
     }
@@ -813,29 +813,33 @@ section.exiting {
         flex-direction: column;
         justify-content: center;
         width: 100%;
+        align-items: flex-end !important; /* Move text items to the right */
+        text-align: right !important;
     }
     .media-frame {
-        width: 200px !important; /* Larger Logo */
-        height: 200px !important;
+        width: 260px !important; /* Extreme Large Logo */
+        height: 260px !important;
         display: block !important;
-        margin-bottom: 1rem !important;
-        order: -1; /* Always on top */
+        margin-bottom: 2rem !important;
+        order: -1; 
+        align-self: center !important; /* Keep logo centered for balance */
     }
     #hero-img {
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important;
-        transform: scale(1.1); /* Enlarge image inside frame */
+        transform: scale(1.2); /* Massive inner image */
     }
     .this-is {
         display: none !important;
     }
     .hero-title {
-        font-size: clamp(2rem, 10vw, 3.5rem) !important; /* Larger Title */
-        line-height: 1.4 !important; /* Spacing between Digital and Web */
+        font-size: clamp(2rem, 10vw, 3.5rem) !important;
+        line-height: 1.4 !important;
         margin: 0.5rem 0 !important;
         white-space: nowrap;
         color: #fff !important;
+        text-align: right !important;
     }
     .hero-subtitle {
         display: none !important;
@@ -844,11 +848,16 @@ section.exiting {
         height: auto !important;
         margin: 0 !important;
         display: block !important;
+        text-align: right !important;
     }
     .cursive-text {
-        font-size: 2.2rem !important; /* Larger Cursive */
+        font-size: 2.2rem !important;
         color: #3b82f6 !important;
         margin-bottom: 0.5rem !important;
+        text-align: right !important;
+    }
+    .hero-badges {
+        justify-content: flex-end !important; /* Align badges to right */
     }
 }
 
