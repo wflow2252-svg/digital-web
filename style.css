@@ -403,6 +403,7 @@ section.exiting {
                 0 0 50px rgba(59, 130, 246, 0.1);
     backdrop-filter: blur(20px);
     transition: var(--transition);
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) skewX(-5deg);
     animation: hero-float 6s infinite ease-in-out;
 }
 
@@ -410,7 +411,7 @@ section.exiting {
     border-color: rgba(59, 130, 246, 0.4);
     box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8),
                 0 0 80px rgba(59, 130, 246, 0.2);
-    transform: scale(1.02);
+    transform: perspective(1000px) rotateY(-5deg) rotateX(10deg) skewX(-5deg) scale(1.05);
 }
 
 .media-frame img {
@@ -422,8 +423,8 @@ section.exiting {
 }
 
 @keyframes hero-float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(2deg); }
+    0%, 100% { transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) skewX(-5deg) translateY(0); }
+    50% { transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) skewX(-5deg) translateY(-20px); }
 }
 
 .frame-decor {
