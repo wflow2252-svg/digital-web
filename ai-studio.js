@@ -5,7 +5,7 @@
 
     if (!generateBtn) return;
 
-    generateBtn.onclick = () => {
+    generateBtn.onclick = async () => {
         const prompt = promptInput.value.trim();
         if (!prompt) {
             promptInput.style.borderColor = '#ff3b30';
@@ -14,21 +14,67 @@
         }
 
         generateBtn.disabled = true;
+        promptInput.disabled = true;
         generateBtn.innerHTML = '<span class="material-symbols-outlined spinning">sync</span> Architecting...';
 
-        // Simulate Neural Processing
-        setTimeout(() => {
-            const html = generateTrialWebsite(prompt);
-            
-            // Re-use the Preview Hub from the page
-            if (window.dwOpenPreview) {
-                window.dwOpenPreview(btoa(html));
-            }
+        const log = document.getElementById('studio-log');
+        log.innerHTML = '';
+        log.classList.add('active');
 
-            generateBtn.disabled = false;
-            generateBtn.innerHTML = '<span class="material-symbols-outlined">auto_awesome</span> Generate Trial';
-        }, 1500);
+        // Start Sequence
+        await runNeuralSequence(prompt);
+
+        const html = generateTrialWebsite(prompt);
+        if (window.dwOpenPreview) {
+            window.dwOpenPreview(btoa(html));
+        }
+
+        generateBtn.disabled = false;
+        promptInput.disabled = false;
+        generateBtn.innerHTML = '<span class="material-symbols-outlined">auto_awesome</span> Generate Trial';
     };
+
+    async function runNeuralSequence(prompt) {
+        const steps = [
+            { type: 'sys', text: 'Initializing Neural Engine v4.2...' },
+            { type: 'sys', text: 'Analyzing prompt context for: ' + prompt.substring(0, 20) + '...' },
+            { type: 'arch', text: 'Designing semantic HTML5 structures...' },
+            { type: 'design', text: 'Calculating fluid typography scales...' },
+            { type: 'design', text: 'Drafting design tokens (Colors, Spacing)...' },
+            { type: 'build', text: 'Writing index.html', status: 'OK' },
+            { type: 'build', text: 'Writing styles.css', status: 'OK' },
+            { type: 'sys', text: 'Optimizing render pipeline...' },
+            { type: 'sys', text: 'Ready for final preview.' }
+        ];
+
+        for (const step of steps) {
+            printLog(step);
+            await new Promise(r => setTimeout(r, Math.random() * 400 + 400));
+        }
+    }
+
+    function printLog(step) {
+        const log = document.getElementById('studio-log');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        
+        const prefix = {
+            sys: '[SYSTEM]',
+            arch: '[ARCHITECT]',
+            design: '[DESIGNER]',
+            build: '[BUILDER]'
+        }[step.type];
+
+        entry.innerHTML = `
+            <span class="timestamp">${new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+            <span class="prefix">${prefix}</span>
+            <span class="text">${step.text}</span>
+            ${step.status ? `<span class="status-ok">[${step.status}]</span>` : ''}
+        `;
+        
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
 
     function generateTrialWebsite(prompt) {
         const input = prompt.toLowerCase();
