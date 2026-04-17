@@ -1127,3 +1127,65 @@ section.exiting {
     #studio-log { font-size: 0.7rem; padding: 15px; margin: 20px 10px 0; }
 }
 
+/* ========== NEURAL HEATMAP & ANALYTICS ========== */
+#heatmap-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: screen;
+    opacity: 0.8;
+}
+
+#heatmap-toggle {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 10001;
+    background: rgba(13, 17, 23, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    border-radius: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+
+#heatmap-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent);
+}
+
+.analytics-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent);
+}
+
+.analytics-btn .material-symbols-outlined { font-size: 20px; }
+.btn-text { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+.analytics-status {
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+#h-status { color: #fff; }
+
+body.analytics-active {
+    cursor: crosshair;
+}
+
+body.analytics-active section {
+    filter: grayscale(0.5) contrast(0.8);
+    transition: 0.5s;
+}
+
