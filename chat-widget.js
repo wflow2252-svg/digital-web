@@ -574,6 +574,36 @@
       }
       #dw-preview-frame.mobile { width: 375px; height: 667px; border-radius: 30px; border: 8px solid #333; }
 
+      #dw-preview-code-area {
+        display: none;
+        width: 100%;
+        height: 100%;
+        background: #0d1117;
+        color: #c9d1d9;
+        font-family: 'JetBrains Mono', monospace;
+        padding: 30px;
+        border-radius: 12px;
+        overflow-y: auto;
+        position: relative;
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+      #dw-preview-code-area pre { margin: 0; white-space: pre-wrap; word-break: break-all; }
+      .dw-code-copy {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 10;
+        font-weight: 800;
+        font-size: 12px;
+      }
+
       @media (max-width: 500px) {
         #dw-preview-hub { padding-top: 20px; }
         #dw-preview-frame.mobile { width: 90% !important; }
@@ -678,25 +708,46 @@
         <div class="dw-preview-controls">
           <button class="dw-view-btn active" id="dw-view-desktop"><span class="material-symbols-outlined">desktop_windows</span> Desktop</button>
           <button class="dw-view-btn" id="dw-view-mobile"><span class="material-symbols-outlined">smartphone</span> Mobile</button>
+          <button class="dw-view-btn" id="dw-view-code" style="border-color:var(--accent); color:var(--accent);"><span class="material-symbols-outlined">code</span> View Source</button>
           <button class="dw-view-btn" id="dw-close-preview" style="background:rgba(255,59,48,0.2);"><span class="material-symbols-outlined">close</span> Close</button>
         </div>
       </div>
       <div id="dw-preview-frame-container">
         <iframe id="dw-preview-frame"></iframe>
+        <div id="dw-preview-code-area">
+          <button class="dw-code-copy" id="dw-copy-code-btn">Copy Bundle</button>
+          <pre id="dw-code-display"></pre>
+        </div>
       </div>
     `;
     document.body.appendChild(previewHub);
 
     // Preview Hub Listeners
     previewHub.querySelector('#dw-view-desktop').onclick = () => {
+      document.getElementById('dw-preview-frame').style.display = 'block';
+      document.getElementById('dw-preview-code-area').style.display = 'none';
       previewHub.querySelector('#dw-preview-frame').classList.remove('mobile');
       previewHub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
       previewHub.querySelector('#dw-view-desktop').classList.add('active');
     };
     previewHub.querySelector('#dw-view-mobile').onclick = () => {
+      document.getElementById('dw-preview-frame').style.display = 'block';
+      document.getElementById('dw-preview-code-area').style.display = 'none';
       previewHub.querySelector('#dw-preview-frame').classList.add('mobile');
       previewHub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
       previewHub.querySelector('#dw-view-mobile').classList.add('active');
+    };
+    previewHub.querySelector('#dw-view-code').onclick = () => {
+      document.getElementById('dw-preview-frame').style.display = 'none';
+      document.getElementById('dw-preview-code-area').style.display = 'block';
+      previewHub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
+      previewHub.querySelector('#dw-view-code').classList.add('active');
+    };
+    previewHub.querySelector('#dw-copy-code-btn').onclick = () => {
+        const code = document.getElementById('dw-code-display').innerText;
+        navigator.clipboard.writeText(code);
+        previewHub.querySelector('#dw-copy-code-btn').innerText = 'Copied!';
+        setTimeout(() => previewHub.querySelector('#dw-copy-code-btn').innerText = 'Copy Bundle', 2000);
     };
     previewHub.querySelector('#dw-close-preview').onclick = () => previewHub.classList.remove('open');
 
@@ -989,15 +1040,45 @@
     // Register dwOpenChat globally for "Contact Us" button
     window.dwOpenChat = openChat;
     
-    window.dwOpenPreview = (base64Code) => {
-        const code = atob(base64Code);
+    window.dwOpenPreview = (bundle) => {
         const hub = document.getElementById('dw-preview-hub');
         const frame = document.getElementById('dw-preview-frame');
+        const codeDisplay = document.getElementById('dw-code-display');
+        
         hub.classList.add('open');
+        
+        // Reset View
+        document.getElementById('dw-preview-frame').style.display = 'block';
+        document.getElementById('dw-preview-code-area').style.display = 'none';
+        hub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('dw-view-desktop').classList.add('active');
+
+        // Inject Content into Frame
         const doc = frame.contentWindow.document;
         doc.open();
-        doc.write(code);
+        doc.write(bundle.html);
+        
+        // Inject Inline CSS/JS for standalone feel
+        const style = doc.createElement('style');
+        style.textContent = bundle.css;
+        doc.head.appendChild(style);
+        
+        const script = doc.createElement('script');
+        script.textContent = bundle.js;
+        doc.body.appendChild(script);
         doc.close();
+
+        // Prepare Code View
+        codeDisplay.innerText = `
+<!-- index.html -->
+\${bundle.html}
+
+<!-- style.css -->
+\${bundle.css}
+
+<!-- script.js -->
+\${bundle.js}
+        `.trim();
     };
   }
 })();
