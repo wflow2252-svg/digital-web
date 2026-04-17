@@ -16,7 +16,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: row; }
 
         /* Sidebar */
         aside {
@@ -28,6 +28,7 @@
             gap: 2rem;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(20px);
+            z-index: 100;
         }
 
         .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; color: var(--accent); }
@@ -36,8 +37,8 @@
         .nav-item.active { background: rgba(0, 242, 255, 0.1); color: var(--accent); border-left: 2px solid var(--accent); }
 
         /* Main Content */
-        main { flex: 1; padding: 2rem; overflow-y: auto; background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.05), transparent 60%); }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        main { flex: 1; padding: clamp(1rem, 5vw, 2rem); overflow-y: auto; background: radial-gradient(circle at top right, rgba(0, 242, 255, 0.05), transparent 60%); }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
         
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 16px; position: relative; overflow: hidden; }
@@ -46,8 +47,8 @@
         .stat-card .val { font-size: 2rem; font-weight: 900; }
 
         /* Charts & Logs */
-        .content-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; height: 400px; }
-        .chart-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+        .content-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; min-height: 400px; }
+        .chart-container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; min-height: 300px; }
         
         .log-container { 
             background: #000; 
@@ -56,6 +57,7 @@
             padding: 1rem; 
             font-family: 'JetBrains Mono', monospace; 
             font-size: 0.75rem; 
+            max-height: 400px;
             overflow-y: hidden;
             display: flex;
             flex-direction: column;
@@ -79,6 +81,20 @@
         @keyframes scan {
             0% { top: 0; }
             100% { top: 100%; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; flex-direction: row; align-items: center; justify-content: space-between; }
+            aside .nav-item { display: none; }
+            aside .logo { font-size: 1.2rem; }
+            .content-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid { grid-template-columns: 1fr; }
+            .val { font-size: 1.5rem !important; }
         }
     </style>
 </head>

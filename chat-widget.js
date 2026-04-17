@@ -8,11 +8,12 @@
 
   let userInfo = JSON.parse(localStorage.getItem('dw_user') || 'null');
 
-  // Load Firebase Scripts
+  // Load External Scripts
   const scripts = [
     'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
     'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js',
-    'https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js'
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js',
+    'https://cdn.socket.io/4.7.2/socket.io.min.js'
   ];
 
   let loadedCount = 0;
@@ -36,6 +37,14 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const storage = firebase.storage();
+    
+    // AI Server Connection (Socket.io)
+    const socket = io('http://localhost:3000'); // Use absolute URL for the scratch server
+    socket.on('connect', () => console.log('✅ Connected to Smart AI Server'));
+    socket.on('web:reply', (msg) => {
+        // If it's an AI message, it might already be in Firebase or handled separately
+        // For "Scratch" feel, we'll let the server handle responses
+    });
 
     let isOpen = false;
     let messages = [];
@@ -302,6 +311,20 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 12px 12px 12px 4px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      .dw-bubble.admin.is-ai {
+        border-color: var(--accent);
+        background: rgba(59, 130, 246, 0.05);
+      }
+      .dw-ai-badge {
+        font-size: 9px;
+        background: var(--accent);
+        color: white;
+        padding: 1px 4px;
+        border-radius: 4px;
+        margin-left: 6px;
+        font-weight: 800;
+        vertical-align: middle;
       }
       .dw-bubble.admin::before {
         content: '';
