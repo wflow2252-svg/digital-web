@@ -1089,6 +1089,33 @@ section.exiting {
     #studio-generate-btn { padding: 20px; justify-content: center; }
 }
 
+.studio-idea-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.idea-chip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.idea-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
 /* ========== NEURAL LOG TERMINAL ========== */
 #studio-log {
     margin: 30px auto 0;
