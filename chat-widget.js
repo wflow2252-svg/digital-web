@@ -347,6 +347,24 @@
       .dw-bubble-time { font-size: 10.5px; color: #999; }
       .dw-read-tick { color: #53BDEB; font-size: 13px; }
       
+      .dw-trial-btn {
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        margin-top: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Cairo', sans-serif;
+        transition: 0.3s;
+      }
+      .dw-trial-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+      .dw-trial-btn .material-symbols-outlined { font-size: 18px; }
+      
       /* TYPING */
       #dw-typing {
         display: none;
@@ -501,24 +519,64 @@
         height: 40px;
       }
 
-      /* RESPONSIVE MOBILE */
+      /* PREVIEW HUB */
+      #dw-preview-hub {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(15px);
+        z-index: 10000;
+        display: none;
+        flex-direction: column;
+        animation: dw-slideUp 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+      }
+      #dw-preview-hub.open { display: flex; }
+      #dw-preview-header {
+        padding: 1rem 2rem;
+        background: rgba(255,255,255,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      #dw-preview-title { font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; }
+      .dw-preview-controls { display: flex; gap: 10px; }
+      .dw-view-btn {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        transition: 0.3s;
+      }
+      .dw-view-btn:hover, .dw-view-btn.active { background: var(--accent); border-color: var(--accent); }
+      #dw-preview-frame-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05), transparent);
+      }
+      #dw-preview-frame {
+        width: 100%;
+        height: 100%;
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        transition: width 0.4s ease, height 0.4s ease;
+      }
+      #dw-preview-frame.mobile { width: 375px; height: 667px; border-radius: 30px; border: 8px solid #333; }
+
       @media (max-width: 500px) {
-        #dw-fab-wrapper {
-          bottom: 16px;
-          left: 16px;
-        }
-        #dw-chat-window {
-          position: fixed;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
-          width: 100% !important;
-          height: 100dvh !important;
-          max-height: 100dvh !important;
-          border-radius: 0 !important;
-          border-top-left-radius: 20px !important;
-          border-top-right-radius: 20px !important;
-        }
+        #dw-preview-hub { padding-top: 20px; }
+        #dw-preview-frame.mobile { width: 90% !important; }
       }
     `;
     document.head.appendChild(style);
@@ -606,10 +664,41 @@
     const embedContainer = document.getElementById('dw-chat-embed');
     if (embedContainer) {
       embedContainer.appendChild(chatWindow);
-      openChat(); // Working now because btn is initialized
+      openChat(); 
     } else {
       document.body.appendChild(chatWindow);
     }
+
+    // PREVIEW HUB DOM
+    const previewHub = document.createElement('div');
+    previewHub.id = 'dw-preview-hub';
+    previewHub.innerHTML = `
+      <div id="dw-preview-header">
+        <div id="dw-preview-title"><span class="material-symbols-outlined">rocket_launch</span> Live Trial Website</div>
+        <div class="dw-preview-controls">
+          <button class="dw-view-btn active" id="dw-view-desktop"><span class="material-symbols-outlined">desktop_windows</span> Desktop</button>
+          <button class="dw-view-btn" id="dw-view-mobile"><span class="material-symbols-outlined">smartphone</span> Mobile</button>
+          <button class="dw-view-btn" id="dw-close-preview" style="background:rgba(255,59,48,0.2);"><span class="material-symbols-outlined">close</span> Close</button>
+        </div>
+      </div>
+      <div id="dw-preview-frame-container">
+        <iframe id="dw-preview-frame"></iframe>
+      </div>
+    `;
+    document.body.appendChild(previewHub);
+
+    // Preview Hub Listeners
+    previewHub.querySelector('#dw-view-desktop').onclick = () => {
+      previewHub.querySelector('#dw-preview-frame').classList.remove('mobile');
+      previewHub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
+      previewHub.querySelector('#dw-view-desktop').classList.add('active');
+    };
+    previewHub.querySelector('#dw-view-mobile').onclick = () => {
+      previewHub.querySelector('#dw-preview-frame').classList.add('mobile');
+      previewHub.querySelectorAll('.dw-view-btn').forEach(b => b.classList.remove('active'));
+      previewHub.querySelector('#dw-view-mobile').classList.add('active');
+    };
+    previewHub.querySelector('#dw-close-preview').onclick = () => previewHub.classList.remove('open');
 
     if (userRegistered) {
       // listen but don't render welcome again
@@ -848,12 +937,51 @@
 
     function handleAIQuery(text) {
         const input = text.toLowerCase();
+        
+        // SITE GENERATION CHECK
+        if (input.includes('موقع') || input.includes('نسخة تجريبية') || input.includes('website') || input.includes('build')) {
+            const doc = generateTrialWebsite(text);
+            return { type: 'trial', text: '✨ جاري تجهيز النسخة التجريبية الخاصة بك... تم الانتهاء! اضغط على الزر أدناه للمعاينة.', code: doc };
+        }
+
         for (const [key, info] of Object.entries(PROJECT_KNOWLEDGE)) {
             if (input.includes(key)) return info;
         }
         if (input.includes('سعر') || input.includes('تكلفة')) return 'التكلفة تعتمد على حجم المشروع. حابب نحسبلك عرض سعر لمشروعك؟';
         if (input.includes('من انت') || input.includes('مين')) return 'أنا الذكاء الاصطناعي الخاص بـ Digital Web، ومهمتي أساعدك تفهم أعمالنا وتختار الأنسب ليك.';
-        return null; // Return null to let the server or admin handle it if no match
+        return null;
+    }
+
+    function generateTrialWebsite(prompt) {
+        const name = prompt.match(/(لـ|اسم) ([\w\s\u0600-\u06FF]+)/)?.[2] || 'My Business';
+        const color = prompt.includes('أحمر') ? '#ff4b2b' : (prompt.includes('أخضر') ? '#2ecc71' : '#3b82f6');
+        
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: sans-serif; margin: 0; background: #fdfdfd; }
+                    header { background: ${color}; color: white; padding: 2rem; text-align: center; }
+                    .hero { height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'); background-size: cover; color: white; }
+                    .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; text-align: center; }
+                    .btn { background: ${color}; color: white; padding: 1rem 2rem; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 1rem; }
+                </style>
+            </head>
+            <body>
+                <header><h1>${name}</h1></header>
+                <div class="hero">
+                    <h2>Welcome to the Future</h2>
+                    <p>Designed by Digital Web AI</p>
+                    <a href="#" class="btn">Get Started</a>
+                </div>
+                <div class="container">
+                    <h3>About Us</h3>
+                    <p>This is a custom trial generated specifically for ${name}. We build high-performance, beautiful digital products.</p>
+                </div>
+            </body>
+            </html>
+        `;
     }
 
     function renderMessages() {
@@ -873,7 +1001,14 @@
         const tick = m.from === 'user' ? `<span class="dw-read-tick">✓✓</span>` : '';
         
         let contentHTML = escHtml(m.text || '');
-        if (m.type === 'image') {
+        if (m.type === 'trial') {
+          contentHTML = `
+            <div>${escHtml(m.text)}</div>
+            <button class="dw-trial-btn" onclick="window.dwOpenPreview(\`${btoa(m.code)}\`)">
+              <span class="material-symbols-outlined">visibility</span> معاينة الموقع الآن
+            </button>
+          `;
+        } else if (m.type === 'image') {
           contentHTML = `<div class="dw-media-bubble"><img src="${m.content}" onclick="window.open('${m.content}')"></div>`;
         } else if (m.type === 'video') {
           contentHTML = `<div class="dw-media-bubble"><video src="${m.content}" controls></video></div>`;
@@ -929,5 +1064,16 @@
 
     // Register dwOpenChat globally for "Contact Us" button
     window.dwOpenChat = openChat;
+    
+    window.dwOpenPreview = (base64Code) => {
+        const code = atob(base64Code);
+        const hub = document.getElementById('dw-preview-hub');
+        const frame = document.getElementById('dw-preview-frame');
+        hub.classList.add('open');
+        const doc = frame.contentWindow.document;
+        doc.open();
+        doc.write(code);
+        doc.close();
+    };
   }
 })();
