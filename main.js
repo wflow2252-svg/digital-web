@@ -19,54 +19,62 @@ function switchSection(sectionId) {
     const introCursive = document.getElementById('intro-cursive-text');
 
     // Prepare Text based on section
-    if (sectionId === 'stack') {
-        introMain.innerText = 'STAC';
-        introCursive.innerText = 'K';
-    } else if (sectionId === 'projects') {
-        introMain.innerText = 'PROJEC';
-        introCursive.innerText = 'TS';
-    } else if (sectionId === 'contact') {
-        introMain.innerText = 'CONTAC';
-        introCursive.innerText = 'T';
-    } else {
-        introMain.innerText = 'DIGITAL';
-        introCursive.innerText = 'WEB';
-    }
+    const titles = {
+        'stack': { main: 'STAC', cursive: 'K' },
+        'projects': { main: 'PROJEC', cursive: 'TS' },
+        'contact': { main: 'CONTAC', cursive: 'T' }
+    };
+
+    const sectionInfo = titles[sectionId] || { main: 'DIGITAL', cursive: 'WEB' };
+    if (introMain) introMain.innerText = sectionInfo.main;
+    if (introCursive) introCursive.innerText = sectionInfo.cursive;
 
     if (overlay) {
         overlay.classList.add('active');
         
-        // Hide current if exists
         if (activeSection) {
             activeSection.classList.add('exiting');
             activeSection.classList.remove('active');
         }
 
-        // Wait for Intro to "sink in"
         setTimeout(() => {
             if (activeSection) {
-                activeSection.classList.remove('exiting');
+                activeSection.classList.remove('active');
                 activeSection.style.display = 'none';
             }
             
-            // 2. Hide Overlay & Enter New Section
             overlay.classList.remove('active');
             
             setTimeout(() => {
                 prepareAndEnter(targetSection, sectionId);
                 isTransitioning = false;
-            }, 500); // Wait for overlay fade out
-        }, 1200); // How long the big title stays
+            }, 500);
+        }, 1200);
     } else {
+        if (activeSection) {
+            activeSection.classList.remove('active');
+            activeSection.style.display = 'none';
+        }
         prepareAndEnter(targetSection, sectionId);
         isTransitioning = false;
     }
+}
+
+function isAtTop() {
+    return window.scrollY <= 10;
+}
+
+function isAtBottom() {
+    // Check if we are at the bottom of the current document (which is just the active section)
+    return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 10);
 }
 
 function prepareAndEnter(targetSection, sectionId) {
     if (!targetSection) return;
     
     targetSection.style.display = 'block';
+    window.scrollTo(0, 0); // Always start at the top
+    
     setTimeout(() => {
         targetSection.classList.add('active');
         
@@ -95,15 +103,30 @@ function prepareAndEnter(targetSection, sectionId) {
     }, 50);
 }
 
-// Spotlight Effect for Bento Cards
-function initSpotlight() {
-    document.querySelectorAll('.bento-card').forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
+// Magnetic Effect for interactive elements
+function initMagnetic() {
+    const targets = document.querySelectorAll('.bento-card, .badge, .nav-item');
+    
+    targets.forEach(target => {
+        target.addEventListener('mousemove', e => {
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            const sensitivity = target.classList.contains('bento-card') ? 15 : 25;
+            
+            target.style.transform = `translate(${x / sensitivity}px, ${y / sensitivity}px)`;
+            
+            if (target.classList.contains('bento-card')) {
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                target.style.setProperty('--mouse-x', `${mx}px`);
+                target.style.setProperty('--mouse-y', `${my}px`);
+            }
+        });
+        
+        target.addEventListener('mouseleave', () => {
+            target.style.transform = 'translate(0, 0)';
         });
     });
 }
@@ -113,21 +136,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastWheelTime = 0;
     window.addEventListener('wheel', (e) => {
         const now = Date.now();
-        if (now - lastWheelTime < 1500) return; // Debounce
+        if (now - lastWheelTime < 1500) return; 
         
-        if (Math.abs(e.deltaY) < 120) return; // Add more resistance to prevent accidental scrolling
+        if (Math.abs(e.deltaY) < 100) return; 
 
         if (e.deltaY > 0) {
-            // Scroll Down
-            if (currentSectionIndex < sections.length - 1) {
-                switchSection(sections[currentSectionIndex + 1]);
-                lastWheelTime = now;
+            // Scroll Down - check if we are at the bottom
+            if (isAtBottom()) {
+                if (currentSectionIndex < sections.length - 1) {
+                    switchSection(sections[currentSectionIndex + 1]);
+                    lastWheelTime = now;
+                }
             }
         } else {
-            // Scroll Up
-            if (currentSectionIndex > 0) {
-                switchSection(sections[currentSectionIndex - 1]);
-                lastWheelTime = now;
+            // Scroll Up - check if we are at the top
+            if (isAtTop()) {
+                if (currentSectionIndex > 0) {
+                    switchSection(sections[currentSectionIndex - 1]);
+                    lastWheelTime = now;
+                }
             }
         }
     }, { passive: true });
@@ -147,24 +174,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSwipe() {
         const now = Date.now();
-        if (now - lastWheelTime < 1500) return; // Use same debounce
+        if (now - lastWheelTime < 1500) return; 
 
-        const swipeThreshold = 50;
+        const swipeThreshold = 50; 
         const deltaY = touchStartY - touchEndY;
 
         if (Math.abs(deltaY) < swipeThreshold) return;
 
         if (deltaY > 0) {
-            // Swiped Up (Go Down)
-            if (currentSectionIndex < sections.length - 1) {
-                switchSection(sections[currentSectionIndex + 1]);
-                lastWheelTime = now;
+            // Swiped Up (Go Down) - only if at bottom
+            if (isAtBottom()) {
+                if (currentSectionIndex < sections.length - 1) {
+                    switchSection(sections[currentSectionIndex + 1]);
+                    lastWheelTime = now;
+                }
             }
         } else {
-            // Swiped Down (Go Up)
-            if (currentSectionIndex > 0) {
-                switchSection(sections[currentSectionIndex - 1]);
-                lastWheelTime = now;
+            // Swiped Down (Go Up) - only if at top
+            if (isAtTop()) {
+                if (currentSectionIndex > 0) {
+                    switchSection(sections[currentSectionIndex - 1]);
+                    lastWheelTime = now;
+                }
             }
         }
     }
@@ -192,7 +223,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    initSpotlight();
+    // Design Thinking: Logical Greeting based on User's Time
+    const hour = new Date().getHours();
+    const greetText = document.querySelector('#home .cursive-text');
+    if (greetText) {
+        if (hour < 12) greetText.innerText = "Good Morning,";
+        else if (hour < 18) greetText.innerText = "Good Afternoon,";
+        else greetText.innerText = "Good Evening,";
+    }
+
+    initMagnetic();
     
     // Initial entrance
     const activeSection = document.querySelector('section.active');
