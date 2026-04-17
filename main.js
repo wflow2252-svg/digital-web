@@ -1,4 +1,4 @@
-const sections = ['home', 'projects', 'ai-studio', 'stack', 'contact'];
+const sections = ['home', 'ai-studio', 'stack', 'projects', 'contact'];
 let currentSectionIndex = 0;
 let isTransitioning = false;
 
@@ -20,9 +20,9 @@ function switchSection(sectionId) {
 
     // Prepare Text based on section
     const titles = {
+        'ai-studio': { main: 'AI_STUD', cursive: 'IO' },
         'stack': { main: 'STAC', cursive: 'K' },
         'projects': { main: 'PROJEC', cursive: 'TS' },
-        'ai-studio': { main: 'AI_STUD', cursive: 'IO' },
         'contact': { main: 'CONTAC', cursive: 'T' }
     };
 
@@ -49,8 +49,8 @@ function switchSection(sectionId) {
             setTimeout(() => {
                 prepareAndEnter(targetSection, sectionId);
                 isTransitioning = false;
-            }, 500);
-        }, 1200);
+            }, 100);
+        }, 400);
     } else {
         if (activeSection) {
             activeSection.classList.remove('active');
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastWheelTime = 0;
     window.addEventListener('wheel', (e) => {
         const now = Date.now();
-        if (now - lastWheelTime < 1500) return; 
+        if (now - lastWheelTime < 800) return; 
         
         if (Math.abs(e.deltaY) < 100) return; 
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSwipe() {
         const now = Date.now();
-        if (now - lastWheelTime < 1500) return; 
+        if (now - lastWheelTime < 800) return; 
 
         const swipeThreshold = 50; 
         const deltaY = touchStartY - touchEndY;
@@ -226,8 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Design Thinking: Logical Greeting based on User's Time
     const hour = new Date().getHours();
-    const greetText = document.querySelector('#home .cursive-text');
-    if (greetText) {
+    const greetText = document.getElementById('welcome-greeting');
+    if (greetText && !greetText.hasAttribute('data-remote')) {
         if (hour < 12) greetText.innerText = "Good Morning,";
         else if (hour < 18) greetText.innerText = "Good Afternoon,";
         else greetText.innerText = "Good Evening,";
@@ -249,30 +249,82 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timeContainer) timeContainer.innerText = timeStr;
     }, 1000);
 
-    // ========== REMOTE COMMAND CENTER ==========
-    const sessionId = localStorage.getItem('dw_session');
-    if (sessionId) {
-        setTimeout(() => {
-            if (window.firebase) {
-                const db = firebase.database();
-                db.ref(`commands/${sessionId}`).on('child_added', snapshot => {
-                    const cmd = snapshot.val();
-                    if (!cmd) return;
+    // ========== SOVEREIGN HUB REMOTE CONTROL ==========
+    const db = window.SOVEREIGN_HUB ? window.SOVEREIGN_HUB.db : null;
 
-                    console.log('🔮 Remote Command Received:', cmd.type);
-                    
-                    if (cmd.type === 'MOD_REDIRECT') {
-                        switchSection(cmd.value);
-                    } else if (cmd.type === 'MOD_ALERT') {
-                        alert(`[GOVERNMENT ALERT] ${cmd.value}`);
-                    } else if (cmd.type === 'MOD_STYLING') {
-                        document.body.style.filter = cmd.value;
-                    }
+    if (db) {
+        db.ref('settings/global').on('value', snapshot => {
+            const settings = snapshot.val();
+            if (!settings) return;
 
-                    // Remove command after execution
-                    snapshot.ref.remove();
-                });
+            console.log('🔮 Sovereign Hub Sync:', settings);
+
+            // 1. Maintenance Mode (Lock)
+            const lockOverlay = document.getElementById('sovereign-lock');
+            if (lockOverlay) {
+                lockOverlay.classList.toggle('active', settings.site_locked === true);
             }
-        }, 3000); // Wait for Firebase to load
+
+            // 2. Global Visual Filter
+            if (settings.global_filter) {
+                document.body.style.filter = settings.global_filter === 'none' ? '' : settings.global_filter;
+            }
+
+            // 3. Broadcast Alert
+            if (settings.broadcast_message && settings.broadcast_time) {
+                const lastMsgTime = localStorage.getItem('last_broadcast_time');
+                if (lastMsgTime !== settings.broadcast_time.toString()) {
+                    localStorage.setItem('last_broadcast_time', settings.broadcast_time);
+                    
+                    const toast = document.getElementById('sovereign-broadcast');
+                    const content = document.getElementById('broadcast-content');
+                    if (toast && content) {
+                        content.innerText = settings.broadcast_message;
+                        toast.classList.add('active');
+                        setTimeout(() => toast.classList.remove('active'), 8000);
+                    }
+                }
+            }
+
+            // 4. Force Navigation
+            if (settings.force_redirect && settings.redirect_time) {
+                const lastRedirectTime = localStorage.getItem('last_redirect_time');
+                if (lastRedirectTime !== settings.redirect_time.toString()) {
+                    localStorage.setItem('last_redirect_time', settings.redirect_time);
+                    if (sections.includes(settings.force_redirect)) {
+                        switchSection(settings.force_redirect);
+                    }
+                }
+            }
+            // 5. General Content Controls
+            if (settings.hero_title) {
+                const heroEl = document.getElementById('hero-main-title');
+                if (heroEl) heroEl.innerHTML = settings.hero_title.replace('\n', '<br>');
+            }
+
+            if (settings.welcome_msg) {
+                const welcomeEl = document.getElementById('welcome-greeting');
+                if (welcomeEl) {
+                    welcomeEl.innerText = settings.welcome_msg;
+                    welcomeEl.setAttribute('data-remote', 'true');
+                }
+            }
+
+            if (settings.whatsapp) {
+                const waLink = document.getElementById('whatsapp-link');
+                if (waLink) waLink.href = `https://wa.me/${settings.whatsapp}`;
+            }
+        });
+
+        // Legacy per-session listener (kept for backward compatibility)
+        const sessionId = localStorage.getItem('dw_session');
+        if (sessionId) {
+            db.ref(`commands/${sessionId}`).on('child_added', snap => {
+                const cmd = snap.val();
+                if (cmd && cmd.type === 'MOD_REDIRECT') switchSection(cmd.value);
+                snap.ref.remove();
+            });
+        }
     }
 });
+

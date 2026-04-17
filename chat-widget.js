@@ -8,43 +8,21 @@
 
   let userInfo = JSON.parse(localStorage.getItem('dw_user') || 'null');
 
-  // Load External Scripts
-  const scripts = [
-    'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
-    'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js',
-    'https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js',
-    'https://cdn.socket.io/4.7.2/socket.io.min.js'
-  ];
-
-  let loadedCount = 0;
-  scripts.forEach(src => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = () => {
-      loadedCount++;
-      if (loadedCount === scripts.length) initChat();
-    };
-    document.head.appendChild(s);
+  // Scripts are now loaded globally in index.html for Sovereign Hub compatibility
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wait a brief moment to ensure window.firebase is ready
+    setTimeout(initChat, 100);
   });
 
   function initChat() {
-    const firebaseConfig = {
-      apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
-      projectId: "chat-75d30",
-      databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
-      storageBucket: "chat-75d30.appspot.com"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const storage = firebase.storage();
+    const hub = window.SOVEREIGN_HUB;
+    if (!hub) return;
     
-    // AI Server Connection (Socket.io)
-    const socket = io('http://localhost:3000'); // Use absolute URL for the scratch server
-    socket.on('connect', () => console.log('✅ Connected to Smart AI Server'));
-    socket.on('web:reply', (msg) => {
-        // If it's an AI message, it might already be in Firebase or handled separately
-        // For "Scratch" feel, we'll let the server handle responses
-    });
+    const db = hub.db;
+    const storage = hub.storage;
+    
+    // Unify all chat data under 'conversations/{sessionId}' for sync with Flutter Admin
+    const chatRef = db.ref('conversations/' + sessionId);
 
     let isOpen = false;
     let messages = [];
@@ -52,19 +30,44 @@
     let dbListenerStarted = false;
     let unreadCount = 0;
 
-    // Media Recording Variables
+    // Media Recording
     let mediaRecorder;
     let audioChunks = [];
     let isRecording = false;
 
     if (userRegistered) { startListening(); }
 
+    function startListening() {
+      if (dbListenerStarted) return;
+      dbListenerStarted = true;
+      
+      // Listen for message updates from Admin or User
+      chatRef.child('messages').on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        if (msg) {
+          addMessageToUI(msg);
+          if (msg.from === 'admin' && !isOpen) {
+             unreadCount++;
+             updateUnreadUI();
+          }
+        }
+      });
+
+      // Update Presence / Last Seen
+      chatRef.update({
+        id: sessionId,
+        name: userInfo ? userInfo.name : 'زائر',
+        phone: userInfo ? userInfo.phone : '',
+        lastSeen: new Date().toISOString()
+      });
+    }
+
     // ===================== CSS =====================
     const style = document.createElement('style');
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 
-      #dw-fab-wrapper { display: none !important; }
+      /* Chat FAB Wrapper */
 
       #dw-chat-btn {
         position: relative;
@@ -220,6 +223,21 @@
         background: #9EE89E;
         display: inline-block;
       }
+      .dw-copy-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.6);
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dw-copy-btn:hover { background: rgba(255,255,255,0.15); color: white; }
       #dw-close-btn { display: none !important; }
 
       /* WALLPAPER */
@@ -647,7 +665,7 @@
     `;
 
     const chatUIHTML = `
-      <div id="dw-header">
+      <div id="dw-header" style="display:flex; justify-content:space-between; align-items:center;">
         <div id="dw-header-info">
           <div id="dw-header-name">Digital Web AI <span class="dw-ai-badge">SMART</span></div>
           <div id="dw-header-status">
@@ -655,6 +673,7 @@
             <span id="dw-typing-status">AI Assistant Active</span>
           </div>
         </div>
+        <button class="dw-copy-btn" onclick="window.dwCopyChat()"><i class="bi bi-copy"></i> COPY CHAT</button>
       </div>
       <div id="dw-messages-area">
         <div class="dw-date-divider"><span>اليوم</span></div>
@@ -1069,16 +1088,55 @@
         doc.close();
 
         // Prepare Code View
-        codeDisplay.innerText = `
-<!-- index.html -->
-\${bundle.html}
+        if (codeDisplay) {
+            codeDisplay.innerText = 
+`<!-- index.html -->
+${bundle.html}
 
 <!-- style.css -->
-\${bundle.css}
+${bundle.css}
 
 <!-- script.js -->
-\${bundle.js}
-        `.trim();
+${bundle.js}`.trim();
+        }
+    };
+
+    window.dwCopyChat = () => {
+      const messages = document.querySelectorAll('.dw-msg-row');
+      let transcript = "--- DIGITAL WEB AI CONVERSATION TRANSCRIPT ---\n\n";
+      
+      messages.forEach(row => {
+        const isUser = row.classList.contains('user');
+        const bubble = row.querySelector('.dw-bubble');
+        if (bubble) {
+          let text = bubble.innerText.trim();
+          
+          // Handle Media
+          const img = bubble.querySelector('img');
+          const video = bubble.querySelector('video');
+          const audio = bubble.querySelector('audio');
+          
+          if (img) text = `[IMAGE: ${img.src}]`;
+          else if (video) text = `[VIDEO: ${video.src}]`;
+          else if (audio) text = `[VOICE MESSAGE: ${audio.src}]`;
+          
+          if (text) {
+            transcript += `${isUser ? 'USER' : 'AI Assistant'}: ${text}\n\n`;
+          }
+        }
+      });
+
+      if (messages.length === 0) {
+        alert('No messages to copy yet.');
+        return;
+      }
+
+      navigator.clipboard.writeText(transcript).then(() => {
+        alert('Conversation Transcript Copied to Clipboard!');
+      });
     };
   }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initChat);
+  else initChat();
 })();

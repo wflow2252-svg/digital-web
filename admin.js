@@ -1,16 +1,10 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
-    projectId: "chat-75d30",
-    databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
-    storageBucket: "chat-75d30.appspot.com"
-};
-
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+const hub = window.SOVEREIGN_HUB;
+if (!hub) {
+    console.error('🏛️ Sovereign Hub config not found in admin context');
 }
 
-const db = firebase.database();
-const storage = firebase.storage();
+const db = hub ? hub.db : null;
+const storage = hub ? hub.storage : null;
 
 // Sidebar Navigation
 function switchTab(tabId) {

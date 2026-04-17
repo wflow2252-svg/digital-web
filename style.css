@@ -20,8 +20,8 @@
     --text-dim: #71717a;
     
     /* Transitions & Motion */
-    --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast: all 0.3s ease;
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: all 0.2s ease;
     
     /* Fluid Sizing System */
     --padding-page: clamp(1.5rem, 5vw, 4rem);
@@ -193,59 +193,13 @@ body {
     pointer-events: none;
 }
 
-.noise-overlay {
+.neural-bg {
     position: absolute;
     inset: 0;
+    background: url('logo.png') center/40% no-repeat;
     opacity: 0.05;
+    filter: grayscale(1);
     pointer-events: none;
-    z-index: 100;
-    filter: url(#noiseFilter);
-}
-
-.grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
-    background-size: 40px 40px;
-}
-
-.blob-container {
-    position: absolute;
-    inset: 0;
-    filter: blur(100px);
-    opacity: 0.4;
-}
-
-.blob {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: var(--accent);
-    filter: blur(80px);
-    animation: blob-float 20s infinite alternate linear;
-}
-
-.blob-1 {
-    top: -10%;
-    left: -10%;
-    background: rgba(59, 130, 246, 0.3);
-    animation-duration: 25s;
-}
-
-.blob-2 {
-    bottom: -10%;
-    right: -10%;
-    background: rgba(147, 51, 234, 0.2);
-    animation-duration: 30s;
-    animation-delay: -5s;
-}
-
-@keyframes blob-float {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    33% { transform: translate(15%, 20%) scale(1.1) rotate(5deg); }
-    66% { transform: translate(-10%, 15%) scale(0.9) rotate(-5deg); }
-    100% { transform: translate(0, 0) scale(1) rotate(0deg); }
 }
 
 /* Layout */
@@ -282,8 +236,8 @@ body {
 section {
     display: none;
     opacity: 0;
-    transform: scale(0.98) translateY(10px);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 100px 0 150px;
 }
 
@@ -1262,3 +1216,231 @@ body.analytics-active section {
     transition: 0.5s;
 }
 
+/* AI Studio Welcome Screen - Elite Sovereign Design */
+#studio-welcome-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(30px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    transition: all 0.8s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+#studio-welcome-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.1);
+}
+
+.welcome-core-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.neural-core-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: corePulse 3s infinite ease-in-out;
+    opacity: 0.3;
+}
+
+.core-logo {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    z-index: 5;
+}
+
+.core-logo img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 20px var(--accent));
+}
+
+.welcome-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 1rem;
+    background: linear-gradient(to bottom, #fff, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+    max-width: 500px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.begin-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: white;
+    padding: 1.2rem 3rem;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.begin-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    box-shadow: 0 0 40px var(--accent-glow);
+    transform: translateY(-5px);
+}
+
+.begin-btn .material-symbols-outlined {
+    font-size: 1.2rem;
+}
+
+@keyframes corePulse {
+    0% { transform: scale(0.8); opacity: 0.2; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(0.8); opacity: 0.2; }
+}
+
+/* Copy Result Utility */
+.copy-blueprint-btn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.copy-blueprint-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Synthesis Overlay - Immersive Loading */
+.synthesis-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(24px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: all 0.5s ease;
+    padding: 40px;
+}
+
+.synthesis-overlay.active { display: flex; }
+
+.synthesis-overlay .loader {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(255, 255, 255, 0.05);
+    border-top: 3px solid #00f0ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+}
+
+.synthesis-overlay .status-msg {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: white;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+/* GPT Agentic Thought Stream */
+.thought-stream {
+    width: 100%;
+    max-width: 500px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    scroll-behavior: smooth;
+    mask-image: linear-gradient(transparent, #000 20%);
+}
+
+.neural-log {
+    color: #00f0ff;
+    opacity: 0.6;
+    animation: dw-log-in 0.3s ease forwards;
+}
+
+.neural-log.research { color: #fbbf24; }
+.neural-log.architecture { color: #10b981; }
+
+@keyframes dw-log-in { from { opacity: 0; transform: translateX(-5px); } to { opacity: 0.7; transform: translateX(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Typing Pulse Animation for Chat Autopilot */
+.typing-pulse {
+    display: flex;
+    gap: 4px;
+    padding: 2px 0;
+}
+
+.typing-pulse span {
+    width: 6px;
+    height: 6px;
+    background: #00f0ff;
+    border-radius: 50%;
+    display: inline-block;
+    animation: dw-pulse 1.4s infinite ease-in-out both;
+}
+
+.typing-pulse span:nth-child(1) { animation-delay: -0.32s; }
+.typing-pulse span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dw-pulse {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+.msg.typing {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+}
