@@ -83,9 +83,9 @@
                         <div class="badge">
                             v. 4.2.0
                         </div>
-                        <div class="badge badge-accent" onclick="window.dwOpenChat()" style="cursor: pointer; border: 1px solid var(--accent);">
+                        <div class="badge badge-accent" onclick="switchSection('ai-studio')" style="cursor: pointer; border: 1px solid var(--accent);">
                             <span class="material-symbols-outlined">psychology</span>
-                            Ask Magic AI
+                            Enter AI Studio
                         </div>
                     </div>
                 </header>
@@ -216,6 +216,32 @@
             </div>
         </section>
 
+        <!-- AI Studio Section -->
+        <section id="ai-studio">
+            <h2 class="section-title-alt">AI Innovation Lab</h2>
+            <div class="studio-container animate-in" data-stagger="1">
+                <div class="studio-header">
+                    <div class="ai-status-tag"><div class="dot pulse"></div> NEURAL_ENGINE READY</div>
+                    <h3>Start Your Digital Experiment</h3>
+                    <p>Describe your vision, and our elite-tier AI will architect a custom trial project for you in real-time.</p>
+                </div>
+                
+                <div class="studio-input-wrapper">
+                    <input type="text" id="studio-prompt" placeholder="e.g., Build a luxury perfume store landing page in gold and black..." />
+                    <button id="studio-generate-btn">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Generate Trial
+                    </button>
+                </div>
+
+                <div class="studio-features">
+                    <div class="s-feature"><span class="material-symbols-outlined">speed</span> Ultra-Fast Render</div>
+                    <div class="s-feature"><span class="material-symbols-outlined">devices</span> Responsive Mobile Hub</div>
+                    <div class="s-feature"><span class="material-symbols-outlined">code</span> Clean Code Export</div>
+                </div>
+            </div>
+        </section>
+
         <!-- Stack Section -->
         <section id="stack">
             <div class="stack-title-wrapper" data-stagger="1">
@@ -316,6 +342,10 @@
                 <span class="material-symbols-outlined">folder</span>
                 <span>Projects</span>
             </button>
+            <button class="nav-item" onclick="switchSection('ai-studio')">
+                <span class="material-symbols-outlined">psychology</span>
+                <span>Studio</span>
+            </button>
             <button class="nav-item" onclick="switchSection('contact')">
                 <span class="material-symbols-outlined">mail</span>
                 <span>Contact</span>
@@ -324,6 +354,7 @@
     </div>
 
     <script src="chat-widget.js"></script>
+    <script src="ai-studio.js"></script>
     <script src="main.js"></script>
     <!-- v1.0.1 -->
 </body>

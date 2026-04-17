@@ -1,4 +1,4 @@
-const sections = ['home', 'stack', 'projects', 'contact'];
+const sections = ['home', 'projects', 'ai-studio', 'stack', 'contact'];
 let currentSectionIndex = 0;
 let isTransitioning = false;
 
@@ -22,6 +22,7 @@ function switchSection(sectionId) {
     const titles = {
         'stack': { main: 'STAC', cursive: 'K' },
         'projects': { main: 'PROJEC', cursive: 'TS' },
+        'ai-studio': { main: 'AI_STUD', cursive: 'IO' },
         'contact': { main: 'CONTAC', cursive: 'T' }
     };
 

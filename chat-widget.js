@@ -902,86 +902,10 @@
       const msg = { from: 'user', text, time: new Date().toISOString() };
       db.ref(`conversations/${sessionId}/messages`).push().set(msg);
       
-      // CLIENT-SIDE AI FALLBACK (Scratch AI)
-      if (typeof handleAIQuery === 'function') {
-          const aiResponse = handleAIQuery(text);
-          if (aiResponse) {
-              setTimeout(() => {
-                  const aiMsg = {
-                      from: 'admin',
-                      text: aiResponse,
-                      isAi: true,
-                      time: new Date().toISOString()
-                  };
-                  db.ref(`conversations/${sessionId}/messages`).push().set(aiMsg);
-              }, 1000);
-          }
-      }
-
       db.ref(`conversations/${sessionId}`).transaction(conv => {
         if (conv) { conv.unread = (conv.unread || 0) + 1; conv.lastSeen = msg.time; }
         return conv;
       });
-    }
-
-    // AI Logic (Duplicate from server for scratch feel)
-    const PROJECT_KNOWLEDGE = {
-        'ai': 'مشروع AI Vision Dashboard هو منصة لتحليل البيانات البصرية باستخدام الذكاء الاصطناعي مع واجهة عصرية وسرعة استجابة فائقة.',
-        'عطور': 'متجر Luxe Scents هو منصة تجارة إلكترونية فاخرة مخصصة للعطور، تركز على تجربة المستخدم الراقية والتصميم الأنيق.',
-        'saas': 'NextGen SaaS هي واجهة مستقبلية مصممة للشركات التقنية التي تحتاج إلى سرعة في الأداء ونمو متسارع.',
-        'عقارات': 'Estate Elite هو بوابة عقارية فاخرة تتيح تصفح العقارات الراقية بأسلوب عصري وجذاب.',
-        'بنك': 'Luxe Banking هو تطبيق Fintech يعيد تعريف التعاملات المالية بلمسة فنية وتجربة مستخدم فريدة.',
-        'موضة': 'Urban Trend هو متجر ملابس شبابي يركز على الموضة العصرية والقطع النادرة بتصميم فريد.',
-        'خدمات': 'نقدم خدمات تطوير الويب، تطبيقات الموبايل، تصميم تجربة المستخدم (UI/UX)، وحلول الذكاء الاصطناعي المخصصة.'
-    };
-
-    function handleAIQuery(text) {
-        const input = text.toLowerCase();
-        
-        // SITE GENERATION CHECK
-        if (input.includes('موقع') || input.includes('نسخة تجريبية') || input.includes('website') || input.includes('build')) {
-            const doc = generateTrialWebsite(text);
-            return { type: 'trial', text: '✨ جاري تجهيز النسخة التجريبية الخاصة بك... تم الانتهاء! اضغط على الزر أدناه للمعاينة.', code: doc };
-        }
-
-        for (const [key, info] of Object.entries(PROJECT_KNOWLEDGE)) {
-            if (input.includes(key)) return info;
-        }
-        if (input.includes('سعر') || input.includes('تكلفة')) return 'التكلفة تعتمد على حجم المشروع. حابب نحسبلك عرض سعر لمشروعك؟';
-        if (input.includes('من انت') || input.includes('مين')) return 'أنا الذكاء الاصطناعي الخاص بـ Digital Web، ومهمتي أساعدك تفهم أعمالنا وتختار الأنسب ليك.';
-        return null;
-    }
-
-    function generateTrialWebsite(prompt) {
-        const name = prompt.match(/(لـ|اسم) ([\w\s\u0600-\u06FF]+)/)?.[2] || 'My Business';
-        const color = prompt.includes('أحمر') ? '#ff4b2b' : (prompt.includes('أخضر') ? '#2ecc71' : '#3b82f6');
-        
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body { font-family: sans-serif; margin: 0; background: #fdfdfd; }
-                    header { background: ${color}; color: white; padding: 2rem; text-align: center; }
-                    .hero { height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'); background-size: cover; color: white; }
-                    .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; text-align: center; }
-                    .btn { background: ${color}; color: white; padding: 1rem 2rem; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 1rem; }
-                </style>
-            </head>
-            <body>
-                <header><h1>${name}</h1></header>
-                <div class="hero">
-                    <h2>Welcome to the Future</h2>
-                    <p>Designed by Digital Web AI</p>
-                    <a href="#" class="btn">Get Started</a>
-                </div>
-                <div class="container">
-                    <h3>About Us</h3>
-                    <p>This is a custom trial generated specifically for ${name}. We build high-performance, beautiful digital products.</p>
-                </div>
-            </body>
-            </html>
-        `;
     }
 
     function renderMessages() {
