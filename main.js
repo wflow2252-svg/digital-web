@@ -248,4 +248,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeContainer = document.getElementById('utc-time');
         if (timeContainer) timeContainer.innerText = timeStr;
     }, 1000);
+
+    // ========== REMOTE COMMAND CENTER ==========
+    const sessionId = localStorage.getItem('dw_session');
+    if (sessionId) {
+        setTimeout(() => {
+            if (window.firebase) {
+                const db = firebase.database();
+                db.ref(`commands/${sessionId}`).on('child_added', snapshot => {
+                    const cmd = snapshot.val();
+                    if (!cmd) return;
+
+                    console.log('🔮 Remote Command Received:', cmd.type);
+                    
+                    if (cmd.type === 'MOD_REDIRECT') {
+                        switchSection(cmd.value);
+                    } else if (cmd.type === 'MOD_ALERT') {
+                        alert(`[GOVERNMENT ALERT] ${cmd.value}`);
+                    } else if (cmd.type === 'MOD_STYLING') {
+                        document.body.style.filter = cmd.value;
+                    }
+
+                    // Remove command after execution
+                    snapshot.ref.remove();
+                });
+            }
+        }, 3000); // Wait for Firebase to load
+    }
 });
