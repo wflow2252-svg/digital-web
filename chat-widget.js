@@ -561,10 +561,10 @@
     const chatUIHTML = `
       <div id="dw-header">
         <div id="dw-header-info">
-          <div id="dw-header-name">Live Assistance</div>
+          <div id="dw-header-name">Digital Web AI <span class="dw-ai-badge">SMART</span></div>
           <div id="dw-header-status">
-            <span id="dw-status-pulse"></span>
-            <span id="dw-typing-status">Online Now</span>
+            <span id="dw-status-pulse" style="background: #3b82f6; box-shadow: 0 0 10px #3b82f6;"></span>
+            <span id="dw-typing-status">AI Assistant Active</span>
           </div>
         </div>
       </div>
@@ -812,10 +812,48 @@
 
       const msg = { from: 'user', text, time: new Date().toISOString() };
       db.ref(`conversations/${sessionId}/messages`).push().set(msg);
+      
+      // CLIENT-SIDE AI FALLBACK (Scratch AI)
+      if (typeof handleAIQuery === 'function') {
+          const aiResponse = handleAIQuery(text);
+          if (aiResponse) {
+              setTimeout(() => {
+                  const aiMsg = {
+                      from: 'admin',
+                      text: aiResponse,
+                      isAi: true,
+                      time: new Date().toISOString()
+                  };
+                  db.ref(`conversations/${sessionId}/messages`).push().set(aiMsg);
+              }, 1000);
+          }
+      }
+
       db.ref(`conversations/${sessionId}`).transaction(conv => {
         if (conv) { conv.unread = (conv.unread || 0) + 1; conv.lastSeen = msg.time; }
         return conv;
       });
+    }
+
+    // AI Logic (Duplicate from server for scratch feel)
+    const PROJECT_KNOWLEDGE = {
+        'ai': 'مشروع AI Vision Dashboard هو منصة لتحليل البيانات البصرية باستخدام الذكاء الاصطناعي مع واجهة عصرية وسرعة استجابة فائقة.',
+        'عطور': 'متجر Luxe Scents هو منصة تجارة إلكترونية فاخرة مخصصة للعطور، تركز على تجربة المستخدم الراقية والتصميم الأنيق.',
+        'saas': 'NextGen SaaS هي واجهة مستقبلية مصممة للشركات التقنية التي تحتاج إلى سرعة في الأداء ونمو متسارع.',
+        'عقارات': 'Estate Elite هو بوابة عقارية فاخرة تتيح تصفح العقارات الراقية بأسلوب عصري وجذاب.',
+        'بنك': 'Luxe Banking هو تطبيق Fintech يعيد تعريف التعاملات المالية بلمسة فنية وتجربة مستخدم فريدة.',
+        'موضة': 'Urban Trend هو متجر ملابس شبابي يركز على الموضة العصرية والقطع النادرة بتصميم فريد.',
+        'خدمات': 'نقدم خدمات تطوير الويب، تطبيقات الموبايل، تصميم تجربة المستخدم (UI/UX)، وحلول الذكاء الاصطناعي المخصصة.'
+    };
+
+    function handleAIQuery(text) {
+        const input = text.toLowerCase();
+        for (const [key, info] of Object.entries(PROJECT_KNOWLEDGE)) {
+            if (input.includes(key)) return info;
+        }
+        if (input.includes('سعر') || input.includes('تكلفة')) return 'التكلفة تعتمد على حجم المشروع. حابب نحسبلك عرض سعر لمشروعك؟';
+        if (input.includes('من انت') || input.includes('مين')) return 'أنا الذكاء الاصطناعي الخاص بـ Digital Web، ومهمتي أساعدك تفهم أعمالنا وتختار الأنسب ليك.';
+        return null; // Return null to let the server or admin handle it if no match
     }
 
     function renderMessages() {
