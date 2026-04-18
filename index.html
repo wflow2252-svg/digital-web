@@ -12,7 +12,8 @@
     <meta name="description" content="Premium Digital Experiences & AI Hub Synthesis - Sovereign v12.0.">
     <link rel="icon" href="logo.png?v=neural" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=global-18">
+    <link rel="stylesheet" href="devops-agent.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -188,6 +189,10 @@
             <button class="nav-item" onclick="switchSection('ai-studio')">
                 <span class="material-symbols-outlined">auto_awesome</span>
                 <span class="nav-label">AI Studio</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('devops-agent')">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <span class="nav-label">DevOps Agent</span>
             </button>
             <button class="nav-item" onclick="switchSection('projects')">
                 <span class="material-symbols-outlined">folder</span>
@@ -465,6 +470,59 @@
 
         </section>
 
+        <!-- DevOps AI Agent Section -->
+        <section id="devops-agent">
+            <h2 class="section-title-alt" style="margin-bottom: 2rem;">Sovereign DevOps</h2>
+            <div class="da-container animate-in" data-stagger="1">
+                <!-- Sidebar -->
+                <div class="da-sidebar">
+                  <div class="da-sidebar-logo">
+                    <div class="da-logo-text"><span><i data-lucide="cpu" style="width:18px;height:18px;"></i></span> DEVOPS//AI</div>
+                    <div class="da-logo-sub">Senior Architecture Engine v1.0</div>
+                  </div>
+                  <div class="da-sidebar-label">المجالات (Domains)</div>
+                  <div class="da-domain-list" id="da-domainList"></div>
+                </div>
+
+                <!-- Main -->
+                <div class="da-main">
+                  <div class="da-topbar">
+                    <div class="da-domain-title">
+                      <span id="da-domainBadge" class="da-domain-badge">عام</span>
+                      <span class="da-domain-desc" id="da-domainDesc">اسأل المهندس الذكي في أي مجال تقني</span>
+                    </div>
+                    <div class="da-topbar-right">
+                      <button class="da-clear-btn" onclick="da_clearChat()">
+                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> مسح السجل
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="da-messages" id="da-messages">
+                    <div class="da-welcome" id="da-welcome">
+                      <div class="da-welcome-icon"><i data-lucide="terminal-square"></i></div>
+                      <div class="da-welcome-title">DevOps AI Agent</div>
+                      <div class="da-welcome-sub">المساعد التقني الشامل. جاهز لتصميم، نشر، وإدارة أكوادك وبنيتك التحتية بأقصى كفاءة.</div>
+                      <div class="da-welcome-grid" id="da-welcomeGrid"></div>
+                    </div>
+                  </div>
+
+                  <div class="da-quick-area" id="da-quickArea"></div>
+
+                  <div class="da-input-area">
+                    <div class="da-input-wrap">
+                      <textarea id="da-userInput" placeholder="اكتب مشكلتك المعمارية أو التقنية هنا..." rows="1"
+                        onkeydown="da_handleKey(event)" oninput="da_autoResize(this)"></textarea>
+                      <button class="da-send-btn" id="da-sendBtn" onclick="da_sendMsg()">
+                        <i data-lucide="send" style="width:18px;height:18px; margin-right: 2px;"></i>
+                      </button>
+                    </div>
+                    <div class="da-input-hint">اضغط Enter للإرسال • Shift+Enter لسطر جديد</div>
+                  </div>
+                </div>
+            </div>
+        </section>
+
 
 
         <!-- Contact Section -->
@@ -503,6 +561,7 @@
 
     <script src="sovereign-chat.js"></script>
     <script src="ai-studio.js"></script>
+    <script src="devops-agent.js"></script>
     <script src="main.js"></script>
     <script src="heatmap.js"></script>
     <!-- v1.0.1 -->
