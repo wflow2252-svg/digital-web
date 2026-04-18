@@ -4,6 +4,7 @@
 const SOVEREIGN_CONFIG = {
     firebase: {
         apiKey: "AIzaSyDooOAEk-xqZ57SeqN9YMlNSvvy5w454mg",
+        authDomain: "chat-75d30.firebaseapp.com",
         projectId: "chat-75d30",
         databaseURL: "https://chat-75d30-default-rtdb.firebaseio.com",
         storageBucket: "chat-75d30.firebasestorage.app"
@@ -22,4 +23,7 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 // Global references
 const db = typeof firebase !== 'undefined' ? firebase.database() : null;
 const storage = typeof firebase !== 'undefined' ? firebase.storage() : null;
-window.SOVEREIGN_HUB = { db, storage, config: SOVEREIGN_CONFIG };
+const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
+const googleProvider = typeof firebase !== 'undefined' ? new firebase.auth.GoogleAuthProvider() : null;
+
+window.SOVEREIGN_HUB = { db, storage, auth, googleProvider, config: SOVEREIGN_CONFIG };

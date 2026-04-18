@@ -172,8 +172,45 @@
 
             const brandName = prompt.match(/(لـ|اسم|لشركة|for|called) ([\w\s\u0600-\u06FF]+)/)?.[2]?.trim() || 'Sovereign Hub';
 
-            await appendThought('Assembling Aggressive Marketing Payload...', 'logic');
-            await appendThought('Generating Word-by-Word Logic Stream...', 'logic');
+            await appendThought('Allocating Sovereign Cloud Resources...', 'logic');
+            const projectSlug = brandName.toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substring(7, 10);
+            await appendThought(`Provisioning Subdomain: https://${projectSlug}.digitalweb.io`, 'logic');
+            await appendThought('Configuring SSL certificates (DW Secure Shield)...', 'logic');
+            await appendThought('Bootstrapping 24/7 Node.js Cluster...', 'logic');
+            await appendThought('Synching SQL Knowledge Core...', 'logic');
+
+            // Synthesis Complete - Display Domain Banner
+            const logicDisplay = document.getElementById('logic-display');
+            if (logicDisplay) {
+                const domainBanner = document.createElement('div');
+                domainBanner.className = 'domain-assignment-banner';
+                domainBanner.style.cssText = `
+                    background: rgba(59, 130, 246, 0.05);
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    padding: 20px;
+                    border-radius: 15px;
+                    margin-top: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    animation: dw-slideUp 0.5s ease;
+                `;
+                domainBanner.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: var(--accent); padding: 10px; border-radius: 10px;"><i data-lucide="globe" style="color: black;"></i></div>
+                        <div>
+                            <div style="font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px;">SOVEREIGN HUB DOMAIN</div>
+                            <div style="font-weight: 900; color: white; font-size: 1.1rem;">https://${projectSlug}.digitalweb.io</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 5px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; border: 1px solid rgba(34, 197, 94, 0.2);">SSL SECURED</div>
+                        <div style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 5px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; border: 1px solid rgba(59, 130, 246, 0.2);">SERVER_ALIVE: 24/7</div>
+                    </div>
+                `;
+                logicDisplay.prepend(domainBanner);
+                if (window.lucide) lucide.createIcons();
+            }
 
             const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:'Cairo',sans-serif;background:#020617;color:#f8fafc;scroll-behavior:smooth;}.bg-mesh{background-image:radial-gradient(at 0% 0%,hsla(253,16%,7%,1) 0,transparent 50%)}</style></head><body class="bg-mesh min-h-screen">
                 ${UI_FACTORY.header(brandName, config.accent)}

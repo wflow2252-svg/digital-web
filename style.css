@@ -1,23 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rock+Salt&family=Dancing+Script:wght@700&display=swap');
 
 :root {
-    /* Color Palette - Premium Dark */
-    --bg: #050505;
-    --fg: #ffffff;
+    /* Color Palette - Premium Slate Grey */
+    --bg: #121214;
+    --fg: #f4f4f5;
     --accent: #3b82f6;
     --accent-glow: rgba(59, 130, 246, 0.4);
     --accent-secondary: #60a5fa;
     
     /* Surface System (Glassmorphism) */
-    --surface: rgba(255, 255, 255, 0.03);
-    --surface-hover: rgba(255, 255, 255, 0.06);
-    --surface-glass: rgba(10, 10, 10, 0.4);
-    --border: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(59, 130, 246, 0.3);
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --surface-glass: rgba(18, 18, 20, 0.6);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(59, 130, 246, 0.4);
     
     /* Text States */
-    --text-muted: #a1a1aa;
-    --text-dim: #71717a;
+    --text-muted: #d4d4d8;
+    --text-dim: #a1a1aa;
     
     /* Transitions & Motion */
     --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -146,6 +146,105 @@ body {
 }
 
 /* Cinematic Intro Overlay */
+/* Sovereign Glass Nav v13 */
+.glass-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 10000;
+    background: rgba(5, 5, 5, 0.4);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.brand-cube {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+}
+
+.brand-text {
+    font-weight: 900;
+    letter-spacing: -1px;
+    font-size: 1.2rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.nav-item {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+}
+
+.nav-item:hover {
+    color: white;
+}
+
+.nav-login {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.nav-login:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-cta {
+    background: white;
+    color: black;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.nav-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
+
 #intro-overlay {
     position: fixed;
     inset: 0;
@@ -183,6 +282,115 @@ body {
     color: var(--accent);
     font-size: 0.8em;
     margin-left: -0.1em;
+}
+
+/* Sovereign Core Visuals v14 */
+.mesh-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -1;
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+}
+
+.w-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vh;
+    height: 60vh;
+    background: url('logo.png?v=neural') center/contain no-repeat;
+    opacity: 0.12;
+    z-index: -1;
+    filter: invert(1);
+}
+
+/* Google Auth UI */
+.nav-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    object-fit: cover;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.google-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.google-btn i { color: #4285F4; }
+
+/* Centered Hero v14 */
+.hero-v13 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 80vh;
+    position: relative;
+    padding: 0 2rem;
+}
+
+.hero-v13 h1 {
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -3px;
+    color: white;
+    margin-bottom: 2rem;
+    animation: textBlurEntrance 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'Cairo', sans-serif;
+}
+
+.hero-subtitle-amiri {
+    font-family: 'Amiri', serif;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.hero-title-suffix {
+    display: block;
+    color: #4facfe;
+    background: linear-gradient(135deg, #00F0FF 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 0.85em;
+    filter: drop-shadow(0 0 35px rgba(59, 130, 246, 0.6));
+    margin-top: 10px;
+}
+
+@keyframes textBlurEntrance {
+    0% { filter: blur(30px); transform: scale(0.9); opacity: 0; }
+    100% { filter: blur(0); transform: scale(1); opacity: 1; }
+}
+
+.hero-v13 .hero-btns {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .bg-container {

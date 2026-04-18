@@ -9,7 +9,7 @@
     <link rel="icon" href="logo.png?v=neural" type="image/png">
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rock+Salt&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
@@ -19,12 +19,51 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
     <!-- Real-time AI Link (Socket.io) -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
     <!-- Sovereign Hub Unified Config -->
     <script src="firebase-config.js"></script>
+    <script>
+        // Sovereign Auth Logic - Fixed v15
+        async function googleLogin() {
+            try {
+                const { auth } = window.SOVEREIGN_HUB;
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                const result = await auth.signInWithPopup(provider);
+                console.log("Auth Success:", result.user.displayName);
+                updateAuthUI(result.user);
+            } catch (error) {
+                console.error("Auth Error Code:", error.code);
+                console.error("Auth Error Msg:", error.message);
+                alert("Google Login Error: " + error.message);
+            }
+        }
+
+        function updateAuthUI(user) {
+            const loginBtnSlot = document.querySelector('.nav-login-slot');
+            if (user && loginBtnSlot) {
+                loginBtnSlot.innerHTML = `
+                    <div class="nav-user-profile" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+                        <img src="${user.photoURL}" class="user-avatar" style="width: 28px; height: 28px; border-radius: 50%;" alt="${user.displayName}">
+                        <span style="font-size: 0.8rem; font-weight: 800; color: white;">${user.displayName.split(' ')[0]}</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Check persistent auth
+        window.addEventListener('load', () => {
+            if (typeof firebase !== 'undefined') {
+                firebase.auth().onAuthStateChanged(user => { if (user) updateAuthUI(user); });
+            }
+        });
+    </script>
     <style>
         /* Sovereign Lock Plate */
         #sovereign-lock {
@@ -126,53 +165,71 @@
         </filter>
     </svg>
 
-    <!-- Background Decor (Optimized) -->
+    <!-- Background Decor (Static) -->
     <div class="bg-container">
-        <div class="grid-overlay"></div>
-        <div class="neural-bg"></div>
+        <div class="mesh-grid"></div>
+        <div class="glow-vignette"></div>
     </div>
 
 
-    <div class="app-container">
-        <!-- Home Section -->
-        <section id="home" class="active">
-            <div class="hero-split">
-                <header class="hero-text">
-                    <div class="cursive-wrapper animate-in" data-stagger="0">
-                        <span class="cursive-text" id="welcome-greeting">Architecting</span>
-                    </div>
-                    <h1 class="hero-title animate-in" id="hero-main-title" data-stagger="1">Digital<br>Elite</h1>
-                    <div class="cursive-wrapper animate-in" data-stagger="2">
-                        <span class="cursive-text">Performance & Logic</span>
-                    </div>
-                    
-                    <div class="hero-badges animate-in" data-stagger="3">
-                        <div class="badge">
-                            <div class="dot pulse"></div>
-                            Ready for Next-Gen Projects
-                        </div>
-                        <div class="badge">
-                            <span class="material-symbols-outlined">verified</span>
-                            Elite Certified UX
-                        </div>
-                        <div class="badge">
-                            v. 4.2.0
-                        </div>
-                        <div class="badge badge-accent" onclick="switchSection('ai-studio')" style="cursor: pointer; border: 1px solid var(--accent);">
-                            <span class="material-symbols-outlined">psychology</span>
-                            Enter AI Studio
-                        </div>
-                    </div>
-                </header>
+    <nav class="glass-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png?v=neural" class="nav-logo" alt="Digital Web Logo" style="width: 35px; height: 35px; margin-right: 10px;">
+                <span class="brand-text">DIGITAL <span class="highlight">WEB</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="#projects" class="nav-item">مشاريعنا</a>
+                <a href="#features" class="nav-item">الرئيسية</a>
+                <div class="nav-login-slot">
+                    <button class="google-btn" onclick="googleLogin()">
+                        <i class="bi bi-google"></i>
+                        تسجيل الدخول
+                    </button>
+                </div>
+                <button class="nav-cta" onclick="dwSwitchTab('studio')">تجربة مجانية</button>
+            </div>
+        </div>
+    </nav>
 
-                <div class="media-frame animate-in" data-stagger="1">
-                    <img src="logo.png?v=neural" alt="Digital Web Logo" id="hero-img">
-                    <div class="frame-decor"></div>
+    <main class="app-container">
+        <!-- Dashboard Section -->
+        <section id="home" class="active">
+            <div class="hero-v13">
+                <div class="mesh-grid"></div>
+                <div class="w-watermark"></div>
+                
+                <h1 class="hero-title animate-in">أهلاً بك في أهم منصة عربية</h1>
+                
+                <p class="hero-subtitle-amiri animate-in" data-stagger="1" style="max-width: 600px; margin: 0 auto; opacity: 0.8; font-size: 1.4rem;">
+                    نظام استضافة وتوليد ذكي متكامل بخبرات عربية وعالمية.
+                </p>
+
+                <div class="hero-btns animate-in" data-stagger="2">
+                    <button class="btn-primary" onclick="dwSwitchTab('studio')">تجربة مجانية للـ AI</button>
+                    <button class="btn-secondary" onclick="window.scrollTo(0, document.querySelector('#stack').offsetTop)">استكشف السحابة</button>
+                </div>
+
+                <!-- Portal Infrastructure Bento (Simplified) -->
+                <div class="infra-preview animate-in" data-stagger="3" style="display: flex; gap: 20px; margin-top: 60px;">
+                    <div class="glass-card" style="padding: 20px; border-radius: 20px;">
+                        <i data-lucide="server" style="color: #3b82f6;"></i>
+                        <div style="font-size: 10px; margin-top: 10px; opacity: 0.5;">SERVER STATUS</div>
+                        <div style="font-weight: 800; font-size: 14px;">24/7 ACTIVE</div>
+                    </div>
+                    <div class="glass-card" style="padding: 20px; border-radius: 20px;">
+                        <i data-lucide="globe" style="color: #3b82f6;"></i>
+                        <div style="font-size: 10px; margin-top: 10px; opacity: 0.5;">DOMAINS</div>
+                        <div style="font-weight: 800; font-size: 14px;">AUTO_PROCESSED</div>
+                    </div>
+                    <div class="glass-card" style="padding: 20px; border-radius: 20px;">
+                        <i data-lucide="code" style="color: #3b82f6;"></i>
+                        <div style="font-size: 10px; margin-top: 10px; opacity: 0.5;">CUSTOM API</div>
+                        <div style="font-weight: 800; font-size: 14px;">v13_READY</div>
+                    </div>
                 </div>
             </div>
         </section>
-
-
         <!-- Stack Section (Moved to 2nd Position) -->
         <section id="stack">
             <div class="stack-title-wrapper" data-stagger="1">
