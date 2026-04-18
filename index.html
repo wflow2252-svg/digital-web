@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Digital Web | Sovereign Hub Synthesis</title>
-    <link rel="canonical" href="https://digitalwebeg.vercel.app">
+    <link rel="canonical" href="https://digital.web">
     <meta name="description" content="Premium Digital Experiences & AI Hub Synthesis - Sovereign v12.0.">
     <link rel="icon" href="logo.png?v=neural" type="image/png">
     <link rel="stylesheet" href="style.css">
@@ -172,24 +172,44 @@
     </div>
 
 
-    <nav class="glass-nav">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <img src="logo.png?v=neural" class="nav-logo" alt="Digital Web Logo" style="width: 35px; height: 35px; margin-right: 10px;">
-                <span class="brand-text">DIGITAL <span class="highlight">WEB</span></span>
-            </div>
-            <div class="nav-links">
-                <a href="#projects" class="nav-item">مشاريعنا</a>
-                <a href="#features" class="nav-item">الرئيسية</a>
-                <div class="nav-login-slot">
-                    <button class="google-btn" onclick="googleLogin()">
-                        <i class="bi bi-google"></i>
-                        تسجيل الدخول
-                    </button>
-                </div>
-                <button class="nav-cta" onclick="dwSwitchTab('studio')">تجربة مجانية</button>
-            </div>
+    <nav class="pill-nav top-pill">
+        <div class="pill-brand">
+            <img src="logo.png?v=neural" class="pill-logo" alt="Logo">
         </div>
+        
+        <div class="pill-items">
+            <button class="nav-item active" onclick="switchSection('home')">
+                <span class="material-symbols-outlined">home</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('domains')">
+                <span class="material-symbols-outlined">language</span>
+                <span class="nav-label">Domains</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('ai-studio')">
+            <button class="nav-item" onclick="switchSection('infrastructure')">
+                <span class="material-symbols-outlined">dns</span>
+                <span class="nav-label">Infrastructure</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('projects')">
+                <span class="material-symbols-outlined">folder</span>
+                <span class="nav-label">Projects</span>
+            </button>
+            <button class="nav-item" onclick="switchSection('contact')">
+                <span class="material-symbols-outlined">mail</span>
+                <span class="nav-label">Contact</span>
+            </button>
+        </div>
+
+        <div class="pill-actions">
+            <div class="nav-login-slot">
+                <button class="google-btn small" onclick="googleLogin()">
+                    <i class="bi bi-google"></i>
+                </button>
+            </div>
+            <button class="pill-cta" onclick="dwSwitchTab('studio')">ابدأ</button>
+        </div>
+        <div class="nav-indicator"></div>
     </nav>
 
     <main class="app-container">
@@ -199,7 +219,7 @@
                 <div class="mesh-grid"></div>
                 <div class="w-watermark"></div>
                 
-                <h1 class="hero-title animate-in">أهلاً بك في أهم منصة عربية</h1>
+                <h1 id="hero-main-title" class="hero-title">أهلاً بك في أهم منصة <span class="hero-word-glass">عربية</span></h1>
                 
                 <p class="hero-subtitle-amiri animate-in" data-stagger="1" style="max-width: 600px; margin: 0 auto; opacity: 0.8; font-size: 1.4rem;">
                     نظام استضافة وتوليد ذكي متكامل بخبرات عربية وعالمية.
@@ -230,57 +250,172 @@
                 </div>
             </div>
         </section>
-        <!-- Stack Section (Moved to 2nd Position) -->
-        <section id="stack">
-            <div class="stack-title-wrapper" data-stagger="1">
-                <span class="stack-title-cursive">My Tech</span>
-                <h1 class="stack-title-main">Stack</h1>
+
+        <!-- Domain Hub Section -->
+        <section id="domains" style="padding-top: 120px;">
+            <div class="domains-header text-center" style="margin-bottom: 4rem;">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[10px] font-black tracking-widest uppercase mb-6 animate-in" data-stagger="1">
+                    <i class="material-symbols-outlined" style="font-size: 14px;">hub</i> SOVEREIGN CLOUD INFRASTRUCTURE
+                </div>
+                <h2 class="hero-title animate-in" data-stagger="2" style="font-size: clamp(2rem, 6vw, 4rem); line-height: 1;">مركز إدارة النطاقات</h2>
+                <p class="hero-subtitle-amiri animate-in" data-stagger="3">تحكم بالسيادة الرقمية عبر دومينك العالمي الخاص.</p>
             </div>
 
-            <div class="skills-grid" data-stagger="2">
-                <!-- Row 1 -->
-                <div class="skill-box">
-                    <div class="dot-corner dot-tl"></div>
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML5">
-                </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3">
-                </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript">
-                </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React">
-                </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="Python">
-                </div>
-                <div class="skill-box">
-                    <div class="dot-corner dot-tr"></div>
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node.js">
+            <div class="domain-grid grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 max-w-7xl mx-auto">
+                <!-- Primary Domain Card -->
+                <div class="domain-card primary animate-in" data-stagger="4">
+                    <div class="domain-card-header">
+                        <div class="domain-icon-wrapper">
+                            <i class="material-symbols-outlined">public</i>
+                        </div>
+                        <div class="domain-status">
+                            <span class="status-dot"></span>
+                            ACTIVE
+                        </div>
+                    </div>
+                    <div class="domain-name">digital.web</div>
+                    <div class="domain-usage">Platform Identity | Primary</div>
+                    <div class="domain-meta">
+                        <div class="meta-item"><i class="material-symbols-outlined">verified_user</i> SSL SECURE</div>
+                        <div class="meta-item"><i class="material-symbols-outlined">dns</i> CLOUDFLARE PRO</div>
+                    </div>
                 </div>
 
-                <!-- Row 2 -->
-                <div class="skill-box">
-                    <div class="dot-corner dot-bl"></div>
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript">
+                <!-- Domain Card 2 -->
+                <div class="domain-card animate-in" data-stagger="5">
+                    <div class="domain-card-header">
+                        <div class="domain-icon-wrapper">
+                            <i class="material-symbols-outlined">cloud_circle</i>
+                        </div>
+                        <div class="domain-status muted">
+                            MAPPING...
+                        </div>
+                    </div>
+                    <div class="domain-name">client-alpha.digital.web</div>
+                    <div class="domain-usage">Generated Storefront</div>
+                    <div class="domain-meta">
+                        <div class="meta-item">Propagation: 98%</div>
+                    </div>
                 </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" alt="Next.js">
+
+                <!-- Connect Domain Card -->
+                <div class="domain-card connect-new animate-in" data-stagger="6">
+                    <div class="connect-icon"><i class="material-symbols-outlined">add_circle</i></div>
+                    <div class="connect-text">Connect New Domain</div>
+                    <div class="connect-sub">Add custom CNAME records</div>
                 </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="Tailwind CSS">
+            </div>
+        </section>
+        <section id="infrastructure" style="padding-top: 100px;">
+            <div class="infra-header text-center" style="margin-bottom: 4rem;">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-[10px] font-black tracking-widest uppercase mb-6 animate-in" data-stagger="1">
+                    <i class="material-symbols-outlined" style="font-size: 14px;">terminal</i> SOVEREIGN CLOUD OS v13.0
                 </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg" alt="Firebase">
+                <h2 class="hero-title animate-in" data-stagger="2" style="font-size: clamp(2rem, 6vw, 4rem); line-height: 1;">البنية التحتية السيادية</h2>
+                <p class="hero-subtitle-amiri animate-in" data-stagger="3">منظومة سحابية متكاملة تمنحك السيطرة الكاملة على بياناتك وتطبيقاتك.</p>
+            </div>
+
+            <div class="infra-bento-grid grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 px-6 max-w-[1600px] mx-auto auto-rows-[120px]">
+                
+                <!-- 1. Frontend & Backend Engine -->
+                <div class="infra-card md:col-span-2 lg:col-span-3 row-span-2 animate-in" data-stagger="4">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">developer_mode</i> APP ENGINE</div>
+                        <div class="infra-status online">SYNCED</div>
+                    </div>
+                    <div class="app-stack-visual">
+                        <div class="stack-layer front">FRONTEND <span class="badge-mini">REACTIVE</span></div>
+                        <div class="stack-layer back">BACKEND <span class="badge-mini">SCALABLE</span></div>
+                        <div class="stack-layer db">DATABASE <span class="badge-mini">ENCRYPTED</span></div>
+                    </div>
+                    <div class="infra-desc">Frontend, Backend and Database instances managed by Sovereign Synthesis.</div>
                 </div>
-                <div class="skill-box">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg" alt="Google Cloud">
+
+                <!-- 2. CI/CD Pipeline -->
+                <div class="infra-card md:col-span-2 row-span-2 animate-in" data-stagger="5">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">alt_route</i> CI / CD PIPELINE</div>
+                    </div>
+                    <div class="pipeline-visual">
+                        <div class="pipe-step active"><i class="material-symbols-outlined">commit</i></div>
+                        <div class="pipe-line active"></div>
+                        <div class="pipe-step active"><i class="material-symbols-outlined">build</i></div>
+                        <div class="pipe-line active"></div>
+                        <div class="pipe-step pulsing"><i class="material-symbols-outlined">rocket_launch</i></div>
+                    </div>
+                    <div class="infra-desc">Automated build and deploy cycles for zero-downtime releases.</div>
                 </div>
-                <div class="skill-box">
-                    <div class="dot-corner dot-br"></div>
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" alt="Figma">
+
+                <!-- 3. Security & WAF -->
+                <div class="infra-card lg:col-span-1 row-span-3 animate-in" data-stagger="6">
+                    <div class="infra-card-header">
+                        <div class="infra-label">SECURITY</div>
+                    </div>
+                    <div class="shield-visual">
+                        <div class="shield-circle">
+                            <i class="material-symbols-outlined">shield</i>
+                        </div>
+                    </div>
+                    <div class="infra-value">ACTIVE</div>
+                    <div class="infra-desc">WAF & DDoS Protection at the edge.</div>
                 </div>
+
+                <!-- 4. Global CDN -->
+                <div class="infra-card md:col-span-2 lg:col-span-3 row-span-2 animate-in" data-stagger="7">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">language</i> GLOBAL CDN</div>
+                        <div class="infra-status">98 EDGE NODES</div>
+                    </div>
+                    <div class="cdn-visual">
+                        <div class="cdn-map-dots"></div>
+                    </div>
+                    <div class="infra-desc">Content delivery optimized for MENA and Global low-latency access.</div>
+                </div>
+
+                <!-- 5. Containers (Docker/K8s) -->
+                <div class="infra-card md:col-span-2 row-span-1 animate-in" data-stagger="8">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">inventory_2</i> CONTAINERS</div>
+                        <div class="infra-val-small">Active: 1,240</div>
+                    </div>
+                </div>
+
+                <!-- 6. Networking -->
+                <div class="infra-card md:col-span-2 row-span-1 animate-in" data-stagger="9">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">hub</i> NETWORKING</div>
+                        <div class="infra-val-small">10 Gbps Uplink</div>
+                    </div>
+                </div>
+
+                <!-- 7. Monitoring & Logging -->
+                <div class="infra-card md:col-span-3 row-span-2 animate-in" data-stagger="10">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">monitoring</i> MONITORING & LOGS</div>
+                    </div>
+                    <div class="graph-visual">
+                        <div class="graph-bar" style="height: 40%;"></div>
+                        <div class="graph-bar" style="height: 60%;"></div>
+                        <div class="graph-bar" style="height: 80%;"></div>
+                        <div class="graph-bar" style="height: 50%;"></div>
+                        <div class="graph-bar" style="height: 90%;"></div>
+                    </div>
+                    <div class="infra-desc">Real-time observability and structured log synthesis.</div>
+                </div>
+
+                <!-- 8. Backups & Recovery -->
+                <div class="infra-card md:col-span-2 lg:col-span-2 row-span-2 animate-in" data-stagger="11">
+                    <div class="infra-card-header">
+                        <div class="infra-label"><i class="material-symbols-outlined">backup</i> BACKUPS & RECOVERY</div>
+                    </div>
+                    <div class="backup-status">
+                        <div class="circular-progress">
+                            <span class="prog-val">100%</span>
+                        </div>
+                    </div>
+                    <div class="infra-desc">Automated snapshots and point-in-time recovery.</div>
+                </div>
+
             </div>
         </section>
 
@@ -532,30 +667,7 @@
             </div>
         </section>
 
-        <!-- Floating Nav -->
-        <nav class="pill-nav">
-            <div class="nav-indicator"></div>
-            <button class="nav-item active" onclick="switchSection('home')">
-                <span class="material-symbols-outlined">home</span>
-                <span>Home</span>
-            </button>
-            <button class="nav-item" onclick="switchSection('ai-studio')">
-                <span class="material-symbols-outlined">psychology</span>
-                <span>Studio</span>
-            </button>
-            <button class="nav-item" onclick="switchSection('stack')">
-                <span class="material-symbols-outlined">layers</span>
-                <span>Stack</span>
-            </button>
-            <button class="nav-item" onclick="switchSection('projects')">
-                <span class="material-symbols-outlined">folder</span>
-                <span>Projects</span>
-            </button>
-            <button class="nav-item" onclick="switchSection('contact')">
-                <span class="material-symbols-outlined">mail</span>
-                <span>Contact</span>
-            </button>
-        </nav>
+
     </div>
 
     <script src="sovereign-chat.js"></script>

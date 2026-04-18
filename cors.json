@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["https://digitalwebeg.vercel.app", "http://localhost:5000", "http://127.0.0.1:5500", "http://localhost:3000"],
+    "origin": ["https://digital.web", "https://digitalwebeg.vercel.app", "http://localhost:5000", "http://127.0.0.1:5500", "http://localhost:3000"],
     "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
     "responseHeader": ["Content-Type"],
     "maxAgeSeconds": 3600

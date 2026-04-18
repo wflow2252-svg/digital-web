@@ -174,7 +174,7 @@
 
             await appendThought('Allocating Sovereign Cloud Resources...', 'logic');
             const projectSlug = brandName.toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substring(7, 10);
-            await appendThought(`Provisioning Subdomain: https://${projectSlug}.digitalweb.io`, 'logic');
+            await appendThought(`Provisioning Subdomain: https://${projectSlug}.digital.web`, 'logic');
             await appendThought('Configuring SSL certificates (DW Secure Shield)...', 'logic');
             await appendThought('Bootstrapping 24/7 Node.js Cluster...', 'logic');
             await appendThought('Synching SQL Knowledge Core...', 'logic');
@@ -200,7 +200,7 @@
                         <div style="background: var(--accent); padding: 10px; border-radius: 10px;"><i data-lucide="globe" style="color: black;"></i></div>
                         <div>
                             <div style="font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px;">SOVEREIGN HUB DOMAIN</div>
-                            <div style="font-weight: 900; color: white; font-size: 1.1rem;">https://${projectSlug}.digitalweb.io</div>
+                            <div style="font-weight: 900; color: white; font-size: 1.1rem;">https://${projectSlug}.digital.web</div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">

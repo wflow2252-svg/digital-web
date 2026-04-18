@@ -1,4 +1,4 @@
-const sections = ['home', 'ai-studio', 'stack', 'projects', 'contact'];
+const sections = ['home', 'domains', 'ai-studio', 'infrastructure', 'projects', 'contact'];
 let currentSectionIndex = 0;
 let isTransitioning = false;
 
@@ -296,11 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            // 5. General Content Controls
+            // 5. General Content Controls (Disabled hero_title sync to prioritize Arabic Master Title)
+            /* 
             if (settings.hero_title) {
                 const heroEl = document.getElementById('hero-main-title');
                 if (heroEl) heroEl.innerHTML = settings.hero_title.replace('\n', '<br>');
             }
+            */
 
             if (settings.welcome_msg) {
                 const welcomeEl = document.getElementById('welcome-greeting');
