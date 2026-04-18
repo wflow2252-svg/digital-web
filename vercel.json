@@ -1,6 +1,16 @@
 {
   "outputDirectory": ".",
+  "functions": {
+    "api/*.js": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/ai",
+      "destination": "/api/ai.js"
+    },
     {
       "source": "/demo/:id",
       "destination": "/demo.html?id=:id"

@@ -85,6 +85,31 @@
                     { t: 'دفع دولي ومحلي', d: 'تكامل فوري مع أشهر بوابات الدفع لتحصيل آمن وسريع.', size: 'md:col-span-1', icon: 'credit-card' }
                 ]
             }
+            },
+            medical: {
+                title: 'Elite Medical | رعاية صحية بسيادة رقمية',
+                desc: 'منصتك الطبية ليست مجرد عرض، بل رحلة ثقة تقود المريض إليك من خلال تصميم احترافي وأدوات ذكية.',
+                accent: 'blue-500',
+                unsplash: 'hospital,doctor',
+                features: [
+                    { t: 'حجز مواعيد ذكي', d: 'نظام متكامل يسهل عملية الحجز ويقلل وقت الانتظار.', size: 'md:col-span-2', icon: 'calendar-days' },
+                    { t: 'ملفات المرضى', d: 'إدارة آمنة وذكية لبيانات المرضى تضمن الخصوصية الكاملة.', size: 'md:col-span-1', icon: 'user-plus' },
+                    { t: 'استشارات عن بعد', d: 'تكامل مع منصات الفيديو لتقديم رعاية صحية في أي مكان.', size: 'md:col-span-1', icon: 'video' },
+                    { t: 'ثقة ومصداقية', d: 'عناصر تصميم تعزز من صورة العيادة وتجذب المرضى الباحثين عن الجودة.', size: 'md:col-span-2', icon: 'award' }
+                ]
+            },
+            legal: {
+                title: 'Strategic Justice | سيادة القانون في العصر الرقمي',
+                desc: 'حلول رقمية متطورة لمكاتب المحاماة تعزز من سلطتك المهنية وتسهل الوصول إلى العدالة.',
+                accent: 'amber-600',
+                unsplash: 'law,justice',
+                features: [
+                    { t: 'استشارات قانونية', d: 'نظام طلب استشارات أولي مؤتمت يوفر وقتك ووقت العميل.', size: 'md:col-span-1', icon: 'gavel' },
+                    { t: 'أمان البيانات', d: 'تشفير عسكري لكافة المراسلات والوثائق القانونية الحساسة.', size: 'md:col-span-2', icon: 'lock' },
+                    { t: 'إدارة قضايا', d: 'لوحة تحكم ذكية لمتابعة سير القضايا والتحديثات اللحظية.', size: 'md:col-span-2', icon: 'file-text' },
+                    { t: 'هوية مهنية', d: 'تصميم يعكس الوقار والدقة للوصول إلى نخبة العملاء.', size: 'md:col-span-1', icon: 'briefcase' }
+                ]
+            }
         },
         default: {
             title: 'Sovereign Growth | حلول رقمية تقلب الموازين',
@@ -108,7 +133,7 @@
         if (!generateBtn || !promptInput) return;
         if (statusDisplay) statusDisplay.innerText = "Sovereign v12.5 | Strategic Refinement Active";
 
-        const UI_FACTORY = {
+        window.SOVEREIGN_UI_FACTORY = {
             header: (name, accent) => `<nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl">
                 <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
                     <div class="flex items-center gap-3">

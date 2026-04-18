@@ -835,26 +835,43 @@ async function sendMsg() {
   chatHistory.push({ role: 'user', content: text });
   showThinking();
 
+  // ══════════════════════════════════════════════════════
+  // 🤖 SOVEREIGN AI — secure proxy (token on server, never here)
+  // ══════════════════════════════════════════════════════
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const sysPrompt = systemPrompts[currentDomain] || systemPrompts.general;
+    const ctx = chatHistory.length > 1
+      ? '\n\n[سياق]:\n' + chatHistory.slice(-5, -1)
+          .map(h => (h.role === 'user' ? 'User: ' : 'AI: ') + h.content).join('\n')
+      : '';
+    const fullPrompt = `${sysPrompt}${ctx}\n\nسؤال: ${text}\n\nأجب بالعربي بشكل واضح ومختصر. استخدم code blocks للكود.`;
+
+    const resp = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompts[currentDomain] + '\n\nكن واضحاً ومختصراً. استخدم code blocks للكود. لا تطول بدون فائدة.',
-        messages: chatHistory
-      })
+      body: JSON.stringify({ prompt: fullPrompt })
     });
-    const data = await resp.json();
+
     hideThinking();
-    const reply = data.content?.[0]?.text || 'تم قطع الاتصال. تأكد من إعدادات الـ CROS أو الـ API Key في البيئة المحلية.';
-    chatHistory.push({ role: 'assistant', content: reply });
-    if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
-    addMsg('ai', reply);
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP ${resp.status}`);
+    }
+
+    const { reply } = await resp.json();
+
+    if (reply && reply.trim().length > 5) {
+      chatHistory.push({ role: 'assistant', content: reply });
+      if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+      addMsg('ai', reply);
+    } else {
+      addMsg('ai', '⚠️ نماذج الذكاء الاصطناعي مشغولة. حاول مرة أخرى خلال دقيقة.');
+    }
   } catch (e) {
     hideThinking();
-    addMsg('ai', 'لم يتم العثور على Endpoint مفعل أو توقفت الخدمة بشكل طارئ. يٌرجى التحقق من الشبكة.');
+    console.error('AI Error:', e);
+    addMsg('ai', `⚠️ خطأ: ${e.message || 'تحقق من الاتصال بالإنترنت.'}`);
   }
 
   isLoading = false;

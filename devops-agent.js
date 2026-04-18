@@ -1,15 +1,22 @@
-// Digital Web - AI Studio Agent Logic (Restricted)
+// Digital Web - AI Studio Agent Logic (Sovereign v13.0)
+// AI calls go to /api/ai (Vercel serverless proxy) — no token in client code.
 
 const da_domains = [
   { id:'builder', icon:'layout', name:'إنشاء موقع تجريبي', desc:'قم ببناء موقعك مجاناً عبر الذكاء الاصطناعي', color:'#00d4ff' }
 ];
 
 const da_systemPrompts = {
-  builder: 'أنت Sovereign AI، مصمم ومبرمج مواقع محترف. مهمتك قراءة طلب المستخدم، وتوليد كود HTML و CSS و JS في ملف واحد متكامل واحترافي 100%. أجب دائماً بالعربية وركز على الـ UX/UI الراقي جداً. لا تدرج أي نصوص زائدة، فقط قدم العمل.'
+  builder: `أنت Sovereign AI، خبير تصميم ومبرمج مواقع ويب محترف. مهمتك:
+1. قراءة طلب المستخدم بدقة.
+2. توليد كود HTML + CSS + JS متكامل في ملف واحد.
+3. استخدام Tailwind CSS (CDN) و Lucide Icons.
+4. التصميم احترافي، راقي، وجذاب بصرياً — dark mode بشكل افتراضي.
+5. أجب باللغة العربية في أي شرح، والكود بالإنجليزية.
+6. قدّم الكود الكامل داخل كتلة \`\`\`html ... \`\`\` بدون أي نص زائد.`
 };
 
 const da_quickSuggestions = {
-  builder: ['موقع لشركة تقنية','موقع لمطعم وكافيه','موقع لعيادة أسنان', 'متجر إلكتروني للملابس']
+  builder: ['موقع لشركة تقنية', 'موقع لمطعم وكافيه', 'موقع لعيادة أسنان', 'متجر إلكتروني للملابس']
 };
 
 const da_welcomeCards = [
@@ -21,21 +28,23 @@ let da_currentDomain = 'builder';
 let da_chatHistory = [];
 let da_isLoading = false;
 let da_messageCount = 0;
-const MAX_MESSAGES = 4; // Hard Limit
+const MAX_MESSAGES = 4;
+
+// ═══════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════
 
 function initDevopsAgent() {
   const domainList = document.getElementById('da-domainList');
-  if(!domainList) return;
+  if (!domainList) return;
   domainList.innerHTML = '';
   da_domains.forEach(d => {
     const el = document.createElement('div');
     el.className = 'da-domain-item active';
     el.dataset.id = d.id;
     el.innerHTML = `<span class="da-d-icon"><i data-lucide="${d.icon}"></i></span><span class="da-d-name">${d.name}</span>`;
-    // Removed onClick domain switching since there's only one.
     domainList.appendChild(el);
   });
-
   da_renderWelcomeCards();
   if (typeof lucide !== 'undefined') lucide.createIcons();
   da_renderQuick();
@@ -43,7 +52,7 @@ function initDevopsAgent() {
 
 function da_renderWelcomeCards() {
   const wg = document.getElementById('da-welcomeGrid');
-  if(!wg) return;
+  if (!wg) return;
   wg.innerHTML = '';
   da_welcomeCards.forEach(c => {
     const el = document.createElement('div');
@@ -56,7 +65,7 @@ function da_renderWelcomeCards() {
 
 function da_renderQuick() {
   const area = document.getElementById('da-quickArea');
-  if(!area) return;
+  if (!area) return;
   area.innerHTML = (da_quickSuggestions[da_currentDomain] || [])
     .map(q => `<button class="da-quick-pill" onclick="da_sendQuick(this.textContent)">${q}</button>`)
     .join('');
@@ -85,9 +94,9 @@ function da_clearChat() {
   welcome.className = 'da-welcome';
   welcome.id = 'da-welcome';
   welcome.innerHTML = `
-    <div class="da-welcome-icon"><i data-lucide="terminal-square"></i></div>
-    <div class="da-welcome-title">AI Studio Agent</div>
-    <div class="da-welcome-sub">المساعد التقني الشامل. جاهز لتصميم مسودات المواقع وتوليد الأكواد مجاناً (رصيد محدود).</div>
+    <div class="da-welcome-icon"><i data-lucide="wand-2"></i></div>
+    <div class="da-welcome-title">AI Studio | مولّد المواقع</div>
+    <div class="da-welcome-sub">صف فكرة موقعك وسيبنيه لك الذكاء الاصطناعي كاملاً. رصيدك المجاني: 4 رسائل.</div>
     <div class="da-welcome-grid" id="da-welcomeGrid"></div>`;
   msgs.appendChild(welcome);
   da_renderWelcomeCards();
@@ -99,6 +108,7 @@ function da_formatText(text) {
     `<pre><code>${da_escHtml(code.trim())}</code></pre>`);
   text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${da_escHtml(c)}</code>`);
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\n/g, '<br>');
   return text;
 }
 
@@ -116,29 +126,28 @@ function da_addMsg(role, text) {
 
   const av = document.createElement('div');
   av.className = 'da-avatar ' + role;
-  
-  if(role === 'ai') { av.innerHTML = '<i data-lucide="bot" style="width:20px;height:20px;"></i>'; } 
-  else { av.innerHTML = '<i data-lucide="user" style="width:20px;height:20px;"></i>'; }
+  av.innerHTML = role === 'ai'
+    ? '<i data-lucide="bot" style="width:20px;height:20px;"></i>'
+    : '<i data-lucide="user" style="width:20px;height:20px;"></i>';
 
   const col = document.createElement('div');
   col.className = 'da-msg-col';
 
   const bubble = document.createElement('div');
   bubble.className = 'da-bubble ' + role;
-  if (role === 'ai') { bubble.innerHTML = da_formatText(text); } 
-  else { bubble.textContent = text; }
+  bubble.innerHTML = role === 'ai' ? da_formatText(text) : da_escHtml(text);
 
   const meta = document.createElement('div');
   meta.className = 'da-msg-meta';
-  meta.textContent = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'});
+  meta.textContent = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
   col.appendChild(bubble);
   col.appendChild(meta);
   row.appendChild(av);
   row.appendChild(col);
   msgs.appendChild(row);
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons({root: row});
+
+  if (typeof lucide !== 'undefined') lucide.createIcons({ root: row });
   msgs.scrollTop = msgs.scrollHeight;
   return bubble;
 }
@@ -152,10 +161,10 @@ function da_showThinking() {
     <div class="da-avatar ai"><i data-lucide="bot" style="width:20px;height:20px;"></i></div>
     <div class="da-thinking-bubble">
       <div class="da-dot"></div><div class="da-dot"></div><div class="da-dot"></div>
-      <span style="font-size:11px; margin-right:8px; color:#94a3b8; font-family:'JetBrains Mono', monospace;">ANALYZING REQUIREMENTS...</span>
+      <span style="font-size:11px; margin-right:8px; color:#94a3b8; font-family:'JetBrains Mono',monospace;">SOVEREIGN AI GENERATING...</span>
     </div>`;
   msgs.appendChild(row);
-  if (typeof lucide !== 'undefined') lucide.createIcons({root: row});
+  if (typeof lucide !== 'undefined') lucide.createIcons({ root: row });
   msgs.scrollTop = msgs.scrollHeight;
 }
 
@@ -164,6 +173,9 @@ function da_hideThinking() {
   if (t) t.remove();
 }
 
+// ═══════════════════════════════════════════════════════════
+// 🧠 MAIN SEND — calls /api/ai (secure proxy, no token here)
+// ═══════════════════════════════════════════════════════════
 async function da_sendMsg() {
   if (da_isLoading) return;
   const input = document.getElementById('da-userInput');
@@ -171,12 +183,11 @@ async function da_sendMsg() {
   if (!text) return;
 
   if (da_messageCount >= MAX_MESSAGES) {
-      da_addMsg('ai', 'عذراً! لقد استنفدت رصيدك التجريبي المجاني (4/4 رسائل). يُرجى التواصل معنا للاشتراك في الخدمة الكاملة. 🛑');
-      return;
+    da_addMsg('ai', '⛔ عذراً! لقد استنفدت رصيدك التجريبي المجاني (4/4 رسائل). يُرجى التواصل معنا للاشتراك في الخدمة الكاملة.');
+    return;
   }
-  
-  da_messageCount++;
 
+  da_messageCount++;
   input.value = '';
   input.style.height = 'auto';
   da_isLoading = true;
@@ -187,59 +198,95 @@ async function da_sendMsg() {
   da_showThinking();
 
   try {
-    // Build full message with system context
-    const systemGoal = da_systemPrompts['builder'];
-    const contextStr = da_chatHistory.length > 1
-      ? "\n\n[سياق المحادثة السابق]:\n" + da_chatHistory.slice(0, -1).map(h => (h.role === 'user' ? 'المستخدم: ' : 'AI: ') + h.content).join('\n')
-      : "";
+    const sysPrompt = da_systemPrompts['builder'];
+    const ctx = da_chatHistory.length > 1
+      ? '\n\n[سياق المحادثة]:\n' + da_chatHistory.slice(-5, -1)
+          .map(h => (h.role === 'user' ? 'المستخدم: ' : 'AI: ') + h.content).join('\n')
+      : '';
+    const fullPrompt = `${sysPrompt}${ctx}\n\nطلب المستخدم: ${text}`;
 
-    const fullPrompt = `[SYSTEM]: ${systemGoal}\n\n[USER]: ${text}${contextStr}`;
-
-    // Direct REST call to Bytez API — works from browser without SDK
-    const resp = await fetch('https://api.bytez.com/models/v2/anthropic/claude-opus-4-6/chat', {
+    // → /api/ai  (Vercel serverless — token never on client)
+    const resp = await fetch('/api/ai', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Key 31b385faf5c325b4f98b432dd21a53ac',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: fullPrompt }],
-        max_tokens: 3000,
-        stream: false
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: fullPrompt })
     });
 
     da_hideThinking();
 
     if (!resp.ok) {
-      const errText = await resp.text();
-      console.error('Bytez error:', resp.status, errText);
-      da_addMsg('ai', `خطأ من الخادم: ${resp.status}. تحقق من صحة الـ API Key.`);
-      da_messageCount--;
-    } else {
-      const data = await resp.json();
-      // Bytez returns { output: "..." } or OpenAI-compatible format
-      const reply = data?.output 
-        || data?.choices?.[0]?.message?.content 
-        || data?.content?.[0]?.text 
-        || (typeof data === 'string' ? data : JSON.stringify(data));
-      
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP ${resp.status}`);
+    }
+
+    const { reply, model } = await resp.json();
+
+    if (reply && reply.trim().length > 5) {
       da_chatHistory.push({ role: 'assistant', content: reply });
       if (da_chatHistory.length > 30) da_chatHistory = da_chatHistory.slice(-30);
       da_addMsg('ai', reply);
+
+      // Auto-open preview if HTML code is detected
+      const htmlMatch = reply.match(/```html([\s\S]*?)```/);
+      if (htmlMatch || reply.includes('<!DOCTYPE html>') || reply.includes('<html')) {
+        const code = htmlMatch ? htmlMatch[1].trim() : reply;
+        if (window.dwOpenPreview) {
+          window.dwOpenPreview({
+            html: code,
+            code: code,
+            analysis: { brandName: 'AI Generated Site', dialect: { welcome: 'Sovereign AI' } },
+            logic: [`Real AI (${model || 'HF'})`, 'Sovereign Protocol v13']
+          });
+        }
+      }
+    } else {
+      // Trigger local fallback
+      da_messageCount--;
+      da_addMsg('ai', '⚡ محرك الذكاء الاصطناعي مشغول الآن. جاري تفعيل محرك التوليد المحلي...');
+      setTimeout(() => da_triggerLocalFallback(text), 600);
     }
 
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error('AI Studio Error:', err);
     da_hideThinking();
-    da_addMsg('ai', 'فشل الاتصال بالخادم. تحقق من الإنترنت وأعد المحاولة.');
     da_messageCount--;
+    da_addMsg('ai', `⚡ ${err.message || 'خطأ في الاتصال'}. جاري تفعيل المحرك المحلي...`);
+    setTimeout(() => da_triggerLocalFallback(text), 600);
+  } finally {
+    da_isLoading = false;
+    document.getElementById('da-sendBtn').disabled = false;
   }
-
-  da_isLoading = false;
-  document.getElementById('da-sendBtn').disabled = false;
-  input.focus();
 }
 
-// Load it when DOM is ready
+// ═══════════════════════════════════════════════════════════
+// 🏛️ LOCAL SYNTHESIS ENGINE (Always-Available Fallback)
+// ═══════════════════════════════════════════════════════════
+function da_triggerLocalFallback(text) {
+  const p = text.toLowerCase();
+  let dialect = { welcome: 'أهلاً بك في آفاق السيادة الرقمية', cta: 'ابدأ رحلة النجاح الآن' };
+  if (p.includes('ابي') || p.includes('ودي')) dialect = { welcome: 'حيّاك في عالم الفخامة الرقمية', cta: 'احجز مكانك في القمة' };
+  if (p.includes('عايز') || p.includes('اعملي')) dialect = { welcome: 'أهلاً في مصنع النجاح', cta: 'سيطر على السوق دلوقتي' };
+
+  const brandName = text.match(/(لـ|اسم|لشركة|for|called) ([\w\s\u0600-\u06FF]+)/)?.[2]?.trim() || 'Sovereign Hub';
+
+  let accent = 'indigo-600', niche = 'تقنية متقدمة';
+  if (p.includes('مطعم') || p.includes('كافيه') || p.includes('اكل')) { accent = 'orange-500'; niche = 'مطعم وكافيه'; }
+  else if (p.includes('عقار') || p.includes('فيلا') || p.includes('سكن')) { accent = 'emerald-600'; niche = 'عقارات'; }
+  else if (p.includes('متجر') || p.includes('ملابس') || p.includes('تسوق')) { accent = 'fuchsia-600'; niche = 'متجر إلكتروني'; }
+  else if (p.includes('عيادة') || p.includes('طب') || p.includes('صحة')) { accent = 'sky-500'; niche = 'رعاية صحية'; }
+
+  if (window.SOVEREIGN_UI_FACTORY) {
+    const f = window.SOVEREIGN_UI_FACTORY;
+    const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:'Cairo',sans-serif;background:#020617;color:#f8fafc;}<\/style><\/head><body class="bg-slate-950 min-h-screen">
+    ${f.header(brandName, accent)}
+    ${f.hero(brandName, `منصة ${niche} احترافية لتحقيق أهدافك وتحويل زوارك لعملاء دائمين.`, 'modern', accent, dialect)}
+    ${f.footer()}<script>lucide.createIcons();<\/script><\/body><\/html>`;
+
+    da_addMsg('ai', `✅ تم توليد موقع **${brandName}** (${niche}) بالمحرك المحلي! شاهد المعاينة في اليمين.`);
+    window.dwOpenPreview({ html, code: html, analysis: { dialect, brandName }, logic: ['Local Engine', 'Sovereign v13'] });
+  } else {
+    da_addMsg('ai', `تم التحليل: **${brandName}** (${niche}). أعد تحميل الصفحة للحصول على المعاينة الكاملة.`);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', initDevopsAgent);
