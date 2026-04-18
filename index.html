@@ -364,10 +364,17 @@
             <h2 class="section-title-alt">AI Innovation Lab</h2>
             <div class="studio-container animate-in" data-stagger="1">
                 <div class="studio-header">
-                    <div class="ai-status-tag"><div class="dot pulse"></div> NEURAL_ENGINE READY</div>
+                    <div class="ai-status-tag"><div class="dot pulse"></div> MASTER_ARCHITECT v11.0 ACTIVE</div>
+                    <div class="knowledge-core-status">
+                        <span class="core-label">SEMANTIC_CORE:</span>
+                        <span class="core-value" id="registry-size">Analyzing Registry...</span>
+                        <span class="core-badge">TAILWIND_ENGINE ENABLED</span>
+                    </div>
+
                     <h3>Start Your Digital Experiment</h3>
-                    <p>Describe your vision, and our elite-tier AI will architect a custom trial project for you in real-time.</p>
+                    <p>Describe your vision, and our Sovereign AI will derive a full-stack blueprint from its deep knowledge registry.</p>
                 </div>
+
                 
                 <div class="studio-idea-chips">
                     <button class="idea-chip" onclick="dwQuickPrompt('Build a luxury perfume store with gold accents')">Perfume Store</button>
@@ -392,7 +399,42 @@
 
                 <!-- Neural Processing Log -->
                 <div id="studio-log"></div>
+
+                <!-- Sovereign Result Dashboard (NEW v9.0) -->
+                <div id="studio-result-dashboard" class="hidden">
+                    <div class="dashboard-header">
+                        <button class="back-to-studio" onclick="dwResetStudio()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Core
+                        </button>
+                        <div class="tab-nav">
+                            <button class="tab-btn active" onclick="dwSwitchTab('vision')">VISION</button>
+                            <button class="tab-btn" onclick="dwSwitchTab('code')">CODE</button>
+                            <button class="tab-btn" onclick="dwSwitchTab('logic')">LOGIC CORE</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-content">
+                        <div id="tab-vision" class="tab-panel active"></div>
+                        <div id="tab-code" class="tab-panel">
+                            <div class="code-header">
+                                <span>FRONT-END BLUEPRINT</span>
+                                <button onclick="window.parent.dwCopyResult('CODE')">COPY CODE</button>
+                            </div>
+                            <pre id="code-display" dir="ltr"></pre>
+                        </div>
+                        <div id="tab-logic" class="tab-panel">
+                            <div class="logic-header">
+                                <h3>Architectural Reasoning</h3>
+                                <p>Synthesis Cluster v10.0.0 Active</p>
+                            </div>
+                            <div id="logic-display"></div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </section>
 
 
