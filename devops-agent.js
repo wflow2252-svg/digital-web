@@ -248,58 +248,30 @@ async function da_sendMsg() {
       : '';
     const fullPrompt = `${sysPrompt}${ctx}\n\nطلب المستخدم: ${text}`;
 
-    // → 100% Native Local Neural Engine (Ollama)
-    // Runs on your local machine, completely free, private, and always available.
-    
-    // First, verify Ollama is running and get available models
-    let availableModels = [];
-    try {
-      const checkOllama = await fetch('http://localhost:11434/api/tags');
-      const tagsData = await checkOllama.json();
-      availableModels = tagsData.models.map(m => m.name);
-    } catch (e) {
-      throw new Error("تطبيق Ollama غير متصل ⚠️. يرجى تثبيت وتشغيل Ollama على جهازك من ollama.com");
-    }
-
-    // Auto-detect the best coding model available locally
-    let selectedModel = 'llama3'; // Default fallback
-    const preferredModels = ['qwen2.5-coder', 'deepseek-coder', 'mistral', 'llama3'];
-    for (let pm of preferredModels) {
-      if (availableModels.find(m => m.startsWith(pm))) {
-        selectedModel = availableModels.find(m => m.startsWith(pm));
-        break;
-      }
-    }
-
-    if (availableModels.length === 0) {
-      throw new Error("لم يتم العثور على أي نموذج ⚠️. يرجى فتح الـ Terminal وكتابة: ollama run llama3");
-    }
-
+    // → 100% Native Open Source Neural Engine (Pollinations AI)
+    // No backend proxy, NO API keys needed.
     const messages = [
       { role: 'system', content: sysPrompt },
       { role: 'user', content: text }
     ];
 
-    const resp = await fetch('http://localhost:11434/api/chat', {
+    const resp = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        model: selectedModel,
-        messages: messages,
-        stream: false 
+        messages, 
+        model: 'mistral' 
       })
     });
 
     da_hideThinking();
 
     if (!resp.ok) {
-      const err = await resp.text();
-      throw new Error(`مشكلة في استجابة Ollama: ${err}`);
+      throw new Error(`مشكلة في الاتصال بمزود الذكاء الاصطناعي (HTTP ${resp.status})`);
     }
 
-    const data = await resp.json();
-    const reply = data.message?.content || "";
-    const model = `${selectedModel} (Ollama Local API)`;
+    const reply = await resp.text();
+    const model = 'Mistral-7B (Open Source)';
 
     if (reply && reply.trim().length > 10) {
       da_chatHistory.push({ role: 'user', content: text });
