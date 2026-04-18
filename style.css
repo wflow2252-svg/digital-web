@@ -711,10 +711,14 @@ section.exiting {
     z-index: 10;
 }
 
-.terminal-line { margin-bottom: 4px; display: flex; gap: 10px; opacity: 0; animation: terminalFadeIn 0.3s forwards; }
-.terminal-line .t-ts { color: rgba(255,255,255,0.2); flex-shrink: 0; }
-.terminal-line .t-cmd { color: #3b82f6; font-weight: 800; }
-.terminal-line .t-out { color: #e5e7eb; }
+.terminal-line { margin-bottom: 4px; display: flex; gap: 10px; opacity: 0; animation: terminalFadeIn 0.3s forwards; position: relative; }
+.terminal-line::after { content: '|'; position: absolute; right: -8px; animation: blink 0.8s infinite; opacity: 0; }
+.terminal-line.active::after { opacity: 1; }
+
+@keyframes blink { from { opacity: 0; } to { opacity: 1; } }
+
+.logic-stream-terminal::-webkit-scrollbar { width: 4px; }
+.logic-stream-terminal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
 @keyframes terminalFadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
