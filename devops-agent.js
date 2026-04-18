@@ -248,21 +248,30 @@ async function da_sendMsg() {
       : '';
     const fullPrompt = `${sysPrompt}${ctx}\n\nطلب المستخدم: ${text}`;
 
-    // → Vercel Serverless AI Proxy (Solves all CORS, Token, and Localhost Fallbacks)
-    const resp = await fetch('/api/ai', {
+    // → 100% Native Open Source Neural Engine (Pollinations AI)
+    // No backend proxy, NO API keys needed.
+    const messages = [
+      { role: 'system', content: sysPrompt },
+      { role: 'user', content: text }
+    ];
+
+    const resp = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: fullPrompt })
+      body: JSON.stringify({ 
+        messages, 
+        model: 'mistral' 
+      })
     });
 
     da_hideThinking();
 
     if (!resp.ok) {
-      const errData = await resp.json().catch(() => ({}));
-      throw new Error(errData.error || `HTTP ${resp.status}`);
+      throw new Error(`مشكلة في الاتصال بمزود الذكاء الاصطناعي (HTTP ${resp.status})`);
     }
 
-    const { reply, model } = await resp.json();
+    const reply = await resp.text();
+    const model = 'Mistral-7B (Open Source)';
 
     if (reply && reply.trim().length > 10) {
       da_chatHistory.push({ role: 'user', content: text });
