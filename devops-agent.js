@@ -224,25 +224,40 @@ async function da_sendMsg() {
   da_showThinking();
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: da_systemPrompts[da_currentDomain] + '\n\nكن واضحاً ومختصراً. استخدم code blocks للكود. لا تطول بدون فائدة.',
-        messages: da_chatHistory
-      })
-    });
-    const data = await resp.json();
+    const module = await import('https://esm.sh/bytez.js');
+    const Bytez = module.default;
+    const sdk = new Bytez("31b385faf5c325b4f98b432dd21a53ac");
+    const model = sdk.model("anthropic/claude-opus-4-6");
+
+    // Inject system prompt manually by formatting the message array
+    const messagesObj = [
+      { role: "user", content: "[SYSTEM GOAL]: " + da_systemPrompts[da_currentDomain] + "\n\n[USER ACTION]: " + text }
+    ];
+    
+    // For Claude, if chat history gets long, it sometimes requires very strict alternating roles.
+    // To be completely safe and avoid multi-role API errors in Bytez, we will just pass the current prompt with history context stringified.
+    const contextStr = da_chatHistory.length > 1 ? "\n\n[PREVIOUS CHAT CONTEXT]:\n" + da_chatHistory.slice(0, -1).map(h => (h.role === 'user' ? 'User: ' : 'AI: ') + h.content).join('\n') : "";
+    messagesObj[0].content += contextStr;
+
+    const { error, output } = await model.run(messagesObj);
+
     da_hideThinking();
-    const reply = data.content?.[0]?.text || 'تم قطع الاتصال. تأكد من إعدادات الـ CROS أو الـ API Key في البيئة المحلية.';
-    da_chatHistory.push({ role: 'assistant', content: reply });
-    if (da_chatHistory.length > 30) da_chatHistory = da_chatHistory.slice(-30);
-    da_addMsg('ai', reply);
+
+    if (error) {
+      console.error(error);
+      da_addMsg('ai', 'عذراً، حدث خطأ أثناء الاتصال بالمودل.');
+      da_chatHistory.push({ role: 'assistant', content: 'Error' });
+    } else {
+      let reply = typeof output === 'string' ? output : (output?.[0]?.content || output?.text || JSON.stringify(output));
+      da_chatHistory.push({ role: 'assistant', content: reply });
+      if (da_chatHistory.length > 30) da_chatHistory = da_chatHistory.slice(-30);
+      da_addMsg('ai', reply);
+    }
+
   } catch (e) {
+    console.error(e);
     da_hideThinking();
-    da_addMsg('ai', 'لم يتم العثور على Endpoint مفعل أو توقفت الخدمة بشكل طارئ. يٌرجى التحقق من الشبكة.');
+    da_addMsg('ai', 'حدث خطأ في تحميل مكتبة البنية التحتية. يرجى المراجعة.');
   }
 
   da_isLoading = false;
