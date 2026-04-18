@@ -187,29 +187,43 @@ async function da_sendMsg() {
   da_showThinking();
 
   try {
-    const module = await import('https://esm.sh/bytez.js');
-    const Bytez = module.default;
-    const sdk = new Bytez("31b385faf5c325b4f98b432dd21a53ac");
-    const model = sdk.model("anthropic/claude-opus-4-6");
+    // Build full message with system context
+    const systemGoal = da_systemPrompts['builder'];
+    const contextStr = da_chatHistory.length > 1
+      ? "\n\n[سياق المحادثة السابق]:\n" + da_chatHistory.slice(0, -1).map(h => (h.role === 'user' ? 'المستخدم: ' : 'AI: ') + h.content).join('\n')
+      : "";
 
-    const messagesObj = [
-      { role: "user", content: "[SYSTEM GOAL]: " + da_systemPrompts['builder'] + "\n\n[USER ACTION]: " + text }
-    ];
-    
-    const contextStr = da_chatHistory.length > 1 ? "\n\n[PREVIOUS CHAT CONTEXT]:\n" + da_chatHistory.slice(0, -1).map(h => (h.role === 'user' ? 'User: ' : 'AI: ') + h.content).join('\n') : "";
-    messagesObj[0].content += contextStr;
+    const fullPrompt = `[SYSTEM]: ${systemGoal}\n\n[USER]: ${text}${contextStr}`;
 
-    const { error, output } = await model.run(messagesObj);
+    // Direct REST call to Bytez API — works from browser without SDK
+    const resp = await fetch('https://api.bytez.com/models/v2/anthropic/claude-opus-4-6/chat', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Key 31b385faf5c325b4f98b432dd21a53ac',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: fullPrompt }],
+        max_tokens: 3000,
+        stream: false
+      })
+    });
 
     da_hideThinking();
 
-    if (error) {
-      console.error(error);
-      da_addMsg('ai', 'عذراً، حدث خطأ أثناء الاتصال بالمودل.');
-      da_chatHistory.push({ role: 'assistant', content: 'Error' });
-      da_messageCount--; // refund message count
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error('Bytez error:', resp.status, errText);
+      da_addMsg('ai', `خطأ من الخادم: ${resp.status}. تحقق من صحة الـ API Key.`);
+      da_messageCount--;
     } else {
-      let reply = typeof output === 'string' ? output : (output?.[0]?.content || output?.text || JSON.stringify(output));
+      const data = await resp.json();
+      // Bytez returns { output: "..." } or OpenAI-compatible format
+      const reply = data?.output 
+        || data?.choices?.[0]?.message?.content 
+        || data?.content?.[0]?.text 
+        || (typeof data === 'string' ? data : JSON.stringify(data));
+      
       da_chatHistory.push({ role: 'assistant', content: reply });
       if (da_chatHistory.length > 30) da_chatHistory = da_chatHistory.slice(-30);
       da_addMsg('ai', reply);
@@ -218,7 +232,7 @@ async function da_sendMsg() {
   } catch (e) {
     console.error(e);
     da_hideThinking();
-    da_addMsg('ai', 'حدث خطأ في تحميل الاتصال، تأكد أنك متصل بالإنترنت وأن مفتاح Bytez صالح.');
+    da_addMsg('ai', 'فشل الاتصال بالخادم. تحقق من الإنترنت وأعد المحاولة.');
     da_messageCount--;
   }
 
