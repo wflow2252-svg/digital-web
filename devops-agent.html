@@ -3,379 +3,530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DevOps AI Agent</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>DevOps AI Agent | Sovereign UI</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root {
-    --bg: #0a0c10;
-    --surface: #111318;
-    --surface2: #181c24;
-    --border: #1e2330;
-    --border2: #252d3d;
-    --accent: #00d4ff;
-    --accent2: #0099bb;
-    --green: #00ff88;
-    --amber: #ffaa00;
-    --red: #ff4455;
-    --text: #e8eaf0;
-    --text2: #8892a4;
-    --text3: #4a5568;
-    --mono: 'IBM Plex Mono', monospace;
+    --bg-base: #020617;
+    --surface-glass: rgba(15, 23, 42, 0.4);
+    --surface-card: rgba(30, 41, 59, 0.3);
+    --border-light: rgba(148, 163, 184, 0.1);
+    --border-glass: rgba(255, 255, 255, 0.05);
+    
+    --accent-glow: rgba(56, 189, 248, 0.4);
+    --accent-solid: #38bdf8;
+    --accent-dark: #0284c7;
+    
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #475569;
+    
+    --green-glow: #10b981;
+    --amber-glow: #f59e0b;
+    --red-glow: #ef4444;
+
+    --mono: 'JetBrains Mono', monospace;
     --sans: 'Cairo', sans-serif;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    height: 100vh;
+    --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Sidebar */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg-base); }
+  
+  body {
+    font-family: var(--sans);
+    color: var(--text-main);
+    display: flex;
+    height: 100vh;
+    /* Subtly animated gradient background */
+    background: radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                var(--bg-base);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* ================= SIDEBAR ================= */
   .sidebar {
-    width: 220px;
-    min-width: 220px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
     padding: 0;
     overflow: hidden;
+    position: relative;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    z-index: 10;
   }
   .sidebar-logo {
-    padding: 20px 16px 16px;
-    border-bottom: 1px solid var(--border);
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border-glass);
+    position: relative;
+    overflow: hidden;
+  }
+  .sidebar-logo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-solid), transparent);
+    opacity: 0.5;
   }
   .logo-text {
     font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: 1px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 2px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text span {
+    color: var(--accent-solid);
+    text-shadow: 0 0 10px var(--accent-glow);
   }
   .logo-sub {
     font-size: 10px;
-    color: var(--text3);
-    margin-top: 3px;
+    color: var(--text-muted);
+    margin-top: 6px;
     font-family: var(--mono);
+    letter-spacing: 0.5px;
   }
+  
   .sidebar-label {
     font-size: 10px;
-    color: var(--text3);
+    color: var(--text-dim);
     font-family: var(--mono);
-    letter-spacing: 1.5px;
-    padding: 16px 16px 8px;
+    letter-spacing: 2px;
+    padding: 24px 20px 10px;
     text-transform: uppercase;
+    font-weight: 700;
   }
-  .domain-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+  .domain-list { flex: 1; overflow-y: auto; padding: 0 12px 12px; }
+  
   .domain-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 8px;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all .15s;
-    margin-bottom: 2px;
+    transition: var(--transition);
+    margin-bottom: 4px;
     border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
   }
-  .domain-item:hover { background: var(--surface2); }
+  .domain-item:hover { 
+    background: var(--surface-card); 
+    border-color: var(--border-glass);
+  }
   .domain-item.active {
-    background: rgba(0,212,255,0.08);
-    border-color: rgba(0,212,255,0.2);
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.2);
+    box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.05);
   }
-  .domain-item.active .d-name { color: var(--accent); }
-  .domain-item.active .d-icon { color: var(--accent); }
-  .d-icon { font-size: 15px; width: 20px; text-align: center; }
-  .d-name { font-size: 12px; color: var(--text2); font-weight: 600; }
+  .domain-item.active::before {
+    content: '';
+    position: absolute;
+    right: 0; top: 20%; bottom: 20%; width: 3px;
+    background: var(--accent-solid);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--accent-solid);
+  }
+  .d-icon { font-size: 16px; width: 24px; text-align: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  .domain-item.active .d-name { color: var(--text-main); font-weight: 700; }
+  .d-name { font-size: 13px; color: var(--text-muted); font-weight: 600; transition: var(--transition); }
+  
   .status-bar {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid var(--border-glass);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .status-dot {
-    width: 7px; height: 7px;
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: blink 2s infinite;
+    background: var(--green-glow);
+    box-shadow: 0 0 10px var(--green-glow);
+    animation: pulse 2s infinite;
   }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .status-text { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+  .status-text { font-size: 11px; color: var(--text-muted); font-family: var(--mono); font-weight: 500; }
 
-  /* Main */
+  /* ================= MAIN AREA ================= */
   .main {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--bg);
+    position: relative;
+  }
+
+  /* Grid lines overlay for main area */
+  .main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
   }
 
   /* Top bar */
   .topbar {
-    padding: 14px 24px;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border-glass);
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--surface);
     flex-shrink: 0;
+    z-index: 10;
   }
   .domain-title {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
   .domain-badge {
     font-family: var(--mono);
     font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: rgba(0,212,255,0.1);
-    color: var(--accent);
-    border: 1px solid rgba(0,212,255,0.2);
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-solid);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
-  .topbar-right { display: flex; gap: 8px; align-items: center; }
+  .domain-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+  
   .clear-btn {
     font-size: 11px;
-    color: var(--text3);
-    background: none;
-    border: 1px solid var(--border2);
-    padding: 5px 12px;
-    border-radius: 6px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-light);
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
     font-family: var(--mono);
-    transition: all .15s;
+    transition: var(--transition);
+    display: flex; align-items: center; gap: 6px;
   }
-  .clear-btn:hover { color: var(--red); border-color: var(--red); }
+  .clear-btn:hover { 
+    color: var(--red-glow); 
+    border-color: rgba(239, 68, 68, 0.3); 
+    background: rgba(239, 68, 68, 0.05);
+  }
 
-  /* Messages */
+  /* Messages Area */
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 32px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
     scroll-behavior: smooth;
+    z-index: 5;
   }
-  .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-track { background: transparent; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: fadeUp .2s ease; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .msg-row { display: flex; gap: 16px; align-items: flex-start; animation: slideIn .3s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   .msg-row.user { flex-direction: row-reverse; }
 
   .avatar {
-    width: 34px; height: 34px;
-    border-radius: 8px;
+    width: 38px; height: 38px;
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   }
   .avatar.ai {
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.2);
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 500;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(2, 132, 199, 0.2));
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--accent-solid);
   }
   .avatar.user {
-    background: rgba(0,255,136,0.1);
-    border: 1px solid rgba(0,255,136,0.2);
-    font-size: 16px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--green-glow);
   }
 
+  .msg-col { display: flex; flex-direction: column; max-width: 75%; }
+  
   .bubble {
-    max-width: 72%;
-    padding: 13px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.75;
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 14.5px;
+    line-height: 1.8;
     white-space: pre-wrap;
     word-break: break-word;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
   .bubble.ai {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-top-right-radius: 3px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
+    color: var(--text-main);
+    border-top-right-radius: 4px;
   }
   .bubble.user {
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.15);
-    color: var(--text);
-    border-top-left-radius: 3px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.05));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: var(--text-main);
+    border-top-left-radius: 4px;
     text-align: right;
   }
+  
+  /* Formatting inside bubble */
   .bubble code {
     font-family: var(--mono);
-    background: var(--surface2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    color: var(--accent);
+    background: rgba(0,0,0,0.3);
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--accent-solid);
+    border: 1px solid var(--border-glass);
   }
   .bubble pre {
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 14px;
-    margin: 10px 0;
+    background: #000;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 12px 0;
     overflow-x: auto;
     font-family: var(--mono);
-    font-size: 12px;
-    color: var(--green);
+    font-size: 13px;
+    color: var(--green-glow);
     line-height: 1.6;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
   }
+  
+  /* Copy button for pre */
+  .bubble pre { position: relative; }
+  .bubble pre::before {
+    content: 'Terminal';
+    position: absolute;
+    top: 0; left: 0;
+    background: rgba(255,255,255,0.1);
+    padding: 2px 10px;
+    font-size: 10px;
+    border-bottom-right-radius: 8px;
+    color: var(--text-muted);
+  }
+  .bubble pre code { background: none; border: none; color: inherit; padding: 0; font-size: inherit; }
+
   .msg-meta {
     font-size: 10px;
-    color: var(--text3);
+    color: var(--text-dim);
     font-family: var(--mono);
-    margin-top: 5px;
+    margin-top: 6px;
     padding: 0 4px;
   }
-  .msg-col { display: flex; flex-direction: column; }
 
-  /* Thinking */
-  .thinking-row { display: flex; gap: 12px; align-items: center; }
+  /* Thinking Animation */
+  .thinking-row { display: flex; gap: 16px; align-items: center; animation: slideIn .3s ease; }
   .thinking-bubble {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    border-top-right-radius: 3px;
-    padding: 13px 16px;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    border-top-right-radius: 4px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bounce .9s infinite; }
-  .dot:nth-child(2) { animation-delay: .15s; }
-  .dot:nth-child(3) { animation-delay: .3s; }
-  @keyframes bounce { 0%,100%{transform:translateY(0);opacity:.3} 50%{transform:translateY(-5px);opacity:1} }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-solid); animation: typing 1.4s infinite ease-in-out both; }
+  .dot:nth-child(1) { animation-delay: -0.32s; }
+  .dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes typing { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px var(--accent-solid); } }
 
   /* Quick pills */
   .quick-area {
-    padding: 0 24px 12px;
+    padding: 0 32px 16px;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
     flex-shrink: 0;
+    z-index: 10;
   }
   .quick-pill {
-    font-size: 11px;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border2);
-    background: transparent;
-    color: var(--text2);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid var(--border-light);
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(8px);
+    color: var(--text-muted);
     cursor: pointer;
     font-family: var(--sans);
-    transition: all .15s;
+    transition: var(--transition);
     white-space: nowrap;
+    font-weight: 600;
   }
   .quick-pill:hover {
-    background: var(--surface2);
-    color: var(--text);
-    border-color: rgba(0,212,255,0.3);
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--text-main);
+    border-color: rgba(56, 189, 248, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
   /* Input area */
   .input-area {
-    padding: 12px 24px 20px;
+    padding: 16px 32px 24px;
     flex-shrink: 0;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
+    background: linear-gradient(to top, rgba(2, 6, 23, 0.9) 50%, transparent);
+    z-index: 10;
   }
   .input-wrap {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: flex-end;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    padding: 10px 12px;
-    transition: border-color .2s;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 12px 16px;
+    transition: var(--transition);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
-  .input-wrap:focus-within { border-color: rgba(0,212,255,0.4); }
+  .input-wrap:focus-within { 
+    border-color: rgba(56, 189, 248, 0.5); 
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.1), 0 10px 30px rgba(0,0,0,0.5);
+  }
   #userInput {
     flex: 1;
     background: none;
     border: none;
     outline: none;
-    color: var(--text);
-    font-size: 14px;
+    color: var(--text-main);
+    font-size: 15px;
     font-family: var(--sans);
     resize: none;
-    max-height: 120px;
+    max-height: 150px;
     min-height: 24px;
     line-height: 1.6;
     direction: rtl;
+    padding: 4px 0;
   }
-  #userInput::placeholder { color: var(--text3); }
+  #userInput::placeholder { color: var(--text-dim); }
   .send-btn {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    background: var(--accent);
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-solid), var(--accent-dark));
     border: none;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all .15s;
+    transition: var(--transition);
     flex-shrink: 0;
-    color: var(--bg);
-    font-size: 16px;
+    color: var(--text-main);
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
   }
-  .send-btn:hover { background: var(--accent2); transform: scale(1.05); }
-  .send-btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+  .send-btn:hover { 
+    transform: scale(1.05) translateY(-2px); 
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5);
+  }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(1); }
+  
   .input-hint {
-    font-size: 10px;
-    color: var(--text3);
+    font-size: 11px;
+    color: var(--text-dim);
     font-family: var(--mono);
-    margin-top: 8px;
+    margin-top: 12px;
     text-align: center;
+    letter-spacing: 0.5px;
   }
 
-  /* Welcome screen */
+  /* Welcome Screen */
   .welcome {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 20px;
     text-align: center;
     padding: 40px;
+    animation: fadeIn 0.8s ease;
   }
-  .welcome-icon { font-size: 48px; margin-bottom: 8px; }
-  .welcome-title { font-size: 22px; font-weight: 700; color: var(--text); }
-  .welcome-sub { font-size: 14px; color: var(--text2); line-height: 1.7; max-width: 400px; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  
+  .welcome-icon { 
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), transparent);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+  }
+  .welcome-icon i { color: var(--accent-solid); width: 40px; height: 40px; }
+  
+  .welcome-title { 
+    font-size: 28px; font-weight: 800; 
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  .welcome-sub { font-size: 15px; color: var(--text-muted); line-height: 1.8; max-width: 450px; }
+  
   .welcome-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 16px;
+    margin-top: 16px;
     width: 100%;
-    max-width: 480px;
+    max-width: 550px;
   }
   .welcome-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
+    background: rgba(30, 41, 59, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
     cursor: pointer;
-    transition: all .15s;
+    transition: var(--transition);
     text-align: right;
+    display: flex; flex-direction: column; gap: 12px;
   }
-  .welcome-card:hover { border-color: rgba(0,212,255,0.3); background: var(--surface2); }
-  .welcome-card-icon { font-size: 20px; margin-bottom: 6px; }
-  .welcome-card-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .welcome-card:hover { 
+    border-color: rgba(56, 189, 248, 0.4); 
+    background: rgba(30, 41, 59, 0.6);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .welcome-card-icon { 
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-main);
+  }
+  .welcome-card-icon i { width: 18px; height: 18px; }
+  .welcome-card-text { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -383,14 +534,14 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-text">DEVOPS//AI</div>
-    <div class="logo-sub">Senior Engineer Agent v1.0</div>
+    <div class="logo-text"><span><i data-lucide="cpu" style="width:18px;height:18px;"></i></span> DEVOPS//AI</div>
+    <div class="logo-sub">Senior Architecture Engine v1.0</div>
   </div>
-  <div class="sidebar-label">المجالات</div>
+  <div class="sidebar-label">المجالات (Domains)</div>
   <div class="domain-list" id="domainList"></div>
   <div class="status-bar">
     <div class="status-dot"></div>
-    <div class="status-text">Agent Online</div>
+    <div class="status-text">SYSTEM ONLINE . READY</div>
   </div>
 </div>
 
@@ -399,18 +550,20 @@
   <div class="topbar">
     <div class="domain-title">
       <span id="domainBadge" class="domain-badge">عام</span>
-      <span style="font-size:13px;color:var(--text2);font-family:var(--mono)" id="domainDesc">اسأل في أي مجال تقني</span>
+      <span class="domain-desc" id="domainDesc">اسأل المهندس الذكي في أي مجال تقني</span>
     </div>
     <div class="topbar-right">
-      <button class="clear-btn" onclick="clearChat()">مسح المحادثة</button>
+      <button class="clear-btn" onclick="clearChat()">
+        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> مسح السجل
+      </button>
     </div>
   </div>
 
   <div class="messages" id="messages">
     <div class="welcome" id="welcome">
-      <div class="welcome-icon">⚙️</div>
+      <div class="welcome-icon"><i data-lucide="terminal-square"></i></div>
       <div class="welcome-title">DevOps AI Agent</div>
-      <div class="welcome-sub">خبير تقني متكامل في كل طبقات الـ stack — من الـ Frontend للـ Infrastructure</div>
+      <div class="welcome-sub">المساعد التقني الشامل. جاهز لتصميم، نشر، وإدارة أكوادك وبنيتك التحتية بأقصى كفاءة.</div>
       <div class="welcome-grid" id="welcomeGrid"></div>
     </div>
   </div>
@@ -419,29 +572,49 @@
 
   <div class="input-area">
     <div class="input-wrap">
-      <textarea id="userInput" placeholder="اسأل في أي حاجة تقنية..." rows="1"
+      <textarea id="userInput" placeholder="اكتب مشكلتك المعمارية أو التقنية هنا..." rows="1"
         onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="sendMsg()">↑</button>
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+        <i data-lucide="send" style="width:18px;height:18px; margin-right: 2px;"></i>
+      </button>
     </div>
-    <div class="input-hint">Enter للإرسال • Shift+Enter لسطر جديد</div>
+    <div class="input-hint">اضغط Enter للإرسال • Shift+Enter لسطر جديد</div>
   </div>
 </div>
 
 <script>
+lucide.createIcons();
+
 const domains = [
-  { id:'general',  icon:'🧠', name:'عام',         desc:'أي سؤال تقني',       color:'#00d4ff' },
-  { id:'frontend', icon:'🖥', name:'Frontend',    desc:'React, CSS, Perf',   color:'#00d4ff' },
-  { id:'backend',  icon:'⚙️', name:'Backend',     desc:'APIs, Microservices', color:'#00ff88' },
-  { id:'database', icon:'🗄', name:'Database',    desc:'SQL, NoSQL, Redis',  color:'#ffaa00' },
-  { id:'cloud',    icon:'☁️', name:'Cloud',       desc:'AWS, GCP, Azure',    color:'#00d4ff' },
-  { id:'cicd',     icon:'🔄', name:'CI/CD',       desc:'Pipelines, Deploy',  color:'#00ff88' },
-  { id:'security', icon:'🔒', name:'Security',    desc:'OWASP, IAM, Secrets',color:'#ff4455' },
-  { id:'containers',icon:'📦',name:'Containers',  desc:'Docker, K8s, Helm',  color:'#ffaa00' },
-  { id:'monitoring',icon:'📊',name:'Monitoring',  desc:'Prometheus, Grafana', color:'#00d4ff' },
-  { id:'networking',icon:'🌐',name:'Networking',  desc:'DNS, LB, VPC',       color:'#00ff88' },
-  { id:'cdn',      icon:'⚡', name:'CDN',         desc:'Cloudflare, Caching', color:'#ffaa00' },
-  { id:'backup',   icon:'💾', name:'Backup',      desc:'DR, RTO/RPO',        color:'#ff4455' },
+  { id:'general',  icon:'general', name:'عام',         desc:'أسئلة مفتوحة واستشارات',       color:'#00d4ff' },
+  { id:'frontend', icon:'layout', name:'Frontend',    desc:'React, CSS, Perf',   color:'#00d4ff' },
+  { id:'backend',  icon:'database', name:'Backend',     desc:'APIs, Microservices', color:'#00ff88' },
+  { id:'database', icon:'hard-drive', name:'Database',    desc:'SQL, NoSQL, Redis',  color:'#ffaa00' },
+  { id:'cloud',    icon:'cloud', name:'Cloud',       desc:'AWS, GCP, Azure',    color:'#00d4ff' },
+  { id:'cicd',     icon:'rotate-ccw', name:'CI/CD',       desc:'Pipelines, Deploy',  color:'#00ff88' },
+  { id:'security', icon:'lock', name:'Security',    desc:'OWASP, IAM, Secrets',color:'#ff4455' },
+  { id:'containers',icon:'box',name:'Containers',  desc:'Docker, K8s, Helm',  color:'#ffaa00' },
+  { id:'monitoring',icon:'activity',name:'Monitoring',  desc:'Prometheus, Grafana', color:'#00d4ff' },
+  { id:'networking',icon:'network',name:'Networking',  desc:'DNS, LB, VPC',       color:'#00ff88' },
+  { id:'cdn',      icon:'zap', name:'CDN',         desc:'Cloudflare, Caching', color:'#ffaa00' },
+  { id:'backup',   icon:'save', name:'Backup',      desc:'DR, RTO/RPO',        color:'#ff4455' },
 ];
+
+// Map JS domain array to lucide icons specifically for domain item build
+const iconMap = {
+  general: '<i data-lucide="terminal" style="width:18px"></i>',
+  frontend: '<i data-lucide="layout" style="width:18px"></i>',
+  backend: '<i data-lucide="server" style="width:18px"></i>',
+  database: '<i data-lucide="database" style="width:18px"></i>',
+  cloud: '<i data-lucide="cloud" style="width:18px"></i>',
+  cicd: '<i data-lucide="git-merge" style="width:18px"></i>',
+  security: '<i data-lucide="shield" style="width:18px"></i>',
+  containers: '<i data-lucide="box" style="width:18px"></i>',
+  monitoring: '<i data-lucide="activity" style="width:18px"></i>',
+  networking: '<i data-lucide="network" style="width:18px"></i>',
+  cdn: '<i data-lucide="zap" style="width:18px"></i>',
+  backup: '<i data-lucide="save" style="width:18px"></i>',
+};
 
 const systemPrompts = {
   general:   'أنت Senior DevOps Engineer وFull-Stack Architect بخبرة +10 سنين. أجب بالعربي بشكل واضح وعملي. دائماً أعطِ كود شغال وعملي. اذكر البدائل والـ trade-offs. نبّه على الـ pitfalls الشائعة. فكر دائماً في الـ production readiness والـ security.',
@@ -474,10 +647,10 @@ const quickSuggestions = {
 };
 
 const welcomeCards = [
-  { icon:'⚙️', text:'ازاي أبني CI/CD pipeline كامل؟' },
-  { icon:'🔒', text:'ازاي أأمن الـ API بتاعتي؟' },
-  { icon:'📦', text:'ازاي أعمل Docker multi-stage build؟' },
-  { icon:'☁️', text:'ازاي أعمل AWS infrastructure بـ Terraform؟' },
+  { icon:'git-merge', text:'ازاي أبني CI/CD pipeline كامل؟' },
+  { icon:'shield-check', text:'ازاي أأمن الـ API بتاعتي بقوة؟' },
+  { icon:'box', text:'ازاي أعمل Docker multi-stage build؟' },
+  { icon:'cloud', text:'كود Infrastructure بـ Terraform لبيئة AWS.' },
 ];
 
 let currentDomain = 'general';
@@ -491,7 +664,7 @@ domains.forEach(d => {
   const el = document.createElement('div');
   el.className = 'domain-item' + (d.id === 'general' ? ' active' : '');
   el.dataset.id = d.id;
-  el.innerHTML = `<span class="d-icon">${d.icon}</span><span class="d-name">${d.name}</span>`;
+  el.innerHTML = `<span class="d-icon">${iconMap[d.id]}</span><span class="d-name">${d.name}</span>`;
   el.onclick = () => selectDomain(d.id);
   domainList.appendChild(el);
 });
@@ -501,10 +674,12 @@ const wg = document.getElementById('welcomeGrid');
 welcomeCards.forEach(c => {
   const el = document.createElement('div');
   el.className = 'welcome-card';
-  el.innerHTML = `<div class="welcome-card-icon">${c.icon}</div><div class="welcome-card-text">${c.text}</div>`;
+  el.innerHTML = `<div class="welcome-card-icon"><i data-lucide="${c.icon}"></i></div><div class="welcome-card-text">${c.text}</div>`;
   el.onclick = () => { document.getElementById('userInput').value = c.text; sendMsg(); };
   wg.appendChild(el);
 });
+
+lucide.createIcons();
 
 function selectDomain(id) {
   currentDomain = id;
@@ -531,7 +706,7 @@ function sendQuick(text) {
 
 function autoResize(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  el.style.height = Math.min(el.scrollHeight, 150) + 'px';
 }
 
 function handleKey(e) {
@@ -547,27 +722,32 @@ function clearChat() {
   welcome.className = 'welcome';
   welcome.id = 'welcome';
   welcome.innerHTML = `
-    <div class="welcome-icon">⚙️</div>
+    <div class="welcome-icon"><i data-lucide="terminal-square"></i></div>
     <div class="welcome-title">DevOps AI Agent</div>
-    <div class="welcome-sub">خبير تقني متكامل في كل طبقات الـ stack</div>
+    <div class="welcome-sub">المساعد التقني الشامل. جاهز لتصميم، نشر، وإدارة أكوادك وبنيتك التحتية بأقصى كفاءة.</div>
     <div class="welcome-grid" id="welcomeGrid"></div>`;
   msgs.appendChild(welcome);
   const wg2 = document.getElementById('welcomeGrid');
   welcomeCards.forEach(c => {
     const el = document.createElement('div');
     el.className = 'welcome-card';
-    el.innerHTML = `<div class="welcome-card-icon">${c.icon}</div><div class="welcome-card-text">${c.text}</div>`;
+    el.innerHTML = `<div class="welcome-card-icon"><i data-lucide="${c.icon}"></i></div><div class="welcome-card-text">${c.text}</div>`;
     el.onclick = () => { document.getElementById('userInput').value = c.text; sendMsg(); };
     wg2.appendChild(el);
   });
+  lucide.createIcons();
 }
 
 function formatText(text) {
   // code blocks
   text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-    `<pre>${escHtml(code.trim())}</pre>`);
+    `<pre><code>${escHtml(code.trim())}</code></pre>`);
   // inline code
   text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${escHtml(c)}</code>`);
+  
+  // bold text
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  
   return text;
 }
 
@@ -586,7 +766,12 @@ function addMsg(role, text) {
 
   const av = document.createElement('div');
   av.className = 'avatar ' + role;
-  av.textContent = role === 'ai' ? 'AI' : '👤';
+  
+  if(role === 'ai') {
+      av.innerHTML = '<i data-lucide="bot" style="width:20px;height:20px;"></i>';
+  } else {
+      av.innerHTML = '<i data-lucide="user" style="width:20px;height:20px;"></i>';
+  }
 
   const col = document.createElement('div');
   col.className = 'msg-col';
@@ -608,6 +793,8 @@ function addMsg(role, text) {
   row.appendChild(av);
   row.appendChild(col);
   msgs.appendChild(row);
+  
+  lucide.createIcons({root: row});
   msgs.scrollTop = msgs.scrollHeight;
   return bubble;
 }
@@ -618,11 +805,13 @@ function showThinking() {
   row.className = 'thinking-row';
   row.id = 'thinking';
   row.innerHTML = `
-    <div class="avatar ai">AI</div>
+    <div class="avatar ai"><i data-lucide="bot" style="width:20px;height:20px;"></i></div>
     <div class="thinking-bubble">
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span style="font-size:11px; margin-right:8px; color:var(--text-muted); font-family:var(--mono);">PROCESSING...</span>
     </div>`;
   msgs.appendChild(row);
+  lucide.createIcons({root: row});
   msgs.scrollTop = msgs.scrollHeight;
 }
 
@@ -659,13 +848,13 @@ async function sendMsg() {
     });
     const data = await resp.json();
     hideThinking();
-    const reply = data.content?.[0]?.text || 'حصل خطأ، جرب تاني.';
+    const reply = data.content?.[0]?.text || 'تم قطع الاتصال. تأكد من إعدادات الـ CROS أو الـ API Key في البيئة المحلية.';
     chatHistory.push({ role: 'assistant', content: reply });
     if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
     addMsg('ai', reply);
   } catch (e) {
     hideThinking();
-    addMsg('ai', 'في مشكلة في الاتصال. تأكد من الـ network وحاول تاني.');
+    addMsg('ai', 'لم يتم العثور على Endpoint مفعل أو توقفت الخدمة بشكل طارئ. يٌرجى التحقق من الشبكة.');
   }
 
   isLoading = false;
