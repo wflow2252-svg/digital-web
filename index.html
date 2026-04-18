@@ -373,152 +373,43 @@
 
         <!-- AI Studio Section -->
         <section id="ai-studio">
-            <!-- Elite Welcome Overlay -->
-            <div id="studio-welcome-overlay">
-                <div class="welcome-core-container">
-                    <div class="neural-core-pulse"></div>
-                    <div class="core-logo">
-                        <img src="logo.png?v=neural" alt="Sovereign AI">
-                    </div>
-                </div>
-                <h2 class="welcome-title">Neural Architect v8</h2>
-                <p class="welcome-subtitle">Welcome to the Sovereign Innovation Lab. Initialize your digital consciousness to begin synthesis.</p>
-                <button class="begin-btn" onclick="document.getElementById('studio-welcome-overlay').classList.add('hidden')">
-                    BEGIN EXPERIMENT
-                    <span class="material-symbols-outlined">rocket_launch</span>
-                </button>
-            </div>
-
-            <h2 class="section-title-alt">AI Innovation Lab</h2>
-            <div class="studio-container animate-in" data-stagger="1">
-                <div class="studio-header">
-                    <div class="ai-status-tag"><div class="dot pulse"></div> SOVEREIGN_ENGINE v12.5 STRATEGIC_PROMPT</div>
-                    <div class="knowledge-core-status">
-                        <span class="core-label">DIALECT_ENGINE:</span>
-                        <span class="core-value" id="registry-size">Active Synthesis...</span>
-                        <span class="core-badge">AGGRESSIVE_MARKETING ENABLED</span>
-                    </div>
-
-
-
-                    <h3>Start Your Digital Experiment</h3>
-                    <p>Describe your vision, and our Sovereign AI will derive a full-stack blueprint from its deep knowledge registry.</p>
-                </div>
-
-                
-                <div class="studio-idea-chips">
-                    <button class="idea-chip" onclick="dwQuickPrompt('Build a luxury perfume store with gold accents')">Perfume Store</button>
-                    <button class="idea-chip" onclick="dwQuickPrompt('Modern minimalist tech startup landing page')">Tech Startup</button>
-                    <button class="idea-chip" onclick="dwQuickPrompt('High-energy fitness gym website with neon green')">Fitness Gym</button>
-                    <button class="idea-chip" onclick="dwQuickPrompt('Cozy rustic bakery and coffee shop')">Rustic Bakery</button>
-                </div>
-
-                <div class="studio-input-wrapper">
-                    <input type="text" id="studio-prompt" placeholder="Describe your vision..." />
-                    <button id="studio-generate-btn">
-                        <span class="material-symbols-outlined">auto_awesome</span>
-                        Generate Trial
-                    </button>
-                </div>
-
-                <div class="studio-features">
-                    <div class="s-feature"><span class="material-symbols-outlined">speed</span> Ultra-Fast Render</div>
-                    <div class="s-feature"><span class="material-symbols-outlined">devices</span> Responsive Mobile Hub</div>
-                    <div class="s-feature"><span class="material-symbols-outlined">code</span> Clean Code Export</div>
-                </div>
-
-                <!-- Neural Processing Log -->
-                <div id="studio-log"></div>
-
-                <!-- Sovereign Result Dashboard (NEW v9.0) -->
-                <div id="studio-result-dashboard" class="hidden">
-                    <div class="dashboard-header">
-                        <button class="back-to-studio" onclick="dwResetStudio()">
-                            <span class="material-symbols-outlined">arrow_back</span>
-                            Back to Core
-                        </button>
-                        <div class="tab-nav">
-                            <button class="tab-btn active" onclick="dwSwitchTab('vision')">VISION</button>
-                            <button class="tab-btn" onclick="dwSwitchTab('code')">CODE</button>
-                            <button class="tab-btn" onclick="dwSwitchTab('logic')">LOGIC CORE</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-content">
-                        <div id="tab-vision" class="tab-panel active"></div>
-                        <div id="tab-code" class="tab-panel">
-                            <div class="code-header">
-                                <span>FRONT-END BLUEPRINT</span>
-                                <button onclick="window.parent.dwCopyResult('CODE')">COPY CODE</button>
-                            </div>
-                            <pre id="code-display" dir="ltr"></pre>
-                        </div>
-                        <div id="tab-logic" class="tab-panel">
-                            <div class="logic-header">
-                                <h3>Architectural Reasoning</h3>
-                                <p>Synthesis Cluster v10.0.0 Active</p>
-                            </div>
-                            <div id="logic-display"></div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- DevOps AI Agent Section -->
-        <section id="devops-agent">
-            <h2 class="section-title-alt" style="margin-bottom: 2rem;">Sovereign DevOps</h2>
-            <div class="da-container animate-in" data-stagger="1">
-                <!-- Sidebar -->
-                <div class="da-sidebar">
-                  <div class="da-sidebar-logo">
-                    <div class="da-logo-text"><span><i data-lucide="cpu" style="width:18px;height:18px;"></i></span> DEVOPS//AI</div>
-                    <div class="da-logo-sub">Senior Architecture Engine v1.0</div>
-                  </div>
-                  <div class="da-sidebar-label">المجالات (Domains)</div>
-                  <div class="da-domain-list" id="da-domainList"></div>
-                </div>
-
-                <!-- Main -->
-                <div class="da-main">
+            <div class="da-container animate-in" data-stagger="1" style="width:90%; max-width:920px; margin:0 auto; height:calc(100vh - 140px);">
+                <div class="da-main" style="border-radius:24px; overflow:hidden;">
                   <div class="da-topbar">
                     <div class="da-domain-title">
-                      <span id="da-domainBadge" class="da-domain-badge">عام</span>
-                      <span class="da-domain-desc" id="da-domainDesc">اسأل المهندس الذكي في أي مجال تقني</span>
+                      <span class="da-domain-badge">AI Studio</span>
+                      <span class="da-domain-desc">صف فكرتك وسنبني موقعك فورًا • تجربة مجانية (4 رسائل)</span>
                     </div>
-                    <div class="da-topbar-right">
+                    <div>
                       <button class="da-clear-btn" onclick="da_clearChat()">
-                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> مسح السجل
+                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> مسح
                       </button>
                     </div>
                   </div>
-
                   <div class="da-messages" id="da-messages">
                     <div class="da-welcome" id="da-welcome">
-                      <div class="da-welcome-icon"><i data-lucide="terminal-square"></i></div>
-                      <div class="da-welcome-title">DevOps AI Agent</div>
-                      <div class="da-welcome-sub">المساعد التقني الشامل. جاهز لتصميم، نشر، وإدارة أكوادك وبنيتك التحتية بأقصى كفاءة.</div>
+                      <div class="da-welcome-icon"><i data-lucide="wand-2"></i></div>
+                      <div class="da-welcome-title">AI Studio | مولّد المواقع</div>
+                      <div class="da-welcome-sub">صف فكرة موقعك وسيبنيه لك الذكاء الاصطناعي كاملاً — كود HTML احترافي جاهز للنشر. رصيدك المجاني: 4 رسائل.</div>
                       <div class="da-welcome-grid" id="da-welcomeGrid"></div>
                     </div>
                   </div>
-
                   <div class="da-quick-area" id="da-quickArea"></div>
-
                   <div class="da-input-area">
                     <div class="da-input-wrap">
-                      <textarea id="da-userInput" placeholder="اكتب مشكلتك المعمارية أو التقنية هنا..." rows="1"
+                      <textarea id="da-userInput" placeholder="مثال: موقع لمطعم راقي باللون الذهبي والأسود..." rows="1"
                         onkeydown="da_handleKey(event)" oninput="da_autoResize(this)"></textarea>
                       <button class="da-send-btn" id="da-sendBtn" onclick="da_sendMsg()">
-                        <i data-lucide="send" style="width:18px;height:18px; margin-right: 2px;"></i>
+                        <i data-lucide="send" style="width:18px;height:18px;"></i>
                       </button>
                     </div>
-                    <div class="da-input-hint">اضغط Enter للإرسال • Shift+Enter لسطر جديد</div>
+                    <div class="da-input-hint">Enter للإرسال • Shift+Enter لسطر جديد • رصيد مجاني: 4 رسائل</div>
                   </div>
                 </div>
             </div>
         </section>
+
+
 
 
 

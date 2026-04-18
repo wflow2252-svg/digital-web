@@ -1,12 +1,14 @@
 /* DevOps Agent Embedded Module */
-#devops-agent {
+#ai-studio, #devops-agent {
     padding-top: 100px;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding-bottom: 2rem;
 }
+
 
 .da-container {
     width: 90%;
