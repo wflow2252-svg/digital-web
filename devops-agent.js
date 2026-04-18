@@ -62,13 +62,7 @@ function initDevopsAgent() {
     document.head.appendChild(hljsScript);
   }
 
-  // Inject Puter.js for completely free, unauthenticated client-side AI access (Claude 3.5)
-  if (!document.getElementById('puter-js')) {
-    const puterScript = document.createElement('script');
-    puterScript.id = 'puter-js';
-    puterScript.src = 'https://js.puter.com/v2/';
-    document.head.appendChild(puterScript);
-  }
+  // (Puter.js disabled in favor of robust serverless proxy native logic)
 }
 
 function da_renderWelcomeCards() {
@@ -254,27 +248,21 @@ async function da_sendMsg() {
       : '';
     const fullPrompt = `${sysPrompt}${ctx}\n\nطلب المستخدم: ${text}`;
 
-    // ── Ultra-Resilient Direct Client-Side AI (Puter.js)
-    // Uses Claude 3.5 Sonnet completely free, bypassing API keys and CORS completely.
-    
-    if (typeof puter === 'undefined') {
-       throw new Error("جاري تهيئة الشبكة العصبية، يرجى المحاولة بعد لحظة...");
-    }
-
-    const messages = [
-      { role: 'system', content: da_systemPrompts['builder'] },
-      ...da_chatHistory,
-      { role: 'user', content: text }
-    ];
-
-    const response = await puter.ai.chat(messages, {
-        model: 'claude-3-5-sonnet',
-        stream: false
+    // → Vercel Serverless AI Proxy (Solves all CORS, Token, and Localhost Fallbacks)
+    const resp = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: fullPrompt })
     });
 
     da_hideThinking();
 
-    let reply = response?.message?.content || "";
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP ${resp.status}`);
+    }
+
+    const { reply, model } = await resp.json();
 
     if (reply && reply.trim().length > 10) {
       da_chatHistory.push({ role: 'user', content: text });
@@ -291,14 +279,14 @@ async function da_sendMsg() {
           window.dwOpenPreview({
             html: code,
             code: code,
-            analysis: { brandName: 'Sovereign Hub Website', dialect: { welcome: 'Sovereign AI' } },
-            logic: [`Claude 3.5 Sonnet (Puter)`, 'Sovereign Protocol v15']
+            analysis: { brandName: 'Sovereign Website', dialect: { welcome: 'Sovereign AI' } },
+            logic: [`${model}`, 'Sovereign Protocol v15']
           });
         }
       }
     } else {
       da_messageCount--;
-      da_addMsg('ai', '⚡ محرك الذكاء الاصطناعي مزدحم بصياغة الأكواد. يرجى المحاولة مرة أخرى.');
+      da_addMsg('ai', '⚡ محرك الذكاء الاصطناعي المركزي مزدحم. يرجى الانتظار والمحاولة مرة أخرى.');
     }
 
   } catch (err) {
