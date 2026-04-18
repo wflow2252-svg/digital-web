@@ -15,12 +15,13 @@
     max-width: 1300px;
     height: calc(100vh - 140px);
     background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(56, 189, 248, 0.1);
     border-radius: 24px;
     display: flex;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.02);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 0 40px rgba(56, 189, 248, 0.05);
 }
 
 /* Sidebar */
@@ -212,19 +213,25 @@
     line-height: 1.8;
     white-space: pre-wrap;
     word-break: break-word;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
 }
 .da-bubble.ai {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.05);
-    color: #f8fafc;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    color: #e2e8f0;
     border-top-right-radius: 4px;
 }
+.da-bubble.ai::before {
+    content: ''; position: absolute; top:0; left:0; right:0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.5), transparent);
+}
 .da-bubble.user {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.05));
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(99, 102, 241, 0.1));
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
     color: #f8fafc;
     border-top-left-radius: 4px;
     text-align: right;
@@ -273,22 +280,48 @@
 
 .da-msg-meta { font-size: 10px; color: #475569; font-family: 'JetBrains Mono', monospace; margin-top: 6px; padding: 0 4px; }
 
-/* Thinking */
-.da-thinking-row { display: flex; gap: 16px; align-items: center; animation: daSlideIn .3s ease; }
+/* Neural Processing Animation (Thinking) */
+.da-thinking-row { display: flex; gap: 16px; align-items: center; animation: daSlideIn .4s cubic-bezier(0.16, 1, 0.3, 1); }
 .da-thinking-bubble {
-    background: rgba(30, 41, 59, 0.4);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 16px;
-    border-top-right-radius: 4px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    background: linear-gradient(90deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
+    border-radius: 16px; border-top-right-radius: 4px;
+    padding: 14px 22px; display: flex; align-items: center; gap: 12px;
+    position: relative; overflow: hidden;
 }
-.da-dot { width: 6px; height: 6px; border-radius: 50%; background: #38bdf8; animation: daTyping 1.4s infinite ease-in-out both; }
-.da-dot:nth-child(1) { animation-delay: -0.32s; }
-.da-dot:nth-child(2) { animation-delay: -0.16s; }
-@keyframes daTyping { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px #38bdf8; } }
+.da-thinking-bubble::after {
+    content: ''; position: absolute; top:0; left:-100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+    animation: daSweep 2s infinite linear;
+}
+@keyframes daSweep { to { left: 200%; } }
+
+.da-neural-core {
+    display: flex; gap: 4px; align-items: center; height: 16px;
+}
+.da-neural-bar {
+    width: 3px; background: #38bdf8; border-radius: 3px;
+    animation: daPulseBar 1s infinite ease-in-out;
+    box-shadow: 0 0 8px #38bdf8;
+}
+.da-neural-bar:nth-child(1) { height: 8px; animation-delay: 0.0s; }
+.da-neural-bar:nth-child(2) { height: 16px; animation-delay: 0.2s; }
+.da-neural-bar:nth-child(3) { height: 10px; animation-delay: 0.4s; }
+.da-neural-bar:nth-child(4) { height: 14px; animation-delay: 0.6s; }
+.da-neural-bar:nth-child(5) { height: 8px; animation-delay: 0.8s; }
+
+@keyframes daPulseBar {
+    0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+    50% { transform: scaleY(1); opacity: 1; box-shadow: 0 0 12px #38bdf8; }
+}
+
+.da-thinking-text {
+    font-size: 11px; margin-right: 4px; color: #38bdf8;
+    font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
 
 /* Quick Pills */
 .da-quick-area {
@@ -329,17 +362,18 @@
     display: flex;
     gap: 12px;
     align-items: flex-end;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.15);
     border-radius: 20px;
     padding: 12px 16px;
-    transition: all 0.3s;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(56, 189, 248, 0.05);
 }
 .da-input-wrap:focus-within { 
-    border-color: rgba(56, 189, 248, 0.5); 
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.1), 0 10px 30px rgba(0,0,0,0.5);
+    border-color: rgba(56, 189, 248, 0.6); 
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.15), 0 10px 30px rgba(0,0,0,0.6), inset 0 0 10px rgba(56, 189, 248, 0.1);
+    transform: translateY(-2px);
 }
 .da-input-wrap textarea {
     flex: 1;

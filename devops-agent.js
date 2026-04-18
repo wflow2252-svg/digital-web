@@ -48,6 +48,19 @@ function initDevopsAgent() {
   da_renderWelcomeCards();
   if (typeof lucide !== 'undefined') lucide.createIcons();
   da_renderQuick();
+
+  // Inject Highlight.js for stunning code blocks
+  if (!document.getElementById('hljs-theme')) {
+    const hljsStyle = document.createElement('link');
+    hljsStyle.id = 'hljs-theme';
+    hljsStyle.rel = 'stylesheet';
+    hljsStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css';
+    document.head.appendChild(hljsStyle);
+    
+    const hljsScript = document.createElement('script');
+    hljsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+    document.head.appendChild(hljsScript);
+  }
 }
 
 function da_renderWelcomeCards() {
@@ -104,8 +117,11 @@ function da_clearChat() {
 }
 
 function da_formatText(text) {
-  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-    `<pre><code>${da_escHtml(code.trim())}</code></pre>`);
+  // Highlight.js formats Code Blocks
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const codeClass = lang ? `class="language-${lang}"` : '';
+    return `<pre><code ${codeClass}>${da_escHtml(code.trim())}</code></pre>`;
+  });
   text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${da_escHtml(c)}</code>`);
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   text = text.replace(/\n/g, '<br>');
@@ -135,7 +151,25 @@ function da_addMsg(role, text) {
 
   const bubble = document.createElement('div');
   bubble.className = 'da-bubble ' + role;
-  bubble.innerHTML = role === 'ai' ? da_formatText(text) : da_escHtml(text);
+  
+  if (role === 'ai') {
+    // Elegant fade-in for AI bubbles
+    bubble.innerHTML = da_formatText(text);
+    bubble.style.opacity = '0';
+    bubble.style.transform = 'translateY(10px) scale(0.98)';
+    setTimeout(() => {
+      bubble.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+      bubble.style.opacity = '1';
+      bubble.style.transform = 'translateY(0) scale(1)';
+      if (window.hljs) {
+        bubble.querySelectorAll('pre code').forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
+    }, 50);
+  } else {
+    bubble.innerHTML = da_escHtml(text);
+  }
 
   const meta = document.createElement('div');
   meta.className = 'da-msg-meta';
@@ -158,10 +192,18 @@ function da_showThinking() {
   row.className = 'da-thinking-row';
   row.id = 'da-thinking';
   row.innerHTML = `
-    <div class="da-avatar ai"><i data-lucide="bot" style="width:20px;height:20px;"></i></div>
+    <div class="da-avatar ai" style="box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); border-color:#38bdf8;">
+      <i data-lucide="cpu" style="width:20px;height:20px; animation: pulse 2s infinite;"></i>
+    </div>
     <div class="da-thinking-bubble">
-      <div class="da-dot"></div><div class="da-dot"></div><div class="da-dot"></div>
-      <span style="font-size:11px; margin-right:8px; color:#94a3b8; font-family:'JetBrains Mono',monospace;">SOVEREIGN AI GENERATING...</span>
+      <div class="da-neural-core">
+        <div class="da-neural-bar"></div>
+        <div class="da-neural-bar"></div>
+        <div class="da-neural-bar"></div>
+        <div class="da-neural-bar"></div>
+        <div class="da-neural-bar"></div>
+      </div>
+      <span class="da-thinking-text">NEURAL SYNTHESIS...</span>
     </div>`;
   msgs.appendChild(row);
   if (typeof lucide !== 'undefined') lucide.createIcons({ root: row });
