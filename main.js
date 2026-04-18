@@ -1,4 +1,4 @@
-const sections = ['home', 'ai-studio', 'devops-agent', 'projects', 'contact'];
+const sections = ['home', 'ai-studio', 'projects', 'contact'];
 let currentSectionIndex = 0;
 let isTransitioning = false;
 

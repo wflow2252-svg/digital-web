@@ -1,60 +1,27 @@
-// Digital Web - DevOps AI Agent Logic
+// Digital Web - AI Studio Agent Logic (Restricted)
 
 const da_domains = [
-  { id:'general',  icon:'terminal', name:'عام',         desc:'أسئلة مفتوحة واستشارات',       color:'#00d4ff' },
-  { id:'frontend', icon:'layout', name:'Frontend',    desc:'React, CSS, Perf',   color:'#00d4ff' },
-  { id:'backend',  icon:'server', name:'Backend',     desc:'APIs, Microservices', color:'#00ff88' },
-  { id:'database', icon:'database', name:'Database',    desc:'SQL, NoSQL, Redis',  color:'#ffaa00' },
-  { id:'cloud',    icon:'cloud', name:'Cloud',       desc:'AWS, GCP, Azure',    color:'#00d4ff' },
-  { id:'cicd',     icon:'git-merge', name:'CI/CD',       desc:'Pipelines, Deploy',  color:'#00ff88' },
-  { id:'security', icon:'shield', name:'Security',    desc:'OWASP, IAM, Secrets',color:'#ff4455' },
-  { id:'containers',icon:'box',name:'Containers',  desc:'Docker, K8s, Helm',  color:'#ffaa00' },
-  { id:'monitoring',icon:'activity',name:'Monitoring',  desc:'Prometheus, Grafana', color:'#00d4ff' },
-  { id:'networking',icon:'network',name:'Networking',  desc:'DNS, LB, VPC',       color:'#00ff88' },
-  { id:'cdn',      icon:'zap', name:'CDN',         desc:'Cloudflare, Caching', color:'#ffaa00' },
-  { id:'backup',   icon:'save', name:'Backup',      desc:'DR, RTO/RPO',        color:'#ff4455' },
+  { id:'builder', icon:'layout', name:'إنشاء موقع تجريبي', desc:'قم ببناء موقعك مجاناً عبر الذكاء الاصطناعي', color:'#00d4ff' }
 ];
 
 const da_systemPrompts = {
-  general:   'أنت Senior DevOps Engineer وFull-Stack Architect بخبرة +10 سنين. أجب بالعربي بشكل واضح وعملي. دائماً أعطِ كود شغال وعملي. اذكر البدائل والـ trade-offs. نبّه على الـ pitfalls الشائعة. فكر دائماً في الـ production readiness والـ security.',
-  frontend:  'أنت Senior Frontend Engineer متخصص في React, Next.js, Vue, performance optimization, Core Web Vitals, CSS, Tailwind, و state management. أجب بالعربي مع كود عملي شغال. ركز على الـ performance والـ DX.',
-  backend:   'أنت Senior Backend Engineer متخصص في Node.js, Python, Go, REST APIs, GraphQL, gRPC, microservices, message queues (Kafka/RabbitMQ), و system design. أجب بالعربي مع أمثلة حقيقية.',
-  database:  'أنت Senior Database Engineer متخصص في PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, indexing, query optimization, sharding, و replication. أجب بالعربي مع كود SQL وشرح عملي.',
-  cloud:     'أنت Senior Cloud Architect متخصص في AWS, GCP, Azure, Terraform, IaC, multi-region deployment, و cost optimization. أجب بالعربي مع architecture diagrams نصية وأمثلة Terraform.',
-  cicd:      'أنت Senior DevOps Engineer متخصص في GitHub Actions, GitLab CI, Jenkins, ArgoCD, blue-green/canary deployments, و GitOps. أجب بالعربي مع YAML configs حقيقية.',
-  security:  'أنت Senior Security Engineer متخصص في OWASP, secrets management, IAM, RBAC, SSL/TLS, vulnerability scanning, و Zero Trust. أجب بالعربي مع تطبيق عملي وأمثلة.',
-  containers:'أنت Senior Kubernetes & Docker Expert متخصص في multi-stage builds, K8s orchestration, Helm, service mesh, و container security. أجب بالعربي مع Dockerfiles وK8s manifests.',
-  monitoring:'أنت Senior SRE متخصص في Prometheus, Grafana, ELK Stack, OpenTelemetry, SLOs/SLAs, error budgets, و incident response. أجب بالعربي مع configs حقيقية.',
-  networking:'أنت Senior Network Engineer متخصص في DNS, load balancing, VPC, firewalls, Nginx/Traefik, و network security. أجب بالعربي مع أمثلة config حقيقية.',
-  cdn:       'أنت Senior Performance Engineer متخصص في Cloudflare, CloudFront, caching strategies, edge computing, image optimization, و web performance. أجب بالعربي.',
-  backup:    'أنت Senior Site Reliability Engineer متخصص في backup strategies, disaster recovery, RTO/RPO, database replication, و chaos engineering. أجب بالعربي مع خطط عملية.',
+  builder: 'أنت Sovereign AI، مصمم ومبرمج مواقع محترف. مهمتك قراءة طلب المستخدم، وتوليد كود HTML و CSS و JS في ملف واحد متكامل واحترافي 100%. أجب دائماً بالعربية وركز على الـ UX/UI الراقي جداً. لا تدرج أي نصوص زائدة، فقط قدم العمل.'
 };
 
 const da_quickSuggestions = {
-  general:   ['ايه الفرق بين REST و GraphQL؟','ازاي أعمل high availability system؟','معايير الـ production-ready app؟'],
-  frontend:  ['ازاي أحسن Core Web Vitals؟','الفرق بين SSR و CSR و SSG؟','ازاي أعمل code splitting صح؟'],
-  backend:   ['ازاي أعمل rate limiting؟','الفرق بين monolith و microservices؟','ازاي أعمل idempotent API؟'],
-  database:  ['ازاي أعمل database indexing؟','الفرق بين SQL و NoSQL؟','ازاي أحل N+1 problem؟'],
-  cloud:     ['الفرق بين EC2 و Lambda؟','ازاي أعمل multi-region؟','Terraform أو Pulumi؟'],
-  cicd:      ['ازاي أعمل zero-downtime deployment؟','blue-green vs canary؟','ازاي أأمن secrets في CI؟'],
-  security:  ['ازاي أحمي API من attacks؟','ايه هو Zero Trust؟','ازاي أعمل secrets rotation؟'],
-  containers:['ازاي أعمل multi-stage Dockerfile؟','K8s vs Docker Swarm؟','ازاي أعمل pod autoscaling؟'],
-  monitoring:['ازاي أعمل alerting صح؟','الفرق بين metrics و logs و traces؟','ازاي أعمل SLO؟'],
-  networking:['الفرق بين L4 و L7 load balancer؟','ازاي أعمل VPC peering؟','DNS propagation بيشتغل ازاي؟'],
-  cdn:       ['ازاي أعمل cache invalidation؟','الفرق بين push و pull CDN؟','edge functions إيه هي؟'],
-  backup:    ['الفرق بين RTO و RPO؟','ازاي أعمل database backup strategy؟','3-2-1 rule إيه معناها؟'],
+  builder: ['موقع لشركة تقنية','موقع لمطعم وكافيه','موقع لعيادة أسنان', 'متجر إلكتروني للملابس']
 };
 
 const da_welcomeCards = [
-  { icon:'git-merge', text:'ازاي أبني CI/CD pipeline كامل؟' },
-  { icon:'shield-check', text:'ازاي أأمن الـ API بتاعتي بقوة؟' },
-  { icon:'box', text:'ازاي أعمل Docker multi-stage build؟' },
-  { icon:'cloud', text:'كود Infrastructure بـ Terraform لبيئة AWS.' },
+  { icon:'layout', text:'أريد إنشاء موقع لشركة تقنية ناشئة' },
+  { icon:'building', text:'أريد بناء موقع عقاري شامل بخريطة' }
 ];
 
-let da_currentDomain = 'general';
+let da_currentDomain = 'builder';
 let da_chatHistory = [];
 let da_isLoading = false;
+let da_messageCount = 0;
+const MAX_MESSAGES = 4; // Hard Limit
 
 function initDevopsAgent() {
   const domainList = document.getElementById('da-domainList');
@@ -62,15 +29,14 @@ function initDevopsAgent() {
   domainList.innerHTML = '';
   da_domains.forEach(d => {
     const el = document.createElement('div');
-    el.className = 'da-domain-item' + (d.id === 'general' ? ' active' : '');
+    el.className = 'da-domain-item active';
     el.dataset.id = d.id;
     el.innerHTML = `<span class="da-d-icon"><i data-lucide="${d.icon}"></i></span><span class="da-d-name">${d.name}</span>`;
-    el.onclick = () => da_selectDomain(d.id);
+    // Removed onClick domain switching since there's only one.
     domainList.appendChild(el);
   });
 
   da_renderWelcomeCards();
-  
   if (typeof lucide !== 'undefined') lucide.createIcons();
   da_renderQuick();
 }
@@ -86,17 +52,6 @@ function da_renderWelcomeCards() {
     el.onclick = () => { document.getElementById('da-userInput').value = c.text; da_sendMsg(); };
     wg.appendChild(el);
   });
-}
-
-function da_selectDomain(id) {
-  da_currentDomain = id;
-  document.querySelectorAll('.da-domain-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === id);
-  });
-  const d = da_domains.find(x => x.id === id);
-  document.getElementById('da-domainBadge').textContent = d.name;
-  document.getElementById('da-domainDesc').textContent = d.desc;
-  da_renderQuick();
 }
 
 function da_renderQuick() {
@@ -123,6 +78,7 @@ function da_handleKey(e) {
 
 function da_clearChat() {
   da_chatHistory = [];
+  da_messageCount = 0;
   const msgs = document.getElementById('da-messages');
   msgs.innerHTML = '';
   const welcome = document.createElement('div');
@@ -130,8 +86,8 @@ function da_clearChat() {
   welcome.id = 'da-welcome';
   welcome.innerHTML = `
     <div class="da-welcome-icon"><i data-lucide="terminal-square"></i></div>
-    <div class="da-welcome-title">DevOps AI Agent</div>
-    <div class="da-welcome-sub">المساعد التقني الشامل. جاهز لتصميم، نشر، وإدارة أكوادك وبنيتك التحتية بأقصى كفاءة.</div>
+    <div class="da-welcome-title">AI Studio Agent</div>
+    <div class="da-welcome-sub">المساعد التقني الشامل. جاهز لتصميم مسودات المواقع وتوليد الأكواد مجاناً (رصيد محدود).</div>
     <div class="da-welcome-grid" id="da-welcomeGrid"></div>`;
   msgs.appendChild(welcome);
   da_renderWelcomeCards();
@@ -196,7 +152,7 @@ function da_showThinking() {
     <div class="da-avatar ai"><i data-lucide="bot" style="width:20px;height:20px;"></i></div>
     <div class="da-thinking-bubble">
       <div class="da-dot"></div><div class="da-dot"></div><div class="da-dot"></div>
-      <span style="font-size:11px; margin-right:8px; color:#94a3b8; font-family:'JetBrains Mono', monospace;">PROCESSING...</span>
+      <span style="font-size:11px; margin-right:8px; color:#94a3b8; font-family:'JetBrains Mono', monospace;">ANALYZING REQUIREMENTS...</span>
     </div>`;
   msgs.appendChild(row);
   if (typeof lucide !== 'undefined') lucide.createIcons({root: row});
@@ -214,6 +170,13 @@ async function da_sendMsg() {
   const text = input.value.trim();
   if (!text) return;
 
+  if (da_messageCount >= MAX_MESSAGES) {
+      da_addMsg('ai', 'عذراً! لقد استنفدت رصيدك التجريبي المجاني (4/4 رسائل). يُرجى التواصل معنا للاشتراك في الخدمة الكاملة. 🛑');
+      return;
+  }
+  
+  da_messageCount++;
+
   input.value = '';
   input.style.height = 'auto';
   da_isLoading = true;
@@ -229,13 +192,10 @@ async function da_sendMsg() {
     const sdk = new Bytez("31b385faf5c325b4f98b432dd21a53ac");
     const model = sdk.model("anthropic/claude-opus-4-6");
 
-    // Inject system prompt manually by formatting the message array
     const messagesObj = [
-      { role: "user", content: "[SYSTEM GOAL]: " + da_systemPrompts[da_currentDomain] + "\n\n[USER ACTION]: " + text }
+      { role: "user", content: "[SYSTEM GOAL]: " + da_systemPrompts['builder'] + "\n\n[USER ACTION]: " + text }
     ];
     
-    // For Claude, if chat history gets long, it sometimes requires very strict alternating roles.
-    // To be completely safe and avoid multi-role API errors in Bytez, we will just pass the current prompt with history context stringified.
     const contextStr = da_chatHistory.length > 1 ? "\n\n[PREVIOUS CHAT CONTEXT]:\n" + da_chatHistory.slice(0, -1).map(h => (h.role === 'user' ? 'User: ' : 'AI: ') + h.content).join('\n') : "";
     messagesObj[0].content += contextStr;
 
@@ -247,6 +207,7 @@ async function da_sendMsg() {
       console.error(error);
       da_addMsg('ai', 'عذراً، حدث خطأ أثناء الاتصال بالمودل.');
       da_chatHistory.push({ role: 'assistant', content: 'Error' });
+      da_messageCount--; // refund message count
     } else {
       let reply = typeof output === 'string' ? output : (output?.[0]?.content || output?.text || JSON.stringify(output));
       da_chatHistory.push({ role: 'assistant', content: reply });
@@ -257,7 +218,8 @@ async function da_sendMsg() {
   } catch (e) {
     console.error(e);
     da_hideThinking();
-    da_addMsg('ai', 'حدث خطأ في تحميل مكتبة البنية التحتية. يرجى المراجعة.');
+    da_addMsg('ai', 'حدث خطأ في تحميل الاتصال، تأكد أنك متصل بالإنترنت وأن مفتاح Bytez صالح.');
+    da_messageCount--;
   }
 
   da_isLoading = false;

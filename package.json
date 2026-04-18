@@ -7,7 +7,9 @@
     "start": "npx serve .",
     "build": "echo 'No build step required for Vanilla project'"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bytez.js": "^3.0.0"
+  },
   "devDependencies": {
     "serve": "^14.2.0"
   }
