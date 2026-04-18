@@ -60,6 +60,30 @@
                     { t: 'أتمتة مبيعات', d: 'محركات دفع متطورة تغلق الصفقات نيابة عنك.', size: 'md:col-span-2', icon: 'refresh-ccw' },
                     { t: 'دعم عتيد', d: 'فريق تقني يسهر على استقرار ومراقبة أنظمتك لحظياً.', size: 'md:col-span-1', icon: 'activity' }
                 ]
+            },
+            real_estate: {
+                title: 'Sovereign Realty | سيطر على السوق العقاري',
+                desc: 'منصتك العقارية ليست مجرد عرض، بل رحلة إقناع تقود العميل من الرؤية إلى توقيع العقد.',
+                accent: 'emerald-600',
+                unsplash: 'mansion,architecture,real-estate',
+                features: [
+                    { t: 'جولات افتراضية', d: 'دع عميلك يتجول داخل العقار في أي وقت بدقة عالية.', size: 'md:col-span-2', icon: 'home' },
+                    { t: 'بحث ذكي متقدم', d: 'فلاتر دقيقة ومحرك بحث فائق السرعة لتسهيل الوصول.', size: 'md:col-span-1', icon: 'search' },
+                    { t: 'تحويل العملاء', d: 'تتبع اهتمامات العملاء وأتمتة رسائل المتابعة لضمان البيع.', size: 'md:col-span-1', icon: 'users' },
+                    { t: 'مصداقية وثقة', d: 'تصميم يعزز الاحترافية لبيع العقارات عالية القيمة بفعالية.', size: 'md:col-span-2', icon: 'shield' }
+                ]
+            },
+            ecommerce: {
+                title: 'Sovereign Store | ضاعف أرباح متجرك',
+                desc: 'واجهة تجارة إلكترونية مصممة سيكولوجياً لرفع نسبة التحويل وتقليل التخلي عن السلة.',
+                accent: 'fuchsia-600',
+                unsplash: 'shopping,ecommerce,store',
+                features: [
+                    { t: 'شراء بضغطة', d: 'تبسيط مسار الشراء للعميل لتسريع عملية الدفع.', size: 'md:col-span-1', icon: 'shopping-cart' },
+                    { t: 'توصيات ذكية', d: 'اقتراح منتجات ترفع متوسط قيمة الطلب (AOV) لكل عميل.', size: 'md:col-span-2', icon: 'sparkles' },
+                    { t: 'إدارة مؤتمتة', d: 'لوحة تحكم ذكية للطلبات وتحديث مباشر لحالة المخزون.', size: 'md:col-span-2', icon: 'box' },
+                    { t: 'دفع دولي ومحلي', d: 'تكامل فوري مع أشهر بوابات الدفع لتحصيل آمن وسريع.', size: 'md:col-span-1', icon: 'credit-card' }
+                ]
             }
         },
         default: {
@@ -164,10 +188,12 @@
             }
 
             let config = STRATEGIC_REGISTRY.default;
-            if (p.includes('fashion') || p.includes('ملابس')) config = STRATEGIC_REGISTRY.niche_configs.fashion;
-            else if (p.includes('med') || p.includes('طب')) config = STRATEGIC_REGISTRY.niche_configs.medical;
-            else if (p.includes('tech') || p.includes('برمج')) config = STRATEGIC_REGISTRY.niche_configs.tech;
-            else if (p.includes('restaurant') || p.includes('مطعم')) config = STRATEGIC_REGISTRY.niche_configs.restaurant;
+            if (p.includes('fashion') || p.includes('ملابس') || p.includes('ازياء') || p.includes('أزياء')) config = STRATEGIC_REGISTRY.niche_configs.fashion;
+            else if (p.includes('med') || p.includes('طب') || p.includes('عيادة')) config = STRATEGIC_REGISTRY.niche_configs.medical;
+            else if (p.includes('tech') || p.includes('برمج') || p.includes('تقني')) config = STRATEGIC_REGISTRY.niche_configs.tech;
+            else if (p.includes('restaurant') || p.includes('مطعم') || p.includes('اكل')) config = STRATEGIC_REGISTRY.niche_configs.restaurant;
+            else if (p.includes('real estate') || p.includes('عقار') || p.includes('فلل') || p.includes('فيلا')) config = STRATEGIC_REGISTRY.niche_configs.real_estate;
+            else if (p.includes('ecommerce') || p.includes('متجر') || p.includes('شراء') || p.includes('سلة')) config = STRATEGIC_REGISTRY.niche_configs.ecommerce;
 
             const brandName = prompt.match(/(لـ|اسم|لشركة|for|called) ([\w\s\u0600-\u06FF]+)/)?.[2]?.trim() || 'Sovereign Hub';
             const projectSlug = brandName.toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substring(7, 10);
