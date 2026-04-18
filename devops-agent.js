@@ -61,6 +61,14 @@ function initDevopsAgent() {
     hljsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
     document.head.appendChild(hljsScript);
   }
+
+  // Inject Puter.js for completely free, unauthenticated client-side AI access (Claude 3.5)
+  if (!document.getElementById('puter-js')) {
+    const puterScript = document.createElement('script');
+    puterScript.id = 'puter-js';
+    puterScript.src = 'https://js.puter.com/v2/';
+    document.head.appendChild(puterScript);
+  }
 }
 
 function da_renderWelcomeCards() {
@@ -246,35 +254,27 @@ async function da_sendMsg() {
       : '';
     const fullPrompt = `${sysPrompt}${ctx}\n\nطلب المستخدم: ${text}`;
 
-    // ── Secure Direct connection to Google Gemini 1.5 Flash API (CORS-enabled natively)
-    // Dynamic token assembly for local client-side bypass without Vercel backend
-    const k1 = 'AIzaSyDlu';
-    const k2 = 'wgfKtDWPx';
-    const k3 = 'dfvzvXKZO';
-    const k4 = 'jUSQR4h0ECrI';
-    const geminiKey = k1 + k2 + k3 + k4;
+    // ── Ultra-Resilient Direct Client-Side AI (Puter.js)
+    // Uses Claude 3.5 Sonnet completely free, bypassing API keys and CORS completely.
     
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: fullPrompt }] }]
-      })
+    if (typeof puter === 'undefined') {
+       throw new Error("جاري تهيئة الشبكة العصبية، يرجى المحاولة بعد لحظة...");
+    }
+
+    const messages = [
+      { role: 'system', content: da_systemPrompts['builder'] },
+      ...da_chatHistory,
+      { role: 'user', content: text }
+    ];
+
+    const response = await puter.ai.chat(messages, {
+        model: 'claude-3-5-sonnet',
+        stream: false
     });
 
     da_hideThinking();
 
-    if (!resp.ok) {
-      throw new Error(`خطأ في محرك الذكاء الاصطناعي المركزي: ${resp.status}`);
-    }
-
-    const data = await resp.json();
-    let reply = "";
-    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
-      reply = data.candidates[0].content.parts[0].text;
-    }
+    let reply = response?.message?.content || "";
 
     if (reply && reply.trim().length > 10) {
       da_chatHistory.push({ role: 'user', content: text });
@@ -292,7 +292,7 @@ async function da_sendMsg() {
             html: code,
             code: code,
             analysis: { brandName: 'Sovereign Hub Website', dialect: { welcome: 'Sovereign AI' } },
-            logic: [`Gemini 1.5 Flash`, 'Sovereign Protocol v14']
+            logic: [`Claude 3.5 Sonnet (Puter)`, 'Sovereign Protocol v15']
           });
         }
       }
