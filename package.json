@@ -1,0 +1,14 @@
+{
+  "name": "digital-web-sovereign",
+  "version": "13.0.0",
+  "description": "Premium Digital Experiences & AI Hub Synthesis",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'No build step required for Vanilla project'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

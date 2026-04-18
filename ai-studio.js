@@ -153,34 +153,45 @@
                 return new Promise(r => setTimeout(r, 400));
             };
 
-            await appendThought('Detecting User Dialect & Global Archetype...');
+            await appendThought('1. Analyzing prompt and extracting vision...');
             // Dialect Analyzer
             const p = prompt.toLowerCase();
             let dialect = STRATEGIC_REGISTRY.dialects.msa;
             if (p.includes('ابي') || p.includes('ودي') || p.includes('عطني')) {
                 dialect = STRATEGIC_REGISTRY.dialects.saudi;
-                await appendThought('Dialect Identified: SAUDI (Najdi/Hejazi Variant)', 'architecture');
             } else if (p.includes('عايز') || p.includes('اعملي') || p.includes('جامد')) {
                 dialect = STRATEGIC_REGISTRY.dialects.egyptian;
-                await appendThought('Dialect Identified: EGYPTIAN (Local Market Focus)', 'architecture');
             }
 
             let config = STRATEGIC_REGISTRY.default;
             if (p.includes('fashion') || p.includes('ملابس')) config = STRATEGIC_REGISTRY.niche_configs.fashion;
             else if (p.includes('med') || p.includes('طب')) config = STRATEGIC_REGISTRY.niche_configs.medical;
             else if (p.includes('tech') || p.includes('برمج')) config = STRATEGIC_REGISTRY.niche_configs.tech;
+            else if (p.includes('restaurant') || p.includes('مطعم')) config = STRATEGIC_REGISTRY.niche_configs.restaurant;
 
             const brandName = prompt.match(/(لـ|اسم|لشركة|for|called) ([\w\s\u0600-\u06FF]+)/)?.[2]?.trim() || 'Sovereign Hub';
-
-            await appendThought('Allocating Sovereign Cloud Resources...', 'logic');
             const projectSlug = brandName.toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substring(7, 10);
-            await appendThought(`Provisioning Subdomain: https://${projectSlug}.digital.web`, 'logic');
-            await appendThought('Configuring SSL certificates (DW Secure Shield)...', 'logic');
-            await appendThought('Bootstrapping 24/7 Node.js Cluster...', 'logic');
-            await appendThought('Synching SQL Knowledge Core...', 'logic');
+
+            await appendThought(`- Identified Goal: ${brandName}`, 'logic');
+            await appendThought(`- Niche/Style: ${config.title}`, 'logic');
+            await appendThought(`- Copywriting Dialect: ${dialect.welcome}`, 'logic');
+            
+            await appendThought('2. Generating UX/UI Architecture...', 'architecture');
+            await appendThought('- Created System Wireframes [ux_wireframes_v1.sketch]', 'architecture');
+            await appendThought('- Exported Design Tokens & Palette [ui_theme.json]', 'architecture');
+            await appendThought('- Assembling Components & Assets...', 'architecture');
+
+            await appendThought('3. Generating Source Code & Logic...', 'logic');
+            await appendThought('- Compiling HTML/DOM Structure [index.html]', 'logic');
+            await appendThought('- Injecting Tailwind CSS Framework [style.css]', 'logic');
+            await appendThought('- Activating React/JS Interactive Nodes [app.js]', 'logic');
+            
+            await appendThought('Synthesis Complete. Rendering Results...', 'architecture');
 
             // Synthesis Complete - Display Domain Banner
             const logicDisplay = document.getElementById('logic-display');
+            const firebaseDb = window.SOVEREIGN_HUB ? window.SOVEREIGN_HUB.db : null;
+            
             if (logicDisplay) {
                 const domainBanner = document.createElement('div');
                 domainBanner.className = 'domain-assignment-banner';
@@ -188,7 +199,7 @@
                     background: rgba(59, 130, 246, 0.05);
                     border: 1px solid rgba(59, 130, 246, 0.3);
                     padding: 20px;
-                    border-radius: 15px;
+                    border-radius: 20px;
                     margin-top: 20px;
                     display: flex;
                     flex-direction: column;
@@ -199,16 +210,21 @@
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="background: var(--accent); padding: 10px; border-radius: 10px;"><i data-lucide="globe" style="color: black;"></i></div>
                         <div>
-                            <div style="font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px;">SOVEREIGN HUB DOMAIN</div>
-                            <div style="font-weight: 900; color: white; font-size: 1.1rem;">https://${projectSlug}.digital.web</div>
+                            <div style="font-size: 0.7rem; opacity: 0.5; letter-spacing: 1px;">SOVEREIGN TRIAL ASSIGNED</div>
+                            <div id="demo-link-text" style="font-weight: 900; color: white; font-size: 1.1rem;">https://digital.web/demo/${projectSlug}</div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <div style="background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 5px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; border: 1px solid rgba(34, 197, 94, 0.2);">SSL SECURED</div>
-                        <div style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 5px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; border: 1px solid rgba(59, 130, 246, 0.2);">SERVER_ALIVE: 24/7</div>
+                        <button onclick="window.open('/demo/${projectSlug}', '_blank')" style="background: white; color: black; padding: 10px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; border: none; cursor: pointer;">زيارة الموقع التجريبي</button>
+                        <div style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 10px 20px; border-radius: 12px; font-size: 10px; font-weight: 900; border: 1px solid rgba(59, 130, 246, 0.2);">DNS_STATUS: PROPAGATING...</div>
                     </div>
                 `;
                 logicDisplay.prepend(domainBanner);
+                
+                // Update Trial Domain Card in Domains Section
+                const trialEl = document.getElementById('trial-domain-status');
+                if (trialEl) trialEl.innerText = `${projectSlug}.digital.web`;
+
                 if (window.lucide) lucide.createIcons();
             }
 
@@ -218,6 +234,17 @@
                 ${UI_FACTORY.bentoGrid(config.features, config.accent)}
                 ${UI_FACTORY.hookForm(config.accent, dialect)}
                 ${UI_FACTORY.footer()}<script>lucide.createIcons();</script></body></html>`;
+
+            // 🔥 PERSIST TO FIREBASE FOR DEMO LINK
+            if (firebaseDb) {
+                await firebaseDb.ref(`demos/${projectSlug}`).set({
+                    html: html,
+                    brand: brandName,
+                    timestamp: Date.now(),
+                    expires: Date.now() + (24 * 60 * 60 * 1000) // 24 Hours
+                });
+                console.log('✅ Demo Site Persisted to Sovereign Hub');
+            }
 
             const results = { html, code: html, analysis: { dialect, brandName }, logic: ['Strategic Analysis', 'Dialect Patterning', 'Aggressive CTAs'] };
             window.dwOpenPreview(results);

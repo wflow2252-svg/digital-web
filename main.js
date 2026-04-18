@@ -1,4 +1,4 @@
-const sections = ['home', 'domains', 'ai-studio', 'infrastructure', 'projects', 'contact'];
+const sections = ['home', 'ai-studio', 'projects', 'contact'];
 let currentSectionIndex = 0;
 let isTransitioning = false;
 
@@ -11,6 +11,14 @@ function switchSection(sectionId) {
     if (activeSection === targetSection) return;
 
     isTransitioning = true;
+    
+    // Failsafe: forcibly release lock and overlay after 1.5s
+    setTimeout(() => {
+        isTransitioning = false;
+        const o = document.getElementById('intro-overlay');
+        if (o) o.classList.remove('active');
+    }, 1500);
+
     currentSectionIndex = sections.indexOf(sectionId);
 
     // 1. Show Cinematic Intro Overlay
@@ -21,7 +29,6 @@ function switchSection(sectionId) {
     // Prepare Text based on section
     const titles = {
         'ai-studio': { main: 'AI_STUD', cursive: 'IO' },
-        'stack': { main: 'STAC', cursive: 'K' },
         'projects': { main: 'PROJEC', cursive: 'TS' },
         'contact': { main: 'CONTAC', cursive: 'T' }
     };
@@ -48,7 +55,8 @@ function switchSection(sectionId) {
             
             setTimeout(() => {
                 prepareAndEnter(targetSection, sectionId);
-                isTransitioning = false;
+                // Safety: Ensure transitioning and overlay are reset
+                setTimeout(() => { isTransitioning = false; }, 500);
             }, 100);
         }, 400);
     } else {
@@ -57,7 +65,7 @@ function switchSection(sectionId) {
             activeSection.style.display = 'none';
         }
         prepareAndEnter(targetSection, sectionId);
-        isTransitioning = false;
+        setTimeout(() => { isTransitioning = false; }, 500);
     }
 }
 
@@ -327,6 +335,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 snap.ref.remove();
             });
         }
+       }
+});
+
+// Implementation of browser 'Back' button support (Popstate)
+window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.sectionId) {
+        switchSection(e.state.sectionId);
     }
 });
 
+// Override switchSection to support browser history
+const originalSwitchSection = switchSection;
+switchSection = function(sectionId) {
+    if (isTransitioning) return;
+    originalSwitchSection(sectionId);
+    history.pushState({ sectionId }, '', `#${sectionId}`);
+};

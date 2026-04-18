@@ -542,6 +542,59 @@ section.exiting {
     flex-wrap: wrap;
 }
 
+/* Primary and Secondary Hero Buttons */
+.hero-btns {
+    display: flex;
+    gap: 1rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.6);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+}
+
 .badge {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border);
@@ -629,34 +682,35 @@ section.exiting {
     background: rgba(15, 15, 18, 0.6);
     backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 0.4rem 0.8rem;
+    padding: 0.4rem 0.6rem;
     border-radius: 100px;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: clamp(0.5rem, 2vw, 1.5rem);
     z-index: 10000;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    width: auto;
+    width: fit-content;
     max-width: 95vw;
     white-space: nowrap;
 }
 
 .pill-brand {
-    padding-left: 0.5rem;
+    padding-right: 0.8rem;
+    padding-left: 0.2rem;
     display: flex;
     align-items: center;
 }
 
 .pill-logo {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
 }
 
 .pill-items {
     display: flex;
-    gap: 0.2rem;
+    gap: clamp(0.1rem, 1vw, 0.5rem);
     position: relative;
     padding: 0 0.5rem;
     border-left: 1px solid rgba(255, 255, 255, 0.05);
@@ -671,20 +725,23 @@ section.exiting {
 }
 
 .pill-cta {
-    background: white;
-    color: black;
+    background: #fff;
+    color: #000;
     border: none;
     padding: 0.5rem 1.2rem;
     border-radius: 50px;
-    font-weight: 900;
-    font-size: 0.8rem;
+    font-weight: 800;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: var(--transition-fast);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
 .pill-cta:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 5px 25px var(--accent-glow);
 }
 
 .google-btn.small {
@@ -714,15 +771,23 @@ section.exiting {
     background: transparent;
     border: none;
     color: rgba(255, 255, 255, 0.5);
-    padding: 0.7rem 1.3rem;
+    padding: clamp(0.4rem, 1.5vw, 0.8rem) clamp(0.6rem, 2.5vw, 1.4rem);
     border-radius: 100px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: var(--transition-smooth);
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+}
+
+@media (max-width: 850px) {
+    .nav-label { display: none; }
+    .nav-item { padding: 0.7rem; }
+    .pill-nav { gap: 0.5rem; }
+    .pill-brand { display: none; }
+    .pill-items { border: none; padding: 0; }
 }
 
 .nav-item i, .nav-item .material-symbols-outlined {
@@ -731,15 +796,16 @@ section.exiting {
 
 .nav-item:hover {
     color: var(--fg);
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.active {
-    color: #000;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .nav-item.active i, .nav-item.active .material-symbols-outlined {
-    color: #000;
+    color: #fff;
 }
 
 /* Custom Cursor */
@@ -2362,3 +2428,131 @@ body.analytics-active section {
     font-weight: 800;
     color: white;
 }
+
+/* ========== SOVEREIGN DOMAIN HUB & DNS UI v15 ========== */
+.domain-tabs-wrapper {
+    margin-top: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.domain-tabs {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.domain-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 1.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition-fast);
+}
+
+.domain-tab:hover {
+    color: white;
+}
+
+.domain-tab.active {
+    color: var(--accent);
+}
+
+.domain-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.domain-panel {
+    display: none;
+    padding: 60px 0;
+    animation: dw-fadeIn 0.5s ease;
+}
+
+.domain-panel.active {
+    display: block;
+}
+
+/* DNS Propagation Terminal */
+.dns-prop-terminal {
+    background: #0a0a0c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+}
+
+.terminal-header {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.t-controls { display: flex; gap: 8px; }
+.t-controls div { width: 10px; height: 10px; border-radius: 50%; }
+.tc-red { background: #ff5f56; }
+.tc-yellow { background: #ffbd2e; }
+.tc-green { background: #27c93f; }
+
+.t-title {
+    font-size: 10px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.terminal-body {
+    padding: 30px;
+    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.8;
+}
+
+.t-line {
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    gap: 15px;
+}
+
+.t-line [data-loc] { color: var(--accent); font-weight: 900; min-width: 120px; }
+.t-line [data-status="ok"] { color: #22c55e; font-weight: 900; }
+.t-line [data-status="wait"] { color: #eab308; }
+
+/* Domain Card Warning/Trial state */
+.domain-status.warning {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.circular-progress {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.05);
+    border-top-color: #22c55e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: dw-spin 2s linear infinite;
+}
+
+.prog-val { font-size: 10px; font-weight: 900; animation: none; color: white; }

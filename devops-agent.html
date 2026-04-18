@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps AI Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2330;
+    --border2: #252d3d;
+    --accent: #00d4ff;
+    --accent2: #0099bb;
+    --green: #00ff88;
+    --amber: #ffaa00;
+    --red: #ff4455;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #4a5568;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Cairo', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  .sidebar-logo {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+  .sidebar-label {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+    letter-spacing: 1.5px;
+    padding: 16px 16px 8px;
+    text-transform: uppercase;
+  }
+  .domain-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+  .domain-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .domain-item:hover { background: var(--surface2); }
+  .domain-item.active {
+    background: rgba(0,212,255,0.08);
+    border-color: rgba(0,212,255,0.2);
+  }
+  .domain-item.active .d-name { color: var(--accent); }
+  .domain-item.active .d-icon { color: var(--accent); }
+  .d-icon { font-size: 15px; width: 20px; text-align: center; }
+  .d-name { font-size: 12px; color: var(--text2); font-weight: 600; }
+  .status-bar {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .status-text { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+  /* Main */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* Top bar */
+  .topbar {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .domain-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .domain-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .topbar-right { display: flex; gap: 8px; align-items: center; }
+  .clear-btn {
+    font-size: 11px;
+    color: var(--text3);
+    background: none;
+    border: 1px solid var(--border2);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    transition: all .15s;
+  }
+  .clear-btn:hover { color: var(--red); border-color: var(--red); }
+
+  /* Messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: fadeUp .2s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .avatar.ai {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .avatar.user {
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.2);
+    font-size: 16px;
+  }
+
+  .bubble {
+    max-width: 72%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .bubble.ai {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-top-right-radius: 3px;
+  }
+  .bubble.user {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--text);
+    border-top-left-radius: 3px;
+    text-align: right;
+  }
+  .bubble code {
+    font-family: var(--mono);
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .bubble pre {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 14px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    line-height: 1.6;
+  }
+  .msg-meta {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+    margin-top: 5px;
+    padding: 0 4px;
+  }
+  .msg-col { display: flex; flex-direction: column; }
+
+  /* Thinking */
+  .thinking-row { display: flex; gap: 12px; align-items: center; }
+  .thinking-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    border-top-right-radius: 3px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bounce .9s infinite; }
+  .dot:nth-child(2) { animation-delay: .15s; }
+  .dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,100%{transform:translateY(0);opacity:.3} 50%{transform:translateY(-5px);opacity:1} }
+
+  /* Quick pills */
+  .quick-area {
+    padding: 0 24px 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .quick-pill {
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .quick-pill:hover {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: rgba(0,212,255,0.3);
+  }
+
+  /* Input area */
+  .input-area {
+    padding: 12px 24px 20px;
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .input-wrap {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    transition: border-color .2s;
+  }
+  .input-wrap:focus-within { border-color: rgba(0,212,255,0.4); }
+  #userInput {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--sans);
+    resize: none;
+    max-height: 120px;
+    min-height: 24px;
+    line-height: 1.6;
+    direction: rtl;
+  }
+  #userInput::placeholder { color: var(--text3); }
+  .send-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+    flex-shrink: 0;
+    color: var(--bg);
+    font-size: 16px;
+  }
+  .send-btn:hover { background: var(--accent2); transform: scale(1.05); }
+  .send-btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+  .input-hint {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: var(--mono);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* Welcome screen */
+  .welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+    padding: 40px;
+  }
+  .welcome-icon { font-size: 48px; margin-bottom: 8px; }
+  .welcome-title { font-size: 22px; font-weight: 700; color: var(--text); }
+  .welcome-sub { font-size: 14px; color: var(--text2); line-height: 1.7; max-width: 400px; }
+  .welcome-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .welcome-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: right;
+  }
+  .welcome-card:hover { border-color: rgba(0,212,255,0.3); background: var(--surface2); }
+  .welcome-card-icon { font-size: 20px; margin-bottom: 6px; }
+  .welcome-card-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">DEVOPS//AI</div>
+    <div class="logo-sub">Senior Engineer Agent v1.0</div>
+  </div>
+  <div class="sidebar-label">المجالات</div>
+  <div class="domain-list" id="domainList"></div>
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <div class="status-text">Agent Online</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div class="domain-title">
+      <span id="domainBadge" class="domain-badge">عام</span>
+      <span style="font-size:13px;color:var(--text2);font-family:var(--mono)" id="domainDesc">اسأل في أي مجال تقني</span>
+    </div>
+    <div class="topbar-right">
+      <button class="clear-btn" onclick="clearChat()">مسح المحادثة</button>
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">⚙️</div>
+      <div class="welcome-title">DevOps AI Agent</div>
+      <div class="welcome-sub">خبير تقني متكامل في كل طبقات الـ stack — من الـ Frontend للـ Infrastructure</div>
+      <div class="welcome-grid" id="welcomeGrid"></div>
+    </div>
+  </div>
+
+  <div class="quick-area" id="quickArea"></div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" placeholder="اسأل في أي حاجة تقنية..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()">↑</button>
+    </div>
+    <div class="input-hint">Enter للإرسال • Shift+Enter لسطر جديد</div>
+  </div>
+</div>
+
+<script>
+const domains = [
+  { id:'general',  icon:'🧠', name:'عام',         desc:'أي سؤال تقني',       color:'#00d4ff' },
+  { id:'frontend', icon:'🖥', name:'Frontend',    desc:'React, CSS, Perf',   color:'#00d4ff' },
+  { id:'backend',  icon:'⚙️', name:'Backend',     desc:'APIs, Microservices', color:'#00ff88' },
+  { id:'database', icon:'🗄', name:'Database',    desc:'SQL, NoSQL, Redis',  color:'#ffaa00' },
+  { id:'cloud',    icon:'☁️', name:'Cloud',       desc:'AWS, GCP, Azure',    color:'#00d4ff' },
+  { id:'cicd',     icon:'🔄', name:'CI/CD',       desc:'Pipelines, Deploy',  color:'#00ff88' },
+  { id:'security', icon:'🔒', name:'Security',    desc:'OWASP, IAM, Secrets',color:'#ff4455' },
+  { id:'containers',icon:'📦',name:'Containers',  desc:'Docker, K8s, Helm',  color:'#ffaa00' },
+  { id:'monitoring',icon:'📊',name:'Monitoring',  desc:'Prometheus, Grafana', color:'#00d4ff' },
+  { id:'networking',icon:'🌐',name:'Networking',  desc:'DNS, LB, VPC',       color:'#00ff88' },
+  { id:'cdn',      icon:'⚡', name:'CDN',         desc:'Cloudflare, Caching', color:'#ffaa00' },
+  { id:'backup',   icon:'💾', name:'Backup',      desc:'DR, RTO/RPO',        color:'#ff4455' },
+];
+
+const systemPrompts = {
+  general:   'أنت Senior DevOps Engineer وFull-Stack Architect بخبرة +10 سنين. أجب بالعربي بشكل واضح وعملي. دائماً أعطِ كود شغال وعملي. اذكر البدائل والـ trade-offs. نبّه على الـ pitfalls الشائعة. فكر دائماً في الـ production readiness والـ security.',
+  frontend:  'أنت Senior Frontend Engineer متخصص في React, Next.js, Vue, performance optimization, Core Web Vitals, CSS, Tailwind, و state management. أجب بالعربي مع كود عملي شغال. ركز على الـ performance والـ DX.',
+  backend:   'أنت Senior Backend Engineer متخصص في Node.js, Python, Go, REST APIs, GraphQL, gRPC, microservices, message queues (Kafka/RabbitMQ), و system design. أجب بالعربي مع أمثلة حقيقية.',
+  database:  'أنت Senior Database Engineer متخصص في PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, indexing, query optimization, sharding, و replication. أجب بالعربي مع كود SQL وشرح عملي.',
+  cloud:     'أنت Senior Cloud Architect متخصص في AWS, GCP, Azure, Terraform, IaC, multi-region deployment, و cost optimization. أجب بالعربي مع architecture diagrams نصية وأمثلة Terraform.',
+  cicd:      'أنت Senior DevOps Engineer متخصص في GitHub Actions, GitLab CI, Jenkins, ArgoCD, blue-green/canary deployments, و GitOps. أجب بالعربي مع YAML configs حقيقية.',
+  security:  'أنت Senior Security Engineer متخصص في OWASP, secrets management, IAM, RBAC, SSL/TLS, vulnerability scanning, و Zero Trust. أجب بالعربي مع تطبيق عملي وأمثلة.',
+  containers:'أنت Senior Kubernetes & Docker Expert متخصص في multi-stage builds, K8s orchestration, Helm, service mesh, و container security. أجب بالعربي مع Dockerfiles وK8s manifests.',
+  monitoring:'أنت Senior SRE متخصص في Prometheus, Grafana, ELK Stack, OpenTelemetry, SLOs/SLAs, error budgets, و incident response. أجب بالعربي مع configs حقيقية.',
+  networking:'أنت Senior Network Engineer متخصص في DNS, load balancing, VPC, firewalls, Nginx/Traefik, و network security. أجب بالعربي مع أمثلة config حقيقية.',
+  cdn:       'أنت Senior Performance Engineer متخصص في Cloudflare, CloudFront, caching strategies, edge computing, image optimization, و web performance. أجب بالعربي.',
+  backup:    'أنت Senior Site Reliability Engineer متخصص في backup strategies, disaster recovery, RTO/RPO, database replication, و chaos engineering. أجب بالعربي مع خطط عملية.',
+};
+
+const quickSuggestions = {
+  general:   ['ايه الفرق بين REST و GraphQL؟','ازاي أعمل high availability system؟','معايير الـ production-ready app؟'],
+  frontend:  ['ازاي أحسن Core Web Vitals؟','الفرق بين SSR و CSR و SSG؟','ازاي أعمل code splitting صح؟'],
+  backend:   ['ازاي أعمل rate limiting؟','الفرق بين monolith و microservices؟','ازاي أعمل idempotent API؟'],
+  database:  ['ازاي أعمل database indexing؟','الفرق بين SQL و NoSQL؟','ازاي أحل N+1 problem؟'],
+  cloud:     ['الفرق بين EC2 و Lambda؟','ازاي أعمل multi-region؟','Terraform أو Pulumi؟'],
+  cicd:      ['ازاي أعمل zero-downtime deployment؟','blue-green vs canary؟','ازاي أأمن secrets في CI؟'],
+  security:  ['ازاي أحمي API من attacks؟','ايه هو Zero Trust؟','ازاي أعمل secrets rotation؟'],
+  containers:['ازاي أعمل multi-stage Dockerfile؟','K8s vs Docker Swarm؟','ازاي أعمل pod autoscaling؟'],
+  monitoring:['ازاي أعمل alerting صح؟','الفرق بين metrics و logs و traces؟','ازاي أعمل SLO؟'],
+  networking:['الفرق بين L4 و L7 load balancer؟','ازاي أعمل VPC peering؟','DNS propagation بيشتغل ازاي؟'],
+  cdn:       ['ازاي أعمل cache invalidation؟','الفرق بين push و pull CDN؟','edge functions إيه هي؟'],
+  backup:    ['الفرق بين RTO و RPO؟','ازاي أعمل database backup strategy؟','3-2-1 rule إيه معناها؟'],
+};
+
+const welcomeCards = [
+  { icon:'⚙️', text:'ازاي أبني CI/CD pipeline كامل؟' },
+  { icon:'🔒', text:'ازاي أأمن الـ API بتاعتي؟' },
+  { icon:'📦', text:'ازاي أعمل Docker multi-stage build؟' },
+  { icon:'☁️', text:'ازاي أعمل AWS infrastructure بـ Terraform؟' },
+];
+
+let currentDomain = 'general';
+let chatHistory = [];
+let isLoading = false;
+let hasMessages = false;
+
+// Build sidebar
+const domainList = document.getElementById('domainList');
+domains.forEach(d => {
+  const el = document.createElement('div');
+  el.className = 'domain-item' + (d.id === 'general' ? ' active' : '');
+  el.dataset.id = d.id;
+  el.innerHTML = `<span class="d-icon">${d.icon}</span><span class="d-name">${d.name}</span>`;
+  el.onclick = () => selectDomain(d.id);
+  domainList.appendChild(el);
+});
+
+// Build welcome cards
+const wg = document.getElementById('welcomeGrid');
+welcomeCards.forEach(c => {
+  const el = document.createElement('div');
+  el.className = 'welcome-card';
+  el.innerHTML = `<div class="welcome-card-icon">${c.icon}</div><div class="welcome-card-text">${c.text}</div>`;
+  el.onclick = () => { document.getElementById('userInput').value = c.text; sendMsg(); };
+  wg.appendChild(el);
+});
+
+function selectDomain(id) {
+  currentDomain = id;
+  document.querySelectorAll('.domain-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+  const d = domains.find(x => x.id === id);
+  document.getElementById('domainBadge').textContent = d.name;
+  document.getElementById('domainDesc').textContent = d.desc;
+  renderQuick();
+}
+
+function renderQuick() {
+  const area = document.getElementById('quickArea');
+  area.innerHTML = (quickSuggestions[currentDomain] || [])
+    .map(q => `<button class="quick-pill" onclick="sendQuick(this.textContent)">${q}</button>`)
+    .join('');
+}
+
+function sendQuick(text) {
+  document.getElementById('userInput').value = text;
+  sendMsg();
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function clearChat() {
+  chatHistory = [];
+  hasMessages = false;
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome';
+  welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-icon">⚙️</div>
+    <div class="welcome-title">DevOps AI Agent</div>
+    <div class="welcome-sub">خبير تقني متكامل في كل طبقات الـ stack</div>
+    <div class="welcome-grid" id="welcomeGrid"></div>`;
+  msgs.appendChild(welcome);
+  const wg2 = document.getElementById('welcomeGrid');
+  welcomeCards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'welcome-card';
+    el.innerHTML = `<div class="welcome-card-icon">${c.icon}</div><div class="welcome-card-text">${c.text}</div>`;
+    el.onclick = () => { document.getElementById('userInput').value = c.text; sendMsg(); };
+    wg2.appendChild(el);
+  });
+}
+
+function formatText(text) {
+  // code blocks
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+    `<pre>${escHtml(code.trim())}</pre>`);
+  // inline code
+  text = text.replace(/`([^`]+)`/g, (_, c) => `<code>${escHtml(c)}</code>`);
+  return text;
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('messages');
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+  hasMessages = true;
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+
+  const av = document.createElement('div');
+  av.className = 'avatar ' + role;
+  av.textContent = role === 'ai' ? 'AI' : '👤';
+
+  const col = document.createElement('div');
+  col.className = 'msg-col';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + role;
+  if (role === 'ai') {
+    bubble.innerHTML = formatText(text);
+  } else {
+    bubble.textContent = text;
+  }
+
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.textContent = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit',minute:'2-digit'});
+
+  col.appendChild(bubble);
+  col.appendChild(meta);
+  row.appendChild(av);
+  row.appendChild(col);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return bubble;
+}
+
+function showThinking() {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'thinking-row';
+  row.id = 'thinking';
+  row.innerHTML = `
+    <div class="avatar ai">AI</div>
+    <div class="thinking-bubble">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideThinking() {
+  const t = document.getElementById('thinking');
+  if (t) t.remove();
+}
+
+async function sendMsg() {
+  if (isLoading) return;
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  addMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  showThinking();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompts[currentDomain] + '\n\nكن واضحاً ومختصراً. استخدم code blocks للكود. لا تطول بدون فائدة.',
+        messages: chatHistory
+      })
+    });
+    const data = await resp.json();
+    hideThinking();
+    const reply = data.content?.[0]?.text || 'حصل خطأ، جرب تاني.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+    addMsg('ai', reply);
+  } catch (e) {
+    hideThinking();
+    addMsg('ai', 'في مشكلة في الاتصال. تأكد من الـ network وحاول تاني.');
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+// Init
+renderQuick();
+document.getElementById('userInput').focus();
+</script>
+</body>
+</html>
